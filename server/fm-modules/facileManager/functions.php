@@ -289,6 +289,7 @@ function printHeader($subtitle = 'auto', $css = 'facileManager', $help = 'no-hel
 		<link rel="shortcut icon" href="{$GLOBALS['RELPATH']}fm-modules/$fm_name/images/favicon.png" />
 		<link rel="stylesheet" href="{$GLOBALS['RELPATH']}fm-modules/$fm_name/css/$css.css?ver=$fm_version" type="text/css" />
 		<link rel="stylesheet" href="{$GLOBALS['RELPATH']}fm-modules/$fm_name/css/themes.css?ver=$fm_version" type="text/css" />
+		<link rel="stylesheet" href="{$GLOBALS['RELPATH']}fm-modules/$fm_name/css/no-dark.css?ver=$fm_version" type="text/css" />
 		<link rel="stylesheet" href="{$GLOBALS['RELPATH']}fm-includes/extra/jquery-ui.min.css" />
 		<link rel="stylesheet" href="{$GLOBALS['RELPATH']}fm-includes/extra/font-awesome/css/font-awesome.min.css" />
 		<link rel="stylesheet" href="{$GLOBALS['RELPATH']}fm-includes/extra/open-sans.css" type="text/css" />
@@ -367,44 +368,44 @@ function getTopHeader($help) {
 		
 		/** Build app dropdown menu */
 		$modules = getAvailableModules();
+		$avail_modules_array = getActiveModules(true);
 		$avail_modules = '';
 		
 		if (count($modules)) {
 			foreach ($modules as $module_name) {
 				if ($module_name == $_SESSION['module']) continue;
-				if (in_array($module_name, getActiveModules(true))) {
-					$avail_modules .= "<li><a href='{$GLOBALS['RELPATH']}?module=$module_name'><span>$module_name</span></a></li>\n";
+				if (in_array($module_name, $avail_modules_array)) {
+					$avail_modules .= sprintf('<li><a href="%1$s?module=%2$s"><span class="menu-icon"><i class="fa fa-cube" aria-hidden="true"></i></span><span>%2$s</span></a></li>' . "\n",
+						$GLOBALS['RELPATH'], $module_name);
 				}
 			}
+			if ($avail_modules) $avail_modules = "<hr />\n" . $avail_modules;
+		}
 			
-			if ($avail_modules) {
-				$module_menu = <<<HTML
-			<div id="menu_mainitems" class="drop-down">
+		$help = _('Help');
+		$github_issues = _('GitHub Issues');
+		$module_menu = <<<HTML
+			<div id="menu_mainitems" class="module-menu">
 			<ul>
-				<li class="has-sub"><a href="#"><span>{$_SESSION['module']}</span><i class="fa fa-caret-down menu-icon" aria-hidden="true"></i></a>
+				<li class="has-sub"><a href="#"><i class="fa fa-bars fa-lg menu-icon" aria-hidden="true"></i></a>
 					<ul class="sub-right">
-					$avail_modules
+						<li><a class="help_link" href="#"><span class="menu-icon"><i class="fa fa-life-ring" aria-hidden="true"></i></span><span>$help</a></span></li>
+						<li><a href="https://github.com/WillyXJ/facileManager/issues" target="_blank"><span class="menu-icon"><i class="fa fa-github" aria-hidden="true"></i></span><span>$github_issues</a></span></li>
+						$avail_modules
 					</ul>
 				</li>
 			</ul>
 			</div>
 HTML;
-				$sections['right'][] = array('drop-down', $module_menu);
-			}
-			
-			/** Include module toolbar items */
-			if (function_exists('buildModuleToolbar')) {
-				list($module_toolbar_left, $module_toolbar_right) = @buildModuleToolbar();
-				$sections['left'][] = $module_toolbar_left;
-				$sections['right'][] = $module_toolbar_right;
-			}
-		} else {
-			$module_menu = null;
-			$fm_name = isset($_SESSION['module']) ? $_SESSION['module'] : $fm_name;
+		$sections['right'][] = array('module-menu', $module_menu);
+		
+		/** Include module toolbar items */
+		if (function_exists('buildModuleToolbar')) {
+			list($module_toolbar_left, $module_toolbar_right) = @buildModuleToolbar();
+			$sections['left'][] = $module_toolbar_left;
+			$sections['right'][] = $module_toolbar_right;
 		}
 	
-		$sections['right'][] = '<a class="help_link" href="#"><i class="fa fa-life-ring fa-lg" aria-hidden="true"></i></a>';
-
 		$help_file = buildHelpFile();
 	
 		if (defined('FM_INCLUDE_SEARCH') && FM_INCLUDE_SEARCH === true) {
@@ -1278,6 +1279,9 @@ function buildHelpFile() {
 			</ul>
 			<p><i>You can reset the authentication method by setting the following in config.inc.php:</i></p>
 			<p><i>define('FM_NO_AUTH', true);</i></p>
+			<p><b>Login Message</b><br />
+			Define a message to be displayed at login (such as a terms and conditions) and optionally require users to acknowledge the message
+			for authenication to succeed.</p>
 			<p><b>Client Registration</b><br />
 			You can choose to allow clients to automatically register in the database or not.</p>
 			<p><b>API Support</b><br />
@@ -1288,12 +1292,24 @@ function buildHelpFile() {
 			<p><b>Mailing</b><br />
 			There are a few things $fm_name and its modules may need to send an e-mail about (such as password reset links). These settings allow
 			you to configure the mailing settings to use for your environment and enable/disable mailing altogether.</p>
+			<p><b>Proxy Server</b><br />
+			Set the appropriate configuration if $fm_name is behind a proxy server for Internet access.</p>
 			<p><b>Date and Time</b><br />
 			Set your preferred timezone, date format, and time format for $fm_name to use throughout all aspects of the app. What you select is
 			how all dates and times will be display including any client configuration files.</p>
+			<p><b>Logging Method</b><br />
+			There are three ways logging methods supported by $fm_name:</p>
+			<ul>
+				<li><b>Built-in</b><br />
+				Events will only be logged to $fm_name.</li>
+				<li><b>syslog</b><br />
+				Events will only be looged to syslog.</li>
+				<li><b>Built-in + syslog</b><br />
+				Events will be logged to $fm_name and syslog.</li>
+			</ul>
 			<p><b>Show Errors</b><br />
 			Choose whether you want $fm_name errors to be displayed as they occur or not. This can be useful if you are having trouble
-			adding or editing opjects.</p>
+			adding or editing objects.</p>
 			<p><b>Temporary Directory</b><br />
 			Periodically $fm_name and its modules may need to create temporary files or directories on your webserver. Specify the local path for it to use.</p>
 			<p><b>Software Update</b><br />
@@ -1304,6 +1320,10 @@ function buildHelpFile() {
 			<p><b>SSH Key Pair</b><br />
 			In order for client configs to be updated via SSH, $fm_name needs a 2048-bit passwordless key pair generated. Without this key pair, 
 			clients cannot use the SSH update method. Click the 'Generate' button to have $fm_name automatically generate the necessary key pair.</p>
+			<p><b>Image Branding</b><br />
+			Add your own image to brand $fm_name. This image will be used on the login screen, navigation header, and automated e-mails.</p>
+			<p><b>Enable Maintenance Mode</b><br />
+			Only users with Super Admin or Module Management privileges are able to authenticate. This is useful during application upgrades.</p>
 		</div>
 	</li>
 	<li>
@@ -3205,7 +3225,7 @@ function countArrayDimensions($array) {
  * @param string $style Use an image or font
  * @return string
  */
-function displayAddNew($name = null, $rel = null, $title = null, $style = 'default', $id = 'plus') {
+function displayAddNew($name = null, $rel = null, $title = null, $style = 'default', $id = 'plus', $position = 'top') {
 	global $__FM_CONFIG;
 	
 	if (empty($title)) $title = _('Add New');
@@ -3216,7 +3236,7 @@ function displayAddNew($name = null, $rel = null, $title = null, $style = 'defau
 	
 	$image = '<i class="mini-icon ' . $style . '" title="' . $title . '">' . $contents . '</i>';
 	if ($style != 'default') {
-		$title = 'null" class="tooltip-top mini-icon" data-tooltip="' . $title;
+		$title = 'null" class="tooltip-' . $position . ' mini-icon" data-tooltip="' . $title;
 	}
 	
 	return sprintf('<a id="%s" href="#" title="%s"%s%s>%s</a>', $id, $title, $name, $rel, $image);
@@ -3725,7 +3745,7 @@ function clearUpdateDir() {
  * @param string $subject Email subject
  * @param string $body Email body
  * @param string $altbody Email alternate body (plaintext)
- * @param string/array $from From name and address
+ * @param string|array $from From name and address
  * @param array $images Images to embed in the email
  * @return boolean|string
  */
@@ -3737,21 +3757,24 @@ function sendEmail($sendto, $subject, $body, $altbody = null, $from = null, $ima
 		return _('Unable to send email - PHPMailer class is missing.');
 	}
 
+	extract($options);
+
 	require($phpmailer_file);
 	require(dirname($phpmailer_file) . DIRECTORY_SEPARATOR . 'SMTP.php');
 	require(dirname($phpmailer_file) . DIRECTORY_SEPARATOR . 'Exception.php');
 	$mail = new PHPMailer\PHPMailer\PHPMailer;
 
-	/** Set PHPMailer options from database */
-	$mail->Host = getOption('mail_smtp_host');
-	$mail->Port = getOption('mail_smtp_port');
-	$mail->SMTPAuth = getOption('mail_smtp_auth');
+	/** Set PHPMailer options */
 	if ($output_format == 'debug') $mail->SMTPDebug = PHPMailer\PHPMailer\SMTP::DEBUG_CONNECTION;
+	$mail->Host = isset($mail_smtp_host) ? $mail_smtp_host : getOption('mail_smtp_host');
+	$mail->Port = isset($mail_smtp_port) ? $mail_smtp_port : getOption('mail_smtp_port');
+	$mail->SMTPAuth = isset($mail_smtp_auth) ? $mail_smtp_auth : getOption('mail_smtp_auth');
 	if ($mail->SMTPAuth) {
-		$mail->Username = getOption('mail_smtp_user');
-		$mail->Password = getOption('mail_smtp_pass');
+		$mail->Username = isset($mail_smtp_user) ? $mail_smtp_user : getOption('mail_smtp_user');
+		$mail->Password = isset($mail_smtp_pass) ? $mail_smtp_pass : getOption('mail_smtp_pass');
 	}
-	if ($secure = getOption('mail_smtp_tls')) $mail->SMTPSecure = strtolower($secure);
+	$secure = isset($mail_smtp_tls) ? $mail_smtp_tls : getOption('mail_smtp_tls');
+	if ($secure) $mail->SMTPSecure = strtolower($secure);
 
 	if ($from) {
 		if (is_array($from)) {
@@ -3763,7 +3786,7 @@ function sendEmail($sendto, $subject, $body, $altbody = null, $from = null, $ima
 		$mail->From = $from_addr;
 	} else {
 		$mail->FromName = $fm_name;
-		$mail->From = getOption('mail_from');
+		$mail->From = isset($mail_from) ? $mail_from : getOption('mail_from');
 	}
 	$mail->AddAddress($sendto);
 
@@ -4277,6 +4300,7 @@ function getThemes() {
 	if (is_array($selectors[0])) {
 		$themes = str_replace(array('.', ' {'), '', $selectors[0]);
 	}
+	$themes = array_unique($themes);
 	sort($themes);
 	
 	return $themes;

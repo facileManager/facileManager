@@ -357,7 +357,7 @@ class fm_settings {
 						<div class="description">
 							<label for="auth_method">' . _('Authentication Method') . '</label>
 							<p><i>' . _('None') . '</i> - ' . _('Authentication will not be used and all users will have full access.') . '</p>
-							<p><i>' . _('Builtin Authentication') . '</i> - ' . sprintf(_('Users are authenticated against %s thus allowing them to have specific privileges within the application.'), $fm_name) . '</p>
+							<p><i>' . _('Built-in Authentication') . '</i> - ' . sprintf(_('Users are authenticated against %s thus allowing them to have specific privileges within the application.'), $fm_name) . '</p>
 							<p><i>' . _('LDAP Authentication') . '</i> - ' . _('Allows users to authenticate against a LDAP server. This option only appears if the PHP LDAP module is loaded.') . '</p>
 						</div>
 						<div class="choices">
@@ -626,7 +626,7 @@ class fm_settings {
 							</div>
 							<div class="choices">
 							' . $mail_smtp_tls_list . '
-						</div>
+							</div>
 						</div>
 	
 						<div id="setting-row">
@@ -636,6 +636,16 @@ class fm_settings {
 							</div>
 							<div class="choices">
 								<input name="mail_from" id="mail_from" type="email" value="' . $mail_from . '" size="40" placeholder="noreply@mydomain.com" />
+							</div>
+						</div>
+
+						<div id="setting-row">
+							<div class="description">
+								<label>' . _('Test Mail Settings') . '</label>
+								<p>' . _('Test the entered mail settings to ensure functionality.') . '</p>
+							</div>
+							<div class="choices">
+								' . sprintf('<p><a name="test_mail_settings" id="test_mail_settings" class="button">%s</a></p>', _('Test Now')) . '
 							</div>
 						</div>
 					</div>

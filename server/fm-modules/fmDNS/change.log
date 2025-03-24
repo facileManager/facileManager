@@ -1,6 +1,33 @@
-7.0.6 (2025-02-??)
+7.1.1 (2025-03-13)
+==================
+* Server - [bug] Create PTR checkbox no longer gets automatically checked. (Issue #669)
+* Server - [bug] Zone reloads use the server address if configured. (Issue #668)
+* Server - [bug] Zone option update-policy incorrectly set on server group secondaries. (Issue #670)
+
+7.1.0 (2025-02-21)
+==================
+* Server - [improvement] CUSTOM resource records are saved with AJAX on the same page.
+* Server - [improvement] Record validation has better error messages.
+* Server - [improvement] Added word wrapping of long record values when in non-edit mode.
+* Server - [improvement] Added inline validation for SOA forms.
+* Server - [bug] Various CSS fixes.
+* Server - [bug] Fixed SOA selection button text.
+* Server - [bug] Fixed automatic PTR management. (Issue #665)
+* Server - [bug] Fixed record changes when key tag is empty.
+* Server - [bug] Fixed missing logging of SOA record changes.
+
+7.0.8 (2025-02-12)
+==================
+* Server - [bug] Fixed zone imports. (Issue #661)
+
+7.0.7 (2025-02-11)
+==================
+* Server - [bug] Fixed PHP errors.
+
+7.0.6 (2025-02-10)
 ==================
 * Server - [bug] Fixed CAA record flags when upgrading from <7.0.0. (Issue #660)
+* Server - [bug] Fixed CSS when managing zone records.
 
 7.0.5 (2025-02-08)
 ==================

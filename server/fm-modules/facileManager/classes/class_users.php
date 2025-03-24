@@ -164,13 +164,10 @@ class fm_users {
 			}
 		}
 		if (isset($user_caps)) {
-			foreach ($user_caps as $module => $caps_array) {
-				if (array_key_exists('read_only', $caps_array)) {
-					$user_caps[$module] = array('read_only' => 1);
-				}
-			}
 			$log_message .= formatLogKeyData('', 'permissions', $this->getFriendlyCaps($user_caps));
 		}
+
+		if (!isset($user_default_module)) $user_default_module = '';
 		
 		$query = "INSERT INTO `fm_users` (`account_id`, `user_login`, `user_password`, `user_comment`, `user_email`, `user_group`, `user_force_pwd_change`, `user_default_module`, `user_caps`, `user_template_only`, `user_status`, `user_auth_type`) 
 				VALUES('{$_SESSION['user']['account_id']}', '$user_login', '" . password_hash($user_password, PASSWORD_DEFAULT) . "', '$user_comment', '$user_email', '$user_group', '$user_force_pwd_change', '$user_default_module', '" . serialize($user_caps) . "', '$user_template_only', '$user_status', $user_auth_type)";
@@ -234,11 +231,6 @@ class fm_users {
 			}
 		}
 		if (isset($user_caps)) {
-			foreach ($user_caps as $module => $caps_array) {
-				if (array_key_exists('read_only', $caps_array)) {
-					$user_caps[$module] = array('read_only' => 1);
-				}
-			}
 			$log_message .= formatLogKeyData('', 'permissions', $this->getFriendlyCaps($user_caps));
 		}
 		
@@ -305,9 +297,15 @@ class fm_users {
 		$user_login = getNameFromID($post['user_id'], 'fm_users', 'user_', 'user_id', 'user_login');
 		$log_message = sprintf("Updated user '%s':\n", $user_login);
 
+		$ret = $this->validateFormField('user_email', $post['user_email'], $post);
+		if ($ret !== true) return $ret;
+		
 		if (!empty($post['user_password'])) {
 			if (empty($post['cpassword']) || $post['user_password'] != $post['cpassword']) return _('Passwords do not match.');
 			if (password_verify($post['user_password'], getNameFromID($post['user_id'], 'fm_users', 'user_', 'user_id', 'user_password'))) return _('Password is not changed.');
+			$ret = $this->validateFormField('user_password', $post['user_password'], $post);
+			if ($ret !== true) return $ret;
+
 			$sql_pwd = "`user_password`='" . password_hash($post['user_password'], PASSWORD_DEFAULT) . "',";
 			$log_message .= formatLogKeyData('user_', 'Password', 'Changed');
 		} else $sql_pwd = null;
@@ -728,12 +726,14 @@ HTML;
 		
 		if (in_array('user_module', $form_bits)) {
 			$active_modules = ($user_id == $_SESSION['user']['id']) ? getActiveModules(true) : getActiveModules();
-			$user_module_options = buildSelect('user_default_module', 'user_default_module', $active_modules, $user_default_module);
-			unset($active_modules);
-			$return_form_rows .= '<tr>
+			if (count($active_modules) > 1) {
+				$user_module_options = buildSelect('user_default_module', 'user_default_module', $active_modules, $user_default_module);
+				$return_form_rows .= '<tr>
 					<th width="33%" scope="row">' . _('Default Module') . '</th>
 					<td width="67%">' . $user_module_options . '</td>
 				</tr>';
+			}
+			unset($active_modules);
 		}
 		
 		if (in_array('user_theme', $form_bits)) {
@@ -745,7 +745,7 @@ HTML;
 					<th width="33%" scope="row">' . _('Theme') . '</th>
 					<td width="67%">' . $user_theme_options . '</td>
 				</tr>
-				<tr>
+				<tr class="theme-mode-selector">
 					<th width="33%" scope="row">' . _('Theme Mode') . '</th>
 					<td width="67%">' . $user_theme_mode_options . '</td>
 				</tr>';
@@ -1123,12 +1123,13 @@ PERM;
 				if (is_array($data)) {
 					if (empty($value) && isset($data['user_template_only']) && $data['user_template_only'] == 'no') return _('No password defined.');
 					if ($value != $data['cpassword'] && isset($data['user_template_only']) && $data['user_template_only'] == 'no') return _('Passwords do not match.');
-					$regex = ($GLOBALS['PWD_STRENGTH'] == 'strong') ? '/^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\W).*$/' : "^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$";
+					$regex = ($GLOBALS['PWD_STRENGTH'] == 'strong') ? '/^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\W).*$/' : '/^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$/';
 					if (!preg_match($regex, $value)) return _('Password does not meet the complexity requirements.');
 				}
 				break;
 			case 'user_email':
 				if (empty($value) && isset($data['user_template_only']) && $data['user_template_only'] == 'no') return _('No e-mail address defined.');
+				if (!filter_var($value, FILTER_VALIDATE_EMAIL)) return _('Invalid e-mail address format.');
 				break;
 		}
 
