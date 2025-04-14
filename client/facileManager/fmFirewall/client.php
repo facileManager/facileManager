@@ -29,7 +29,7 @@
  */
 
 /** Client version */
-$data['server_client_version'] = '3.2.0';
+$data['server_client_version'] = '3.2.3';
 
 error_reporting(0);
 
@@ -45,7 +45,7 @@ if (file_exists($fm_client_functions)) {
 }
 
 /** Check if running supported version */
-$data['server_version'] = detectFWVersion();
+$data['server_version'] = detectAppVersion();
 
 /** Build the configs provided by $url */
 $retval = buildConf($url, $data);
