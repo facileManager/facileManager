@@ -83,7 +83,7 @@ class fm_module_rpz {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="rpz">%s</p>', __('There are no response policy zones defined.'));
+			printf('<p id="table_edits" class="noresult" name="rpz">%s</p>', _('There are no items defined.'));
 		}
 	}
 

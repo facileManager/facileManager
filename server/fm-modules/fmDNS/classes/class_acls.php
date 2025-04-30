@@ -72,7 +72,7 @@ class fm_dns_acls {
 		
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="acls">%s</p>', __('There are no ACLs.'));
+			printf('<p id="table_edits" class="noresult" name="acls">%s</p>', _('There are no items defined.'));
 		}
 	}
 

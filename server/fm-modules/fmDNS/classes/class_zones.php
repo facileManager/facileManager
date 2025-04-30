@@ -130,8 +130,7 @@ class fm_dns_zones {
 			
 		echo "</tbody>\n</table></div></div>\n";
 		if (!$result) {
-			$message = ($map == 'groups') ? __('There are no zone groups.') : __('There are no zones.');
-			printf('<p id="table_edits" class="noresult" name="domains">%s</p>', $message);
+			printf('<p id="table_edits" class="noresult" name="domains">%s</p>', _('There are no items defined'));
 		}
 	}
 

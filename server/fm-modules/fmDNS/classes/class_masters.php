@@ -72,7 +72,7 @@ class fm_dns_masters {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="masters">%s</p>', __('There are no primaries.'));
+			printf('<p id="table_edits" class="noresult" name="masters">%s</p>', _('There are no items defined.'));
 		}
 	}
 

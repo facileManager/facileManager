@@ -2,6 +2,7 @@
 ==================
 * Server - [improvement] Moved the 'Create Template' checkbox close to the template selection menu.
 * Server - [improvement] Removed JavaScript:void(0); links.
+* Server - [improvement] Changed "no results" message to be the same for consistency.
 * Server - [bug] Fixed PHP errors. (Issue #680)
 * Server - [bug] Fixed record type menu to exclude URL if there are no URL servers defined.
 

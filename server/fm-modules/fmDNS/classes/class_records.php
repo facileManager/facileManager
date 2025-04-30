@@ -44,8 +44,7 @@ class fm_dns_records {
 			
 		$return .= "</tbody>\n</table>\n";
 		if (!$result) {
-			$message = ($record_type == 'ALL') ? __('There are no records.') : sprintf(__('There are no %s records.'), $record_type);
-			$return .= sprintf('<p id="table_edits" class="noresult">%s</p>', $message);
+			$return .= sprintf('<p id="table_edits" class="noresult">%s</p>', _('There are no items defined'));
 		}
 		
 		return $return;
