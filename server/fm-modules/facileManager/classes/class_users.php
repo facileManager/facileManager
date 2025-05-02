@@ -533,6 +533,9 @@ class fm_users {
 
 			$star = (userCan($row->user_id, 'do_everything')) ? $__FM_CONFIG['icons']['star'] : null;
 			$template_user = ($row->user_template_only == 'yes') ? $__FM_CONFIG['icons']['template_user'] : null;
+			if (array_key_exists('keys', $__FM_CONFIG['users']['avail_types']) && $key_status = getNameFromID($row->user_id, 'fm_keys', 'key_', 'user_id', 'key_status')) {
+				$icons[] = sprintf('<a href="?type=keys" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-key %s" aria-hidden="true"></i></a>', __('API key exists'), ($key_status == 'active') ? 'secure' : '');
+			}
 
 			$last_login = ($row->user_last_login == 0) ? _('Never') : date("F d, Y \a\\t H:i T", $row->user_last_login);
 			if ($row->user_ipaddr) {
@@ -546,8 +549,13 @@ class fm_users {
 			} else {
 				$user_auth_type = _('None');
 			}
+
+			if (is_array($icons)) {
+				$icons = implode(' ', $icons);
+			}
+
 			$column = "<td>$star $template_user</td>
-			<td>{$row->user_login}</td>
+			<td>{$row->user_login} $icons</td>
 			<td>$last_login</td>
 			<td>$user_ipaddr</td>
 			<td>$user_auth_type</td>

@@ -1,6 +1,7 @@
 5.4.0 (2025-05-??)
 ==================
 * Server - [improvement] CSS tweaks.
+* Server - [improvement] Added key icon to user list to signify which users have an API key defined.
 
 5.3.2 (2025-05-01)
 ==================
