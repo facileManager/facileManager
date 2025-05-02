@@ -49,6 +49,7 @@ class fm_users {
 					array('title' => _('Last Session Date'), 'rel' => 'user_last_login'),
 					array('title' => _('Last Session Host'), 'rel' => 'user_ipaddr'),
 					array('title' => _('Authenticate With'), 'rel' => 'user_auth_type'),
+					array('title' => _('Group'), 'class' => 'header-nosort'),
 					array('title' => _('Comment'), 'class' => 'header-nosort'));
 		} elseif ($type == 'groups') {
 			array_push($title_array,
@@ -431,6 +432,7 @@ class fm_users {
 		}
 		
 		/* Associated users with group */
+		if (!isset($post['group_users'])) $post['group_users'] = 0;
 		$queries[] = "UPDATE `fm_users` SET `user_group`='0', `user_caps`=NULL WHERE `user_group`='{$post['group_id']}'";
 		$queries[] = "UPDATE `fm_users` SET `user_group`='{$post['group_id']}', `user_caps`=NULL WHERE `user_id` IN ('" . join("','", (array) $post['group_users']) . "')";
 		foreach ($queries as $query) {
@@ -497,6 +499,7 @@ class fm_users {
 		
 		$property = rtrim($type, 's') . '_status';
 		$disabled_class = ($row->$property == 'disabled') ? ' class="disabled"' : null;
+		$icons = null;
 
 		if ($type == 'users') {
 			$id = $row->user_id;
@@ -533,22 +536,27 @@ class fm_users {
 
 			$star = (userCan($row->user_id, 'do_everything')) ? $__FM_CONFIG['icons']['star'] : null;
 			$template_user = ($row->user_template_only == 'yes') ? $__FM_CONFIG['icons']['template_user'] : null;
+			/** API key */
 			if (array_key_exists('keys', $__FM_CONFIG['users']['avail_types']) && $key_status = getNameFromID($row->user_id, 'fm_keys', 'key_', 'user_id', 'key_status')) {
 				$icons[] = sprintf('<a href="?type=keys" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-key %s" aria-hidden="true"></i></a>', __('API key exists'), ($key_status == 'active') ? 'secure' : '');
 			}
 
-			$last_login = ($row->user_last_login == 0) ? _('Never') : date("F d, Y \a\\t H:i T", $row->user_last_login);
+			$last_login = ($row->user_last_login == 0) ? sprintf('<i>%s</i>', _('Never')) : date("F d, Y \a\\t H:i T", $row->user_last_login);
 			if ($row->user_ipaddr) {
 				$user_ipaddr = $row->user_ipaddr;
-			} else $user_ipaddr = _('None');
+			} else $user_ipaddr = sprintf('<i>%s</i>', _('None'));
 
 			if ($row->user_auth_type == 2) {
 				$user_auth_type = 'LDAP';
 			} elseif ($row->user_auth_type == 1) {
 				$user_auth_type = $fm_name;
 			} else {
-				$user_auth_type = _('None');
+				$user_auth_type = sprintf('<i>%s</i>', _('None'));
 			}
+
+			if ($row->user_group) {
+				$user_group = getNameFromID($row->user_group, 'fm_groups', 'group_', 'group_id', 'group_name');
+			} else $user_group = sprintf('<i>%s</i>', _('None'));
 
 			if (is_array($icons)) {
 				$icons = implode(' ', $icons);
@@ -559,6 +567,7 @@ class fm_users {
 			<td>$last_login</td>
 			<td>$user_ipaddr</td>
 			<td>$user_auth_type</td>
+			<td>$user_group</td>
 			<td>{$row->user_comment}</td>";
 			$name = $row->user_login;
 		} elseif ($type == 'groups') {
@@ -576,6 +585,7 @@ class fm_users {
 				$group_members[] = $member[0];
 			}
 			$group_members = join(', ', (array) $group_members);
+			if (!$group_members) $group_members = sprintf('<i>%s</i>', _('None'));
 			
 			$column = "<td>$star</td>
 			<td>{$row->group_name}</td>
