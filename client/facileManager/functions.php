@@ -1238,7 +1238,7 @@ function extractFiles($files = array()) {
 	}
 		
 	/** Move files */
-	$command = findProgram('cp') . " -r $tmp_dir/facileManager/client/facileManager " . dirname(dirname(__FILE__));
+	$command = findProgram('cp') . " -r $tmp_dir/facileManager/client/facileManager " . dirname(__FILE__, 2);
 	@system($command, $retval);
 	if ($retval) {
 		$message = "Failed to save files. Exiting.\n";
