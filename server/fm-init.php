@@ -203,7 +203,7 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 			session_start();
 			$_SESSION['module'] = $fm_name;
 			session_write_close();
-			header('Location: ' . $GLOBALS['RELPATH'] . 'admin-modules.php');
+			header('Location: ' . $GLOBALS['RELPATH'] . 'modules.php');
 			exit;
 		}
 		

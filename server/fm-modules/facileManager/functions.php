@@ -668,7 +668,7 @@ function getCurrentUserMenu() {
 	unset($temp_menu, $element, $submenu_array, $slug, $position, $single_element);
 
 	/** Handle module settings, but no fM settings permissions */
-	if (array_key_exists('admin-settings.php', $filtered_menus[1]) && !array_key_exists('70', $filtered_menus[0])) {
+	if (array_key_exists('settings.php', $filtered_menus[1]) && !array_key_exists('70', $filtered_menus[0])) {
 		$filtered_menus[0][70] = $menu[70];
 	}
 
@@ -2849,7 +2849,7 @@ function addSubmenuPage($parent_slug, $menu_title, $page_title, $capability, $mo
  * @param integer $badge_count Number of items to display in the badge
  */
 function addSettingsPage($menu_title, $page_title, $capability, $module, $menu_slug, $class = null, $badge_count = 0, $position = null) {
-	addSubmenuPage('admin-settings.php', $menu_title, $page_title, $capability, $module, $menu_slug, $class, $position, $badge_count);
+	addSubmenuPage('settings.php', $menu_title, $page_title, $capability, $module, $menu_slug, $class, $position, $badge_count);
 }
 
 
