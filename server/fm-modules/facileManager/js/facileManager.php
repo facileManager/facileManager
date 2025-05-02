@@ -650,6 +650,60 @@ if (isset($__FM_CONFIG)) {
 		return false;
 	});
 
+	/* Branding image upload */
+	$("#btn_brand_img_upload").click(function() {
+		var $this = $(this);
+		const file = $("#brand_img_upload")[0].files[0];
+
+		/* Ensure there is a file */
+		if (!file) {
+			$this.html("' . _('Upload') . '");
+			return;
+		}
+		
+		const form_data = new FormData();
+		form_data.append("file", file);
+		form_data.append("item_type", "fm_settings");
+		form_data.append("upload_image", true);
+
+		$.ajax({
+			type: "POST",
+			url: "fm-modules/facileManager/ajax/processPost.php",
+			data: form_data,
+			contentType: false,
+			processData: false,
+			success: function(response)
+			{
+				if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				} else if (response == "Success") {
+					$("#response").slideUp(400);
+					$("#sm_brand_img").val("/fm-modules/' . $fm_name . '/images/upload/" + file.name).keyup();
+				} else {
+					$("#response").removeClass("static").html(response);
+					$("#response")
+						.addClass("static")
+						.css("opacity", 0)
+						.slideDown(400, function() {
+							$("#response").animate(
+								{ opacity: 1 },
+								{ queue: false, duration: 200 }
+							);
+						});
+					if (response.toLowerCase().indexOf("response_close") == -1) {
+						$("#response").delay(3000).fadeTo(200, 0.00, function() {
+							$("#response").slideUp(400);
+						});
+					}
+				}
+				$this.delay(3000).html("' . _('Upload') . '");
+			}
+		});
+		
+		return false;
+	});
+	
 	/* Account settings */
     $(".account_settings").click(function() {
         var $this 		= $(this);

@@ -3838,11 +3838,7 @@ function createTempDir($subdir, $append = null) {
 	$fm_temp_directory = '/' . ltrim(getOption('fm_temp_directory'), '/');
 	$tmp_dir = rtrim($fm_temp_directory, '/') . "/$subdir/";
 	system('rm -rf ' . $tmp_dir);
-	if (!is_dir($tmp_dir)) {
-		if (!@mkdir($tmp_dir, 0777, true)) {
-			$created = false;
-		}
-	}
+	$created = createDir($tmp_dir);
 
 	return array($tmp_dir, $created);
 }
@@ -4322,3 +4318,28 @@ function getThemes() {
 function isMaintenanceMode() {
 	return getOption('maintenance_mode');
 }
+
+
+/**
+ * Create a directory
+ *
+ * @since 5.4.0
+ * @package facileManager
+ *
+ * @param string $dir Sub directory name
+ * @param boolean $recursive Create recursively or not
+ * @return boolean
+ */
+function createDir($dir, $recursive = true) {
+	$created = true;
+	
+	if (!is_dir($dir)) {
+		if (!@mkdir($dir, 0777, $recursive)) {
+			$created = false;
+		}
+	}
+
+	return $created;
+}
+
+

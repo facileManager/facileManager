@@ -1159,6 +1159,7 @@ i.text_icon {
 	float: right;
 	height: 48px;
 	width: 48px;
+	margin-left: 1em;
 	text-align: center;
 	background-image:
 		-moz-linear-gradient(45deg, #ccc 25%, transparent 25%), 
