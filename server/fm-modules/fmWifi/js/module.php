@@ -2,7 +2,7 @@
 if (!defined('FM_NO_CHECKS')) define('FM_NO_CHECKS', true);
 require_once('../../../fm-init.php');
 
-$module_name = basename(dirname(dirname(__FILE__)));
+$module_name = basename(dirname(__FILE__, 2));
 
 header("Content-Type: text/javascript");
 
