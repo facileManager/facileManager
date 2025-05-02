@@ -1908,7 +1908,8 @@ function bailOut($message, $tryagain = 'try again', $title = null) {
 		<img src="%s" /><span>%s</span>
 	</div>
 	<div id="window">%s%s</div>', getBrandLogo(), $title, $message, $tryagain);
-	exit(printFooter());
+	printFooter();
+	exit();
 }
 
 
@@ -3099,7 +3100,7 @@ HTML;
  * @package facileManager
  *
  * @param string $output Output to parse for AJAX call
- * @return string Return for the AJAX call to display
+ * @return string|null Return for the AJAX call to display
  */
 function parseAjaxOutput($output) {
 	global $fmdb;
@@ -3110,10 +3111,10 @@ function parseAjaxOutput($output) {
 			unset($_POST);
 			include_once(ABSPATH . 'fm-modules/facileManager/ajax/formatOutput.php');
 		} else {
-			echo $message_array['content'];
+			return $message_array['content'];
 		}
 	} else {
-		echo _('Success');
+		return _('Success');
 	}
 }
 
@@ -3237,12 +3238,12 @@ function displayAddNew($name = null, $rel = null, $title = null, $style = 'defau
 	if ($name) $name = ' name="' . $name . '"';
 	if ($rel) $rel = ' rel="' . $rel . '"';
 	
-	$image = '<i class="mini-icon ' . $style . '" title="' . $title . '">' . $contents . '</i>';
+	$image = '<i class="mini-icon ' . $style . '">' . $contents . '</i>';
 	if ($style != 'default') {
-		$title = 'null" class="tooltip-' . $position . ' mini-icon" data-tooltip="' . $title;
+		$title = 'class="tooltip-' . $position . ' mini-icon" data-tooltip="' . $title . '"';
 	}
 	
-	return sprintf('<a id="%s" href="#" title="%s"%s%s>%s</a>', $id, $title, $name, $rel, $image);
+	return sprintf('<a id="%s" href="#" %s%s%s>%s</a>', $id, $title, $name, $rel, $image);
 }
 
 
