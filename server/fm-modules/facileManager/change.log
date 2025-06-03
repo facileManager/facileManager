@@ -1,3 +1,8 @@
+5.3.3 (2025-05-27)
+==================
+* Server - [bug] Fixed grabbing CSS.
+* Client - [bug] Fix macOS detection.
+
 5.3.2 (2025-05-01)
 ==================
 * Server - [bug] Fixed PHP8.4 deprecation warnings.
