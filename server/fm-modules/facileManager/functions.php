@@ -389,8 +389,8 @@ function getTopHeader($help) {
 			<ul>
 				<li class="has-sub"><a href="#"><i class="fa fa-bars fa-lg menu-icon" aria-hidden="true"></i></a>
 					<ul class="sub-right">
-						<li><a class="help_link" href="#"><span class="menu-icon"><i class="fa fa-life-ring" aria-hidden="true"></i></span><span>$help</a></span></li>
-						<li><a href="https://github.com/WillyXJ/facileManager/issues" target="_blank"><span class="menu-icon"><i class="fa fa-github" aria-hidden="true"></i></span><span>$github_issues</a></span></li>
+						<li><a class="help_link" href="#"><span class="menu-icon"><i class="fa fa-life-ring" aria-hidden="true"></i></span><span>$help</span></a></li>
+						<li><a href="https://github.com/WillyXJ/facileManager/issues" target="_blank"><span class="menu-icon"><i class="fa fa-github" aria-hidden="true"></i></span><span>$github_issues</span> <span class="menu-icon mini-icon grey"><i class="fa fa-external-link" aria-hidden="true"></i></span></a></li>
 						$avail_modules
 					</ul>
 				</li>
@@ -668,7 +668,7 @@ function getCurrentUserMenu() {
 	unset($temp_menu, $element, $submenu_array, $slug, $position, $single_element);
 
 	/** Handle module settings, but no fM settings permissions */
-	if (array_key_exists('admin-settings.php', $filtered_menus[1]) && !array_key_exists('70', $filtered_menus[0])) {
+	if (array_key_exists('settings.php', $filtered_menus[1]) && !array_key_exists('70', $filtered_menus[0])) {
 		$filtered_menus[0][70] = $menu[70];
 	}
 
@@ -2849,7 +2849,7 @@ function addSubmenuPage($parent_slug, $menu_title, $page_title, $capability, $mo
  * @param integer $badge_count Number of items to display in the badge
  */
 function addSettingsPage($menu_title, $page_title, $capability, $module, $menu_slug, $class = null, $badge_count = 0, $position = null) {
-	addSubmenuPage('admin-settings.php', $menu_title, $page_title, $capability, $module, $menu_slug, $class, $position, $badge_count);
+	addSubmenuPage('settings.php', $menu_title, $page_title, $capability, $module, $menu_slug, $class, $position, $badge_count);
 }
 
 
@@ -3838,11 +3838,7 @@ function createTempDir($subdir, $append = null) {
 	$fm_temp_directory = '/' . ltrim(getOption('fm_temp_directory'), '/');
 	$tmp_dir = rtrim($fm_temp_directory, '/') . "/$subdir/";
 	system('rm -rf ' . $tmp_dir);
-	if (!is_dir($tmp_dir)) {
-		if (!@mkdir($tmp_dir, 0777, true)) {
-			$created = false;
-		}
-	}
+	$created = createDir($tmp_dir);
 
 	return array($tmp_dir, $created);
 }
@@ -4322,3 +4318,28 @@ function getThemes() {
 function isMaintenanceMode() {
 	return getOption('maintenance_mode');
 }
+
+
+/**
+ * Create a directory
+ *
+ * @since 5.4.0
+ * @package facileManager
+ *
+ * @param string $dir Sub directory name
+ * @param boolean $recursive Create recursively or not
+ * @return boolean
+ */
+function createDir($dir, $recursive = true) {
+	$created = true;
+	
+	if (!is_dir($dir)) {
+		if (!@mkdir($dir, 0777, $recursive)) {
+			$created = false;
+		}
+	}
+
+	return $created;
+}
+
+

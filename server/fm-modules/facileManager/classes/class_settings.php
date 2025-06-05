@@ -183,9 +183,11 @@ class fm_settings {
 		global $fmdb, $__FM_CONFIG, $fm_name;
 		
 		$tmp = sys_get_temp_dir();
+
+		$current_user_can_manage_settings = currentUserCan('manage_settings');
 		
-		$save_button = currentUserCan('manage_settings') ? sprintf('<p><input type="button" name="save" id="save_fm_settings" value="%s" class="button primary" /></p>', _('Save')) : null;
-		$sshkey_button = currentUserCan('manage_settings') ? sprintf('<input type="button" name="gen_ssh" id="generate_ssh_key_pair" value="%s" class="button" />', _('Generate')) : null;
+		$save_button = ($current_user_can_manage_settings) ? sprintf('<p><input type="button" name="save" id="save_fm_settings" value="%s" class="button primary" /></p>', _('Save')) : null;
+		$sshkey_button = ($current_user_can_manage_settings) ? sprintf('<input type="button" name="gen_ssh" id="generate_ssh_key_pair" value="%s" class="button" />', _('Generate')) : null;
 		if ($sshkey_button !== null) {
 			$ssh_priv = getOption('ssh_key_priv', $_SESSION['user']['account_id']);
 			if ($ssh_priv) {
@@ -338,6 +340,9 @@ class fm_settings {
 
 		$ssh_user = getOption('ssh_user', $_SESSION['user']['account_id']);
 		$sm_brand_img = getBrandLogo();
+		if ($current_user_can_manage_settings) {
+			$brand_img_upload = sprintf('<p><input type="file" name="brand_img_upload" id="brand_img_upload" accept="image/*" /> <a name="btn_brand_img_upload" id="btn_brand_img_upload" class="button click_once" >%s</a></p>', _('Upload'));
+		} else $brand_img_upload = '';
 
 		$maintenance_mode = getOption('maintenance_mode');
 		$maintenance_mode_checked = $maintenance_mode ? 'checked' : null;
@@ -831,10 +836,11 @@ class fm_settings {
 						<div class="description">
 							<span id="brand_img"><img src="' . $sm_brand_img . '" /></span>
 							<label>' . _('Image Branding') . '</label>
-							<p>' . _('Rebrand this installation with your image.<br />(Recommended size: 48px x 48px)') . '</p>
+							<p>' . _('Rebrand this installation with your image by specifying the relative URL path or upload an image using the upload form (if available).') . '<br />(' . _('Recommended size: 48px x 48px') . ')' . '</p>
 						</div>
 						<div class="choices">
 							<input name="sm_brand_img" id="sm_brand_img" type="text" value="' . $sm_brand_img . '" size="40" placeholder="path/to/image" />
+							' . $brand_img_upload . '
 						</div>
 					</div>
 				</div>
@@ -936,6 +942,59 @@ class fm_settings {
 		return $user_list;
 	}
 	
+
+	/**
+	 * Uploaded the branding image
+	 *
+	 * @since 5.4.0
+	 * @package facileManager
+	 */
+	function uploadBrandingImage() {
+		/** Error messages from https://www.php.net/manual/en/features.file-upload.errors.php#115746 */
+		$phpFileUploadErrors = array(
+			0 => 'There is no error, the file uploaded with success',
+			1 => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
+			2 => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
+			3 => 'The uploaded file was only partially uploaded',
+			4 => 'No file was uploaded',
+			6 => 'Missing a temporary folder',
+			7 => 'Failed to write file to disk.',
+			8 => 'A PHP extension stopped the file upload.',
+		);
+
+		$retval = true;
+		$filename = $_FILES['file']['name'];
+
+		if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+			/** Ensure file type is image */
+			if (function_exists('mime_content_type')) {
+				if (dirname(mime_content_type($_FILES['file']['tmp_name'])) != 'image') {
+					return _('File uploaded is not an image.');
+				}
+			}
+
+			/** Process file upload */
+			$destination_directory = dirname(__FILE__, 2) . '/images/upload/';
+			if (createDir($destination_directory)) {
+				if (is_writable($destination_directory)) {
+					if (move_uploaded_file($_FILES['file']['tmp_name'], $destination_directory . $filename)) {
+						$retval = true;
+					} else {
+						$retval = sprintf(_('Failed to upload %s to %s'), $_FILES['file']['tmp_name'], $destination_directory . $filename);
+					}
+				} else {
+					$retval = sprintf('%s is not writeable.', $destination_directory);
+				}
+			} else {
+				$retval = sprintf('%s could not be created.', $destination_directory);
+			}
+		} else {
+			$retval = $phpFileUploadErrors[$_FILES['file']['error']];
+		}
+
+		return $retval;
+	}
+
 }
 
 if (!isset($fm_settings))

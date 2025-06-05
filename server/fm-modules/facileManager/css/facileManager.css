@@ -651,6 +651,12 @@ div.header-container {
 #menu_mainitems > ul > li > ul > li a:hover {
 	background-color: var(--submenu-hover);
 }
+#menu_mainitems ul li.has-sub > ul li a span:not(.menu-badge) {
+	padding-right: 3px;
+}
+#menu_mainitems ul li.has-sub > ul li a .menu-icon {
+	width: 20px;
+}
 #menu_mainitems.drop-right ul li > ul {
 	top: 0;
 	left: 17em;
@@ -1151,6 +1157,7 @@ i.text_icon {
 	float: right;
 	height: 48px;
 	width: 48px;
+	margin-left: 1em;
 	text-align: center;
 	background-image:
 		-moz-linear-gradient(45deg, #ccc 25%, transparent 25%), 

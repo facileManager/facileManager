@@ -1,3 +1,12 @@
+5.4.0 (2025-05-??)
+==================
+* Server - [improvement] CSS tweaks.
+* Server - [improvement] Added key icon to user list to signify which users have an API key defined.
+* Server - [improvement] Added associated group column to the user list.
+* Server - [improvement] Renamed settings and modules files.
+* Server - [improvement] Image branding accepts file uploads now.
+* Both   - [improvement] Code cleanup.
+
 5.3.3 (2025-05-27)
 ==================
 * Server - [bug] Fixed grabbing CSS.
