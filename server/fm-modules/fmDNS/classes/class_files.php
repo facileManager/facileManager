@@ -87,7 +87,7 @@ class fm_dns_files {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="files">%s</p>', __('There are no files.'));
+			printf('<p id="table_edits" class="noresult" name="files">%s</p>', _('There are no items defined.'));
 		}
 	}
 

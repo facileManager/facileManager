@@ -93,7 +93,7 @@ class fm_dns_zones {
 
 		if (!count($bulk_actions_list)) $bulk_actions_list = '';
 		$classes = (array_key_exists('attention', $_GET)) ? null : ' grey';
-		$eye_attention = $GLOBALS['zone_badge_counts'][$map] ? sprintf('<a href="JavaScript:void(0);" class="tooltip-top mini-icon" data-tooltip="%s"><i class="fa fa-eye fa-lg eye-attention %s"></i></a>', __('Only view zones that need attention'), $classes) : null;
+		$eye_attention = $GLOBALS['zone_badge_counts'][$map] ? sprintf('<a href="#" class="tooltip-top mini-icon" data-tooltip="%s"><i class="fa fa-eye fa-lg eye-attention %s"></i></a>', __('Only view zones that need attention'), $classes) : null;
 		$addl_blocks = ($map != 'groups') ? array(@buildBulkActionMenu($bulk_actions_list, 'server_id_list'), $this->buildFilterMenu(), $eye_attention) : buildBulkActionMenu($bulk_actions_list);
 		$fmdb->num_rows = $num_rows;
 		echo displayPagination($page, $total_pages, $addl_blocks);
@@ -130,8 +130,7 @@ class fm_dns_zones {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			$message = ($map == 'groups') ? __('There are no zone groups.') : __('There are no zones.');
-			printf('<p id="table_edits" class="noresult" name="domains">%s</p>', $message);
+			printf('<p id="table_edits" class="noresult" name="domains">%s</p>', _('There are no items defined'));
 		}
 	}
 
@@ -868,7 +867,7 @@ class fm_dns_zones {
 				basicGet('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'records', $row->domain_id, 'record_', 'domain_id', 'AND record_type="URL" AND record_name="@"');
 				if ($fmdb->num_rows) {
 					$domain_redirect_url = $fmdb->last_result[0]->record_value;
-					$icons[] = sprintf('<a href="JavaScript:void(0);" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="fa fa-globe" aria-hidden="true"></i></a>', sprintf(__('This zone redirects to %s'), $domain_redirect_url));
+					$icons[] = sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="fa fa-globe" aria-hidden="true"></i></a>', sprintf(__('This zone redirects to %s'), $domain_redirect_url));
 					if (!getOption('url_rr_web_servers', $_SESSION['user']['account_id'], $_SESSION['module'])) {
 						$response = __('There are no URL RR web servers defined in the Settings to support the URL resource records.');
 						$classes[] = 'attention';
@@ -881,17 +880,17 @@ class fm_dns_zones {
 				if ($fmdb->num_rows) {
 					$icons[] = sprintf('<div class="mini-icon tooltip-copy nowrap"><span><b>%s:</b><br /><textarea>' . trim($row->domain_dnssec_ds_rr) . '</textarea><p>%s</p></span><i class="fa fa-lock secure"></i></div>', __('Zone DS RRset'), __('Click to copy'), __('Zone is secured with DNSSEC'));
 				} else {
-					$icons[] = sprintf('<a href="JavaScript:void(0);" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-lock insecure" aria-hidden="true"></i></a>', __('Zone is configured but not secured with DNSSEC'));
+					$icons[] = sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-lock insecure" aria-hidden="true"></i></a>', __('Zone is configured but not secured with DNSSEC'));
 					$response = __('There are no DNSSEC keys defined for this zone.');
 					$classes[] = 'attention';
 				}
 				$icons[] = sprintf('<a href="config-keys.php?type=dnssec&domain_id[]=%d" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-key secure" aria-hidden="true"></i></a>', $row->domain_id, __('Manage zone DNSSEC keys'));
 			}
 			if ($dynamic_zone == 'yes') {
-				$icons[] = sprintf('<a href="JavaScript:void(0);" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-share-alt" aria-hidden="true"></i></a>', __('Zone supports dynamic updates'));
+				$icons[] = sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-share-alt" aria-hidden="true"></i></a>', __('Zone supports dynamic updates'));
 			}
 			if ($domain_template_id = getNameFromID($row->domain_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_template_id')) {
-				$icons[] = sprintf('<a href="JavaScript:void(0);" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-picture-o" aria-hidden="true"></i></a>', sprintf(__('Based on %s'), getNameFromID($domain_template_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_name')));
+				$icons[] = sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-picture-o" aria-hidden="true"></i></a>', sprintf(__('Based on %s'), getNameFromID($domain_template_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_name')));
 			}
 
 			$response = ($response) ? sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="fa fa-question-circle" aria-hidden="true"></i></a>', $response) : null;
@@ -1098,24 +1097,18 @@ HTML;
 		$popup_footer = buildPopup('footer');
 		
 		if (array_search('create_template', $show) !== false) {
-			$template_name_show_hide = 'none';
-			$create_template = sprintf('<tr id="create_template">
-			<th>%s</th>
-			<td><input type="checkbox" id="domain_create_template" name="domain_template" value="yes" /><label for="domain_create_template"> %s</label></td>
-		</tr>', __('Create Template'), __('yes'));
-		} else {
-			$template_name_show_hide = 'table-row';
-			$create_template = <<<HTML
-			<input type="hidden" id="domain_create_template" name="domain_template" value="no" />
-			<input type="hidden" name="domain_default" value="no" />
-HTML;
+			$create_template = (array_search('create_template', $show) !== false) ? sprintf('<div id="domain_create_template_selection"><input type="checkbox" id="domain_create_template" name="domain_template" value="yes" /><label for="domain_create_template"> %s</label></div>', __('Create Template'), __('yes')) : '';
 		}
 	
 		if (array_search('template_menu', $show) !== false) {
 			$classes = 'zone-form';
+			$available_templates = $this->availableZoneTemplates();
+			$template_options = (count($available_templates) > 1)
+				? buildSelect('domain_template_id', 'domain_template_id', $available_templates, $domain_template_id) . '<br />'
+				: '<input type="hidden" id="domain_template_id" name="domain_template_id" value="" />';
 			$select_template = '<tr id="define_template" class="include-with-template">
 					<th>' . __('Template') . '</th>
-					<td>' . buildSelect('domain_template_id', 'domain_template_id', $this->availableZoneTemplates(), $domain_template_id);
+					<td>' . $template_options . $create_template;
 			if ($action == 'edit') {
 				$select_template .= sprintf('<p>%s</p>', __('Changing the template will delete all config options for this zone.'));
 			}
@@ -1127,11 +1120,11 @@ HTML;
 		
 		if (array_search('template_name', $show) !== false) {
 			$default_checked = ($domain_id == $this->getDefaultZone()) ? 'checked' : null;
-			$template_name = sprintf('<tr id="domain_template_default" style="display: %s">
+			$template_name = sprintf('<tr id="domain_template_default">
 			<th></th>
 			<td><input type="checkbox" id="domain_default" name="domain_default" value="yes" %s /><label for="domain_default"> %s</label></td>
 			<input type="hidden" id="domain_create_template" name="domain_template" value="yes" />
-		</tr>', $template_name_show_hide, $default_checked, __('Make Default Template'));
+		</tr>', $default_checked, __('Make Default Template'));
 		} else {
 			$dynamic_checked = ($domain_dynamic == 'yes') ? 'checked' : null;
 			$dynamic_show = ($domain_type == 'primary' || $domain_template_id) ? 'table-row' : 'none';
@@ -1199,6 +1192,7 @@ HTML;
 					<td><input type="text" id="domain_name" name="domain_name" size="40" value="%s" maxlength="%d" class="required" /></td>
 				</tr>
 				%s
+				%s
 				<tr class="include-with-template">
 					<th><label for="domain_view">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
 					<td>%s
@@ -1221,7 +1215,7 @@ HTML;
 							( address_match_element )
 						</div>
 						<div id="define_redirect_url" style="display: none">
-							<h4>%s <a href="JavaScript:void(0);" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle" aria-hidden="true"></i></a></h4>
+							<h4>%s <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle" aria-hidden="true"></i></a></h4>
 							<input type="text" id="domain_redirect_url" name="domain_redirect_url" size="40" value="" class="required" />
 						</div>
 					</td>
@@ -1260,7 +1254,7 @@ HTML;
 			</table>',
 				$action, $domain_id, $classes,
 				__('Zone Name'), $domain_name, $domain_name_length,
-				$select_template,
+				$select_template, $template_name,
 				__('Views'), __('Leave blank to use the views defined in the template.'), $views,
 				__('Zone Map'), $zone_maps,
 				__('Zone Type'), $domain_types,
@@ -1275,7 +1269,7 @@ HTML;
 				__('Zone Transfer Key'), __('Optionally specify a key for transferring this zone (overrides this setting in views).'), $keys,
 				$soa_templates,
 				_('Comment'), $domain_comment,
-				$addl_zone_options . $additional_config_link . $create_template . $template_name
+				$addl_zone_options . $additional_config_link
 				);
 
 		$return_form .= (array_search('popup', $show) !== false) ? $popup_footer . '</form>' : null;
@@ -1319,18 +1313,15 @@ HTML;
 						$('#clone_dname_options').slideUp();
 					}
 				});
-				$("#domain_create_template").click(function() {
-					if ($(this).is(':checked')) {
-						$('#domain_template_name').show('slow');
+				$("table.zone-form").delegate("#domain_template_id", "change", function() {
+					if ($('#domain_template_id').val() != '') {
+						$('.zone-form > tbody > tr:not(.include-with-template, #domain_template_default)').slideUp();
+						$('#domain_create_template_selection').slideUp();
 					} else {
-						$('#domain_template_name').slideUp();
+						$('.zone-form > tbody > tr:not(.include-with-template, #domain_template_default)').show('slow');
+						$('#domain_create_template_selection').show('slow');
 					}
 				});
-				if ($('#domain_template_id').val() != '') {
-					$('.zone-form > tbody > tr:not(.include-with-template, #domain_template_default)').slideUp();
-				} else {
-					$('.zone-form > tbody > tr:not(.include-with-template, #domain_template_default)').show('slow');
-				}
 				if ($('#domain_clone_domain_id').val() != '') {
 					$('.zone-form > tbody > tr#define_soa').slideUp();
 					$('.zone-form > tbody > tr#create_template').slideUp();
@@ -1340,6 +1331,7 @@ HTML;
 						$('.zone-form > tbody > tr#create_template').show('slow');
 					}
 				}
+				$("#domain_template_id").change();
 			});
 		</script>
 HTML;
@@ -1388,10 +1380,10 @@ HTML;
 				$return[$clone_id]['clone_servers'] = $clone_results[$i]->domain_name_servers;
 
 				/** Dynamic updates support */
-				$return[$clone_id]['dynamic'] = (getNameFromID($clone_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_dynamic') == 'yes') ? sprintf('<a href="JavaScript:void(0);" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-share-alt" aria-hidden="true"></i></a>', __('Zone supports dynamic updates')) : null;
+				$return[$clone_id]['dynamic'] = (getNameFromID($clone_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_dynamic') == 'yes') ? sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-share-alt" aria-hidden="true"></i></a>', __('Zone supports dynamic updates')) : null;
 				
 				/** DNSSEC support */
-				$return[$clone_id]['dnssec'] = (getNameFromID($clone_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_dnssec') == 'yes') ? sprintf('<a href="JavaScript:void(0);" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-lock secure" aria-hidden="true"></i></a>', __('Zone is secured with DNSSEC')) : null;
+				$return[$clone_id]['dnssec'] = (getNameFromID($clone_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_dnssec') == 'yes') ? sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-lock secure" aria-hidden="true"></i></a>', __('Zone is secured with DNSSEC')) : null;
 
 				/** Clone comment */
 				$return[$clone_id]['clone_comment'] = ($clone_results[$i]->domain_comment) ? $clone_results[$i]->domain_comment : '&nbsp;';
@@ -1897,6 +1889,8 @@ HTML;
 				return __('You do not have permission to modify this zone.');
 			}
 		}
+
+		if (!$post['domain_default']) $post['domain_default'] = 'no';
 		
 		/** Empty domain names are not allowed */
 		if (empty($post['domain_name'])) return __('No zone name defined.');

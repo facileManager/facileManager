@@ -83,7 +83,7 @@ class fm_module_http {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="http">%s</p>', __('There are no HTTP endpoints defined.'));
+			printf('<p id="table_edits" class="noresult" name="http">%s</p>', _('There are no items defined.'));
 		}
 	}
 

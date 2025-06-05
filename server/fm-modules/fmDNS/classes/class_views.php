@@ -74,7 +74,7 @@ class fm_dns_views {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="views">%s</p>', __('There are no views.'));
+			printf('<p id="table_edits" class="noresult" name="views">%s</p>', _('There are no items defined.'));
 		}
 	}
 
