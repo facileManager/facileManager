@@ -2,6 +2,10 @@
 ==================
 * Both - [improvement] Code cleanup.
 
+0.7.1 (2025-05-27)
+==================
+* Server - [bug] Fixed inconsistent tooltips for "Configure Additional Options."
+
 0.7.0 (2025-01-18)
 ==================
 * Server - [improvement] Made form validation global.
