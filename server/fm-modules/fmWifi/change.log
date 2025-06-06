@@ -1,5 +1,6 @@
 0.8.0 (2025-??-??)
 ==================
+* Server - [improvement] Changed "no results" message to be the same for consistency.
 * Both - [improvement] Code cleanup.
 
 0.7.1 (2025-05-27)
