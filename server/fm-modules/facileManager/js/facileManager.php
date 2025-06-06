@@ -421,6 +421,9 @@ if (isset($__FM_CONFIG)) {
 						$row_id.css({"background-color":"#D98085"});
 						$row_id.fadeOut("slow", function() {
 							$row_id.remove();
+							if ($("#table_edits tbody tr").length < 1) {
+								$("#table_edits").after("<p id=\"table_edits\" class=\"noresult\">' . _('There are no items defined.') . '</p>");
+							}
 						});
 					} else {
 						var eachLine = response.split("\n");

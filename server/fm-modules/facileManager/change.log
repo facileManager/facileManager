@@ -5,6 +5,7 @@
 * Server - [improvement] Added associated group column to the user list.
 * Server - [improvement] Renamed settings and modules files.
 * Server - [improvement] Image branding accepts file uploads now.
+* Server - [improvement] Deleting the last time in a table now displays the default table message.
 * Server - [bug] Fixed URL in error message when attempting to check server connections.
 * Both   - [improvement] Code cleanup.
 
