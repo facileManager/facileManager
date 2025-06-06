@@ -1040,6 +1040,27 @@ function fmUpgrade_531($database) {
 }
 
 
+/** fM v5.4.0 **/
+function fmUpgrade_540($database) {
+	global $fmdb;
+	
+	$success = true;
+	
+	/** Prereq */
+	$success = ($GLOBALS['running_db_version'] < 59) ? fmUpgrade_531($database) : true;
+	
+	$queries = array();
+	if ($success) {
+		/** Delete unused files */
+		deleteDeprecatedFiles(array('pages/help.php'));
+	}
+
+	upgradeConfig('fm_db_version', 60, false);
+	
+	return $success;
+}
+
+
 /**
  * Updates the database with the db version number.
  *

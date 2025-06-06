@@ -1,3 +1,7 @@
+5.4.0 (2025-??-??)
+==================
+* Server - [improvement] Removed in-app help file in favor of docs.facilemanager.com.
+
 5.3.3 (2025-05-27)
 ==================
 * Server - [bug] Fixed grabbing CSS.

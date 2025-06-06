@@ -74,6 +74,6 @@ if (array_key_exists('server_serial_no', $_GET) && is_numeric($_GET['server_seri
 	$preview = _('Invalid Server ID.');
 }
 
-printHeader(_('Server Config Preview'), 'facileManager', 'no-help', 'no-menu');
+printHeader(_('Server Config Preview'), 'facileManager', 'no-menu');
 echo $message . $check_status . "<pre>\n" . $preview . "\n</pre>\n";
 printFooter();
