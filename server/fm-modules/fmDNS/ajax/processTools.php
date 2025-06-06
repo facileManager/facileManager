@@ -58,7 +58,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan('run_tools')) {
 							global $menu;
 							
 							$response = buildPopup('header', _('Error'));
-							$response .= sprintf('<p>' . _('You currently have no active servers defined. <a href="%s">Click here</a> to define one or more to manage.') . '</p>', $menu[getParentMenuKey(_('Servers'))][4]);
+							$response .= sprintf('<p>' . _('You currently have no active servers defined. <a href="%s">Click here</a> to define one or more to manage.') . '</p>', getMenuURL(_('Servers')));
 							break;
 						}
 					}
