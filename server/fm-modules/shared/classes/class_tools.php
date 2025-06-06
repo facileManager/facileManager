@@ -51,7 +51,7 @@ class fm_shared_module_tools {
 		/** Process server list */
 		if (!$num_rows = $fmdb->num_rows) {
 			global $menu;
-			return sprintf('<p>' . _('You currently have no active servers defined. <a href="%s">Click here</a> to define one or more to manage.') . '</p>', $menu[getParentMenuKey(_('Servers'))][4]);
+			return sprintf('<p>' . _('You currently have no active servers defined. <a href="%s">Click here</a> to define one or more to manage.') . '</p>', 'config-servers.php');
 		}
 		$results = $fmdb->last_result;
 		for ($x=0; $x<$num_rows; $x++) {
