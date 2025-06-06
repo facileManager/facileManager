@@ -1273,6 +1273,7 @@ FORM;
 	function getObjectChildren($item_id, $results) {
 		global $__FM_CONFIG, $fmdb;
 
+		$results = [];
 		/** Get group results */
 		basicGet('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'groups', substr($item_id, 1), 'group_', 'group_id');
 		if ($fmdb->num_rows) {
@@ -1288,7 +1289,7 @@ FORM;
 			return $results;
 		}
 
-		return array();
+		return [];
 	}
 }
 
