@@ -145,16 +145,6 @@
 	a.button.disabled {
 		border-color: #d9d9d9;
 	}
-	#help {
-		background-color: #FEFEFE;
-		border-left: 1px #DDD;
-		-webkit-box-shadow: rgba(200,200,200,0.7) -2px 0 3px -1px;
-		-khtml-box-shadow: rgba(200,200,200,0.7) -2px 0 3px -1px;
-		box-shadow: rgba(200,200,200,0.7) -2px 0 3px -1px;
-	}
-	#help_file_container li a.list_title {
-		color: #000;
-	}
 	#pagination a {
 		border: solid 1px #c0c0c0;
 		background: #e9e9e9;

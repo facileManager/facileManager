@@ -878,7 +878,6 @@ h4 {
 	margin-left: -3px;
 }
 .display_results.sortable th:not(.header-nosort):hover,
-#help_buttons img,
 .eye-attention,
 .popout {
 	cursor: pointer;
@@ -1713,10 +1712,9 @@ i.popout {
 	margin-top: -5px;
 }
 
-#help, #fm_mailing_options, #fm_proxy_options,
+#fm_mailing_options, #fm_proxy_options,
 #mail_smtp_auth_options, #auth_ldap_options, #ldap_group_require_options,
 #auth_fm_options, #software_update_options,
-#help_file_container ul li div,
 .hidden {
 	display: none;
 }
@@ -1826,92 +1824,6 @@ span.not_installed {
 	font-size: 14px;
 	color: var(--icon-delete);
 	margin-top: 0;
-}
-
-#help {
-	position: fixed;
-	top: 3.8em;
-	bottom: 0;
-	right: 0em;
-	width: 25%;
-	height: 100%;
-	z-index: 3;
-	background-color: light-dark(#FEFEFE, #3b3b3b);
-	border-left: 1px light-dark(#DDD, #202020) solid;
-	-webkit-box-shadow: light-dark(rgba(200,200,200,0.7), rgb(57,57,57,0.7)) -2px 0 3px -1px;
-	-khtml-box-shadow: light-dark(rgba(200,200,200,0.7), rgb(57,57,57,0.7)) -2px 0 3px -1px;
-	box-shadow: light-dark(rgba(200,200,200,0.7), rgb(57,57,57,0.7)) -2px 0 3px -1px;
-	overflow: hidden;
-}
-
-#help a {
-	text-decoration: underline;
-}
-
-#help_topbar {
-	height: 2em;
-	background-color: var(--table-header-bg);
-	color: var(--table-header-text);
-	padding: 10px;
-}
-
-#help_topbar div {
-	display: flex;
-    align-items: center;
-}
-
-#help_topbar p.title {
-	font-size: 10pt;
-	font-weight: bold;
-}
-
-#help_file_container {
-	flex: 1;
-	padding: 1em;
-	font-size: 9pt;
-	overflow-y: auto;
-	height: 90%;
-}
-
-#help_file_container > div:last-of-type {
-	margin-bottom: 10em;
-}
-
-#help_file_container ul {
-	list-style: none;
-	margin-bottom: 3em;
-	padding: 0;
-}
-
-#help_file_container li {
-	list-style: none;
-	border-bottom: 1px solid var(--settings-divider);
-	padding: 0 5px;
-}
-
-#help_file_container li:first-child {
-	border-top: 1px solid var(--settings-divider);
-}
-
-#help_file_container li a.list_title {
-	cursor: pointer;
-	line-height: 24pt;
-	color: light-dark(#000, #d5d5d5);
-	font-weight: bold;
-	text-decoration: none;
-}
-
-#help_file_container li p {
-	padding: 0;
-}
-
-#help_file_container h3 {
-	font-size: 14px;
-	color: var(--page-title-text);
-	margin-top: 0;
-}
-#help_file_container ul li ul li {
-	padding: 5px;
 }
 
 #pagination_container,
@@ -2133,23 +2045,6 @@ pre {
 
 .add_more {
 	font-size: 12px;
-}
-
-#issue_tracker {
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	left: 0;
-	padding: 10px;
-	color: #888888;
-	text-align: center;
-	width: 100%;
-}
-#help #issue_tracker {
-	position: absolute;
-	width: auto;
-	padding-top: 5px;
-	margin-bottom: 4em;
 }
 
 .select2-drop {

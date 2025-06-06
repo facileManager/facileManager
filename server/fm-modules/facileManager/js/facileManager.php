@@ -951,35 +951,6 @@ if (isset($__FM_CONFIG)) {
 		}
 	});
 
-	$("#tophead .help_link").click(function() {
-		var body_right		= $("#body_container").css("right");
-		var help_right		= $("#help").css("right");
-		
-		if (body_right == "300px") {
-			$("#body_container").animate({right: "0"}, 500);
-			$("#help").hide("slide", { direction: "right" }, 500);
-		} else {
-			$("#body_container").animate({right: "300px"}, 500);
-			$("#help").show("slide", { direction: "right" }, 500);
-		}
-		
-		return false;
-	});
-	
-	$("#help_file_container a.list_title").click(function() {
-		help_block = $(this).next();
-		if ($(help_block).is(":visible")) {
-			$(help_block).slideUp("slow");
-		} else {
-			$(help_block).slideDown("slow");
-		}
-	});
-	
-	$("#help_file_container ul li div a").click(function() {
-		window.opener.location.href = $(this).attr("href");
-		return false;
-	});
-	
 	$("#auth_method").change(function() {
 		if ($(this).val() == 1) {
 			$("#auth_fm_options").show("slow");
@@ -1054,16 +1025,6 @@ if (isset($__FM_CONFIG)) {
 		} else {
 			$("#software_update_options").slideUp();
 		}
-	});
-	
-	$("#help_topbar i.popout").click(function() {
-		$("#tophead .help_link").click();
-		window.open("help.php","1356124444538","' . $__FM_CONFIG['default']['popup']['dimensions'] . ',toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0");
-		return false;
-	});
-	
-	$("#help_topbar .close").click(function() {
-		$("#tophead .help_link").click();
 	});
 	
 	$(function () {

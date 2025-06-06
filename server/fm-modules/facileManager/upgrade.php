@@ -1092,7 +1092,7 @@ function fmUpgrade_531($database) {
 
 /** fM v5.4.0 **/
 function fmUpgrade_540($database) {
-	global $fmdb, $fm_name;
+	global $fmdb;
 	
 	/** Prereq */
 	$success = ($GLOBALS['running_db_version'] < 59) ? fmUpgrade_531($database) : true;
@@ -1109,6 +1109,7 @@ function fmUpgrade_540($database) {
 
 		/** Delete unused files */
 		deleteDeprecatedFiles(array(
+			dirname(__FILE__) . 'pages/help.php',
 			dirname(__FILE__) . 'pages/admin-settings.php',
 			dirname(__FILE__) . 'pages/admin-modules.php'
 		));

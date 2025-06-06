@@ -5,6 +5,7 @@
 * Server - [improvement] Added associated group column to the user list.
 * Server - [improvement] Renamed settings and modules files.
 * Server - [improvement] Image branding accepts file uploads now.
+* Server - [improvement] Removed in-app help file in favor of docs.facilemanager.com.
 * Both   - [improvement] Code cleanup.
 
 5.3.3 (2025-05-27)
