@@ -88,7 +88,7 @@ class fm_module_policies {
 		echo "</tbody>\n</table>\n";
 		
 		if (!$total_pages) {
-			printf('<p id="table_edits" class="noresult" name="policies">%s</p>', __('There are no firewall rules.'));
+			printf('<p id="table_edits" class="noresult" name="policies">%s</p>', _('There are no items defined.'));
 		}
 		
 		echo '</div></div>';

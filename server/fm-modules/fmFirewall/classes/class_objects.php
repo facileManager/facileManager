@@ -73,7 +73,7 @@ class fm_module_objects {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="objects">%s</p>', __('There are no addresses defined.'));
+			printf('<p id="table_edits" class="noresult" name="objects">%s</p>', _('There are no items defined.'));
 		}
 	}
 

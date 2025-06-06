@@ -75,7 +75,7 @@ class fm_module_services {
 
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="services">%s</p>', __('There are no services defined.'));
+			printf('<p id="table_edits" class="noresult" name="services">%s</p>', _('There are no items defined.'));
 		}
 	}
 

@@ -1,5 +1,10 @@
 3.3.0 (2025-??-??)
 ==================
+* Server - [improvement] Changed "no results" message to be the same for consistency.
+* Both - [improvement] Code cleanup.
+
+3.2.5 (2025-05-27)
+==================
 * Both - [improvement] Code cleanup.
 
 3.2.4 (2025-05-01)
