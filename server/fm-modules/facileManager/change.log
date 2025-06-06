@@ -5,6 +5,7 @@
 * Server - [improvement] Added associated group column to the user list.
 * Server - [improvement] Renamed settings and modules files.
 * Server - [improvement] Image branding accepts file uploads now.
+* Server - [bug] Fixed URL in error message when attempting to check server connections.
 * Both   - [improvement] Code cleanup.
 
 5.3.3 (2025-05-27)
