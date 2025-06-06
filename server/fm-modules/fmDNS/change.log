@@ -5,6 +5,17 @@
 * Server - [improvement] Changed "no results" message to be the same for consistency.
 * Both   - [improvement] Code cleanup.
 
+7.1.4 (2025-06-01)
+==================
+* Server - [bug] Fixed zone reloads for .info zones when syntax checks are enabled. (Issue #682)
+
+7.1.3 (2025-05-27)
+==================
+* Server - [bug] Fixed RPZ for All Zones with PHP8.4.
+* Server - [bug] Fixed ability to save updates to RPZ configurations. (Issue #688)
+* Server - [bug] Fixed form validation for RPZ. (Issue #649)
+* Server - [bug] Fixed inconsistent tooltips for "Configure Additional Options."
+
 7.1.2 (2025-05-01)
 ==================
 * Server - [bug] Fixed PHP errors. (Issue #680)
