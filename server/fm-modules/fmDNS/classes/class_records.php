@@ -44,7 +44,7 @@ class fm_dns_records {
 			
 		$return .= "</tbody>\n</table>\n";
 		if (!$result) {
-			$return .= sprintf('<p id="table_edits" class="noresult">%s</p>', _('There are no items defined'));
+			$return .= sprintf('<p id="table_edits" class="noresult">%s</p>', _('There are no items defined.'));
 		}
 		
 		return $return;

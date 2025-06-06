@@ -77,7 +77,7 @@ class fm_dns_controls {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="controls">%s</p>', _('There are no items defined'));
+			printf('<p id="table_edits" class="noresult" name="controls">%s</p>', _('There are no items defined.'));
 		}
 	}
 
