@@ -25,7 +25,7 @@ if (isset($__FM_CONFIG)) {
 	
 	$(document).keyup(function(e) {
 		if (e.keyCode == KEYCODE_ESC) { $("#cancel_button").click(); }
-		if (e.keyCode == KEYCODE_ENTER && $(":focus").is("input[type=text], input[type=password]")) { $("#primary_button").click(); }
+		if (e.keyCode == KEYCODE_ENTER && $(":focus").is("input[type=text], input[type=password], input[type=checkbox]")) { $("#primary_button, #loginbtn, #forgotbtn").click(); }
 	});
 
 	$(function() {
@@ -121,7 +121,7 @@ if (isset($__FM_CONFIG)) {
 		return false;
 	} );
 	
-	$("#login_form input").on("change", function() {
+	$("#login_form input, #form_messaging input").on("change", function() {
 		if ($("#login_message_accept").length) {
 			var button = document.getElementById("loginbtn");
 			if ($("#login_message_accept").is(":checked") && $("#username").length && $("#password").length) {
@@ -132,7 +132,20 @@ if (isset($__FM_CONFIG)) {
 		}
 	});
 
+	$("#show_password").click(function(e) {
+		if ($("#password").attr("type") == "password") {
+			$("#password").attr("type", "text");
+		} else {
+			$("#password").attr("type", "password");
+		}
+	});
+
 	$("#loginbtn").click(function() {
+		/* Ensure username and terms are entered */
+		if (!$("#username").length || !$("#username").val()) {
+			$("#login_form").effect("shake");
+			return false;
+		}
 		if ($("#login_message_accept").length) {
 			if ($("#login_message_accept").prop("checked") != true) {
 				$("#login_message_accept").parent().addClass("failed");
@@ -161,9 +174,12 @@ if (isset($__FM_CONFIG)) {
 					} else {
 						$("#password").focus();
 					}
-					$("#login_form table").effect("shake");	
+					$("#login_form").effect("shake");	
 				} else if (response.indexOf("failed") >=0) {
 					$("#message").prepend(response);
+				} else if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
 				} else {
 					window.location = response;
 				}
@@ -174,25 +190,35 @@ if (isset($__FM_CONFIG)) {
 	});
 	
 	$("#forgotbtn").click(function() {
-	
-		$("#message").html("<p class=\"success\">' . _('Processing...please wait.') . ' <i class=\"fa fa-spinner fa-spin\"></i></p>");
-		
-		var action = $("#forgotpwd").attr("action");
-		var form_data = {
-			user_login: $("#user_login").val(),
-			is_ajax: 1
-		};
-		
-		$("#user_login").val("");	
-		$.ajax({
-			type: "POST",
-			url: action,
-			data: form_data,
-			success: function(response)
-			{
-				$("#message").html(response);
-			}
-		});
+		/* Ensure user_login is entered */
+		if (!$("#user_login").length || !$("#user_login").val()) {
+			$("#user_login").focus();
+			$("#login_form").effect("shake");	
+		} else {
+			$("#message").html("<p class=\"success\">' . _('Processing...please wait.') . ' <i class=\"fa fa-spinner fa-spin\"></i></p>");
+			
+			var action = $("#forgotpwd").attr("action");
+			var form_data = {
+				user_login: $("#user_login").val(),
+				is_ajax: 1
+			};
+			
+			$("#user_login").val("");	
+			$.ajax({
+				type: "POST",
+				url: action,
+				data: form_data,
+				success: function(response)
+				{
+					if(response === false) {
+						$("#user_login").focus();
+						$("#login_form").effect("shake");	
+					} else {
+						$("#message").html(response);
+					}
+				}
+			});
+		}
 		
 		return false;
 	});
@@ -1283,7 +1309,7 @@ if (isset($__FM_CONFIG)) {
 	$(".disable-auto-complete").attr("autocomplete", "off");
 	
 	/* Handle the eye-attention */
-	$(".eye-attention").click(function() {
+	$("#pagination_container .eye-attention").click(function() {
 		var attention	= getUrlVars()["attention"];
 		
 		var queryParameters = {}, queryString = location.search.substring(1),
