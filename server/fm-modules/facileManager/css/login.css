@@ -1,125 +1,134 @@
+:root {
+    color-scheme: light dark;
+}
+
 html {
-	background: #efefef;
+    background: light-dark(#efefef, #464646);
 }
 
 body {
-	color: #333;
-	font-family: "Open Sans",sans-serif;
-	font-size: 13px;
+    color: light-dark(#333, #333);
+    font-family: "Open Sans",sans-serif;
+    font-size: 13px;
 
 }
 
 .container {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 form {
-    background-color: #fff;
+    background-color: light-dark(#fff, #2f2f2f);
     padding: 2.5em;
     border-radius: 6px;
-    -webkit-box-shadow: 0 0 10px rgba(60, 72, 88, .15) !important;
-    box-shadow: 0 0 10px rgba(60, 72, 88, 0.15) !important;
+    -webkit-box-shadow: 0 0 10px light-dark(rgba(60, 72, 88, 0.15), rgba(0, 0, 0, 0.4)) !important;
+    box-shadow: 0 0 10px light-dark(rgba(60, 72, 88, 0.15), rgba(0, 0, 0, 0.4)) !important;
 }
 
 .flex {
-	display: flex;
+    display: flex;
 }
 .flex-column {
-	flex-direction: column;
+    flex-direction: column;
 }
 
 .terms {
-	overflow: auto;
+    overflow: auto;
     margin-left: 1em;
-    border-left: 1px solid #eeeeee;
+    border-left: 1px solid light-dark(#eeeeee, #626262);
     font-size: 12px;
-	display: none;
-	width: 300px;
-	color: #7c7c7c;
+    display: none;
+    width: 300px;
+    color: light-dark(#7c7c7c, #c4c4c4);
 }
 
 form div {
-	padding: 0 !important;
+    padding: 0 !important;
 }
 
 #login_form {
-	margin-top: 1em;
+    margin-top: 1em;
 }
 
 #login_form .input-wrapper input {
-	border-radius: 5px;
+    border-radius: 5px;
 }
 #login_form .input-wrapper input[name=username] {
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 #login_form .input-wrapper input[name=password] {
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
-	border-top: 0px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: 0px;
 }
 
 #login_form .input-wrapper i.fa {
-	position: absolute;
+    position: absolute;
     padding: 11px;
-	color: #3b4b5860;
+    color: light-dark(#3b4b5860, #aac3d760);
 }
 
 .button-wrapper {
-	margin-top: 1em;
+    margin-top: 1em;
 }
 
 div input[type=text], div input[type=password] {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
     margin: 0;
     height: 32px;
     resize: none;
     width: 180px;
-	border: 1px solid #E0E0E0;
+    background-color: light-dark(#fff, #404040);
+    border: 1px solid light-dark(#E0E0E0, #313131);
     padding-left: 2.5em;
-	padding-right: 2.5em;
+    padding-right: 2.5em;
+}
+
+div input[type=text]:focus, div input[type=password]:focus {
+	outline: none;
 }
 
 p {
-	padding-bottom: 2px;
-	line-height: 1.5;
+    padding-bottom: 2px;
+    line-height: 1.5;
 }
 
 a {
-	text-decoration: none;
-	color: #a0a0a0;
+    text-decoration: none;
+    color: light-dark(#a0a0a0, #b0b0b0);
 }
 
 code {
-	font-size: 14px;
+    font-size: 14px;
 }
 
 #logo {
-	text-align: center;
+    text-align: center;
 }
 
 .step {
-	margin: 20px 0 15px;
-	text-align: right;
+    margin: 20px 0 15px;
+    text-align: right;
 }
 
 strong {
-	color: red;
-	font-size: 10pt;
+    color: light-dark(red, red);
+    font-size: 10pt;
 }
 
 .button {
     font-family: "Open Sans", sans-serif;
     display: inline-block;
     font-size: 12px;
-    background: #3b8dbc;
-    border: 1px solid #E0E0E0;
-    color: #fff;
+    background: light-dark(#3b8dbc, #276a91);
+    border: 1px solid light-dark(#E0E0E0, #313131);
+    color: light-dark(#fff, #fff);
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     border-radius: 6px;
@@ -127,81 +136,81 @@ strong {
     text-align: center;
     cursor: pointer;
     width: 100%;
-	line-height: 33px;
+    line-height: 33px;
 }
 
 .fm-branding {
-	color: #3b4b58;
-	display: flex;
+    color: light-dark(#3b4b58, #d2d2d2);
+    display: flex;
     align-items: center;
 }
 
 .fm-branding img {
-	height: 48px;
-	margin: .5em 1em .5em 0em;
+    height: 48px;
+    margin: .5em 1em .5em 0em;
 }
 
 .fm-branding span {
-	font-size: 20px;
+    font-size: 20px;
 }
 
 #footer {
-	display: none;
+    display: none;
 }
 
 
 #forgotton_link {
-	margin: 1em 0 0;
-	text-align: center;
+    margin: 1em 0 0;
+    text-align: center;
 }
 #forgotton_link a {
-	font-size: 8pt;
+    font-size: 8pt;
 }
 
 #message {
-	max-height: 310px;
-	max-width: 242px;
-	overflow-y: scroll;
-	margin: 1em 0 0;
-	color: #7c7c7c;
+    max-height: 310px;
+    max-width: 242px;
+    overflow-y: scroll;
+    margin: 1em 0 0;
+    color: light-dark(#7c7c7c, #c1c1c1);
 }
 
 .success {
-	max-height: 11em;
-	text-align: center;
+    max-height: 11em;
+    text-align: center;
 }
 
 .failed {
-	color: #b95757;
+    color: light-dark(#b95757, #e67e7e);
 }
 
 .terms p {
-	text-align: unset;
-	padding-left: 1em;
+    text-align: unset;
+    padding-left: 1em;
     margin-top: 0;
-	max-height: 25em;
+    max-height: 25em;
 }
 .terms-accept {
-	color: #7c7c7c;
+    color: light-dark(#7c7c7c, #c1c1c1);
 }
 
 i.ok {
-	color: #09a30c;
+    color: light-dark(#09a30c, #09a30c);
 }
 i.fail {
-	color: #c11515;
+    color: light-dark(#c11515, #c11515);
 }
 
 #show_password {
-	left: 240px;
-	cursor: pointer;
+    left: 240px;
+    cursor: pointer;
 }
 
 .copyright {
-	text-align: center;
-	font-size: 10px;
-	color: #a0a0a0;
+    text-align: center;
+    font-size: 10px;
+    color: light-dark(#a0a0a0, #a0a0a0);
 }
 .copyright a {
-	color: #3b8dbc;
+    color: light-dark(#3b8dbc, #66a1c4);
 }
