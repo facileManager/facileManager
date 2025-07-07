@@ -3,6 +3,7 @@
 * Server - [improvement] Moved the 'Create Template' checkbox close to the template selection menu.
 * Server - [improvement] Removed JavaScript:void(0); links.
 * Server - [improvement] Changed "no results" message to be the same for consistency.
+* Server - [bug] Fixed URL in error message when attempting to clear cache.
 * Both   - [improvement] Code cleanup.
 
 7.1.4 (2025-06-01)
