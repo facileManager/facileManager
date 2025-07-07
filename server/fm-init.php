@@ -112,9 +112,11 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 			if (count($_POST)) {
 				$result = $fm_login->processUserPwdResetForm($_POST['user_login']);
 				if ($result === true) {
-					$message = sprintf('<p class="success">%s</p>', _('Your password reset email has been sent to the address on file.'));
+					$message = sprintf('<p class="success"><i class="fa fa-check fa-lg ok"></i> %s</p>', _('Your password reset email has been sent to the address on file.'));
+				} elseif ($result === false) {
+					$message = $result;
 				} else {
-					$message = sprintf('<div class="failed"><p>%s</p></div>', $result);
+					$message = sprintf('<div class="failed"><p><i class="fa fa-times fa-lg fail"></i> %s</p></div>', $result);
 				}
 				
 				if ($_POST['is_ajax']) {

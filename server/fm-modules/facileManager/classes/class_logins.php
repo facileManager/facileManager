@@ -40,41 +40,53 @@ class fm_login {
 		$forgot_link = ($mail_enable && $auth_method == 1) ? sprintf('<p id="forgotton_link"><a href="?forgot_password">%s</a></p>', _('Forgot your password?')) : null;
 		
 		$branding_logo = getBrandLogo();
+
+		$copyright = sprintf('© 2013 - %d %s<br /><a href="https://raw.githubusercontent.com/facileManager/facileManager/refs/heads/master/LICENSE" target="_blank">View license</a>', date('Y'), $fm_name);
 		
 		$login_message = getOption('login_message');
+		$terms_accept = '';
+
 		if ($login_message) {
-			$login_message = '<p class="success">' . $login_message . '</p>';
+			$terms_display = 'style="display: block;"';
+			$login_message = '<p>' . $login_message . '</p>';
 
 			if (getOption('login_message_accept')) {
-				$login_message = '<p class="success"><input name="login_message_accept" id="login_message_accept" type="checkbox" value="1" /><label for="login_message_accept">' . _('I acknowledge and accept the notice below') . '</label></p>' . $login_message;
+				$terms_accept = '<p><input name="login_message_accept" id="login_message_accept" type="checkbox" value="1" /><label for="login_message_accept">' . _('I acknowledge and accept the terms') . '</label></p>';
 			}
 		}
 
-		printf('<form id="loginform" action="%1$s" method="post">
-		<div id="fm-branding">
-			<img src="%2$s" /><span>%3$s</span>
-		</div>
-		<div id="login_form">
-		<table>
-			<tr>
-				<td>
+		printf('<div class="flex flex-column container">
+		<form id="loginform" class="flex" action="%1$s" method="post">
+			<div class="flex flex-column">
+				<div class="fm-branding">
+					<div><img src="%2$s" /></div>
+					<div><span>%3$s</span></div>
+				</div>
+				<div id="login_form">
 					<div class="input-wrapper">
+						<i class="fa fa-user" aria-hidden="true"></i>
 						<input type="text" size="25" name="username" id="username" placeholder="%4$s" />
 					</div>
-				</td>
-				<td>
 					<div class="input-wrapper">
+						<i class="fa fa-key" aria-hidden="true"></i>
 						<input type="password" size="25" name="password" id="password" placeholder="%5$s" />
+						<i id="show_password" class="fa fa-eye eye-attention" title="%10$s"></i>
 					</div>
-				</td>
-				<td><input name="submit" id="loginbtn" type="submit" value="%3$s" class="button" /></td>
-			</tr>
-		</table>
-		%6$s
-		<div id="message">%7$s</div>
+					<div class="button-wrapper"><a name="submit" id="loginbtn" class="button"><i class="fa fa-sign-in" aria-hidden="true"></i> %3$s</a></div>
+					<div>%6$s</div>
+				</div>
+				<div id="form_messaging">
+					<div class="terms-accept">%7$s</div>
+					<div id="message"></div>
+				</div>
+			</div>
+			<div class="terms" %9$s>%8$s</div>
 		</form>
-		</div>', $_SERVER['REQUEST_URI'], $branding_logo, _('Login'), _('Username'),
-				_('Password'), $forgot_link, nl2br($login_message));
+		<div class="copyright">
+			<p>%11$s</p>
+		</div>
+	</div>', $_SERVER['REQUEST_URI'], $branding_logo, _('Login'), _('Username'),
+			_('Password'), $forgot_link, $terms_accept, nl2br($login_message), $terms_display, _('Show'), $copyright);
 		
 		printFooter();
 		exit();
@@ -102,26 +114,24 @@ class fm_login {
 		
 		$branding_logo = getBrandLogo();
 		
-		printf('<form id="loginform" action="%s?forgot_password" method="post">
-		<input type="hidden" name="reset_pwd" value="1" />
-		<div id="fm-branding">
-			<img src="%s" /><span>%s</span>
-		</div>
-		<div id="login_form">
-		<table>
-			<tr>
-				<td>
-					<div class="input-wrapper">
-						<input type="text" name="user_login" id="user_login" placeholder="%s" style="width: 400px;" />
-					</div>
-				</td>
-				<td><input name="submit" id="forgotbtn" type="submit" value="%s" class="button" /></td>
-			</tr>
-		</table>
-		<p id="forgotton_link"><a href="%s">&larr; %s</a></p>
-		<div id="message">%s</div>
+		printf('<div class="flex flex-column container">
+		<form id="loginform" action="%s?forgot_password" method="post">
+			<input type="hidden" name="reset_pwd" value="1" />
+			<div class="fm-branding">
+				<div><img src="%s" /></div>
+				<div><span>%s</span></div>
+			</div>
+			<div id="login_form">
+				<div class="input-wrapper">
+					<i class="fa fa-user" aria-hidden="true"></i>
+					<input type="text" name="user_login" id="user_login" placeholder="%s" />
+				</div>
+				<div class="button-wrapper"><a name="submit" id="forgotbtn" class="button"><i class="fa fa-send" aria-hidden="true"></i> %s</a></div>
+				<p id="forgotton_link"><a href="%s">&larr; %s</a></p>
+				<div id="message">%s</div>
+			</div>
 		</form>
-		</div>', $_SERVER['PHP_SELF'], $branding_logo, _('Reset Password'), _('Username'),
+	</div>', $_SERVER['PHP_SELF'], $branding_logo, _('Reset Password'), _('Username'),
 				_('Submit'), $GLOBALS['RELPATH'], _('Login form'), $message);
 	}
 	
@@ -140,7 +150,7 @@ class fm_login {
 		global $fmdb;
 		
 		$user_login = sanitize(trim($user_login));
-		if (empty($user_login)) return;
+		if (empty($user_login)) return false;
 		
 		$user_info = getUserInfo($user_login, 'user_login');
 		
