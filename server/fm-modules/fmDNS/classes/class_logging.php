@@ -73,7 +73,7 @@ class fm_module_logging {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="logging">%s</p>', sprintf(__('There are no %s defined.'), strtolower($__FM_CONFIG['logging']['avail_types'][$channel_category])));
+			printf('<p id="table_edits" class="noresult" name="logging">%s</p>', _('There are no items defined.'));
 		}
 	}
 

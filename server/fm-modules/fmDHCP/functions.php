@@ -63,7 +63,6 @@ function buildModuleDashboard() {
 		<li>Configuration import tool</li>
 		<li>IPv6</li>
 		<li>Improved logging</li>
-		<li>Help file</li>
 		<li>Dashboard content</li>
 	</ul>
 	
@@ -71,35 +70,6 @@ HTML;
 	
 	return sprintf('<p>%s</p>', sprintf(__('%s has no dashboard content yet.'), $_SESSION['module']));
 
-}
-
-
-/**
- * Builds the help for display
- *
- * @since 0.1
- * @package facileManager
- * @subpackage fmDHCP
- *
- * @return none
- */
-function buildModuleHelpFile() {
-	global $__FM_CONFIG;
-	
-	$body = <<<HTML
-<h3>{$_SESSION['module']}</h3>
-<ul>
-	<li>
-		<a class="list_title">Help Menu Title 1</a>
-		<div id="menu_id_1">
-			<p>To be written.</p>
-			<br />
-		</div>
-	</li>
-	
-HTML;
-	
-	return $body;
 }
 
 

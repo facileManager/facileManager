@@ -421,6 +421,9 @@ if (isset($__FM_CONFIG)) {
 						$row_id.css({"background-color":"#D98085"});
 						$row_id.fadeOut("slow", function() {
 							$row_id.remove();
+							if ($("#table_edits tbody tr").length < 1) {
+								$("#table_edits").after("<p id=\"table_edits\" class=\"noresult\">' . _('There are no items defined.') . '</p>");
+							}
 						});
 					} else {
 						var eachLine = response.split("\n");
@@ -650,6 +653,60 @@ if (isset($__FM_CONFIG)) {
 		return false;
 	});
 
+	/* Branding image upload */
+	$("#btn_brand_img_upload").click(function() {
+		var $this = $(this);
+		const file = $("#brand_img_upload")[0].files[0];
+
+		/* Ensure there is a file */
+		if (!file) {
+			$this.html("' . _('Upload') . '");
+			return;
+		}
+		
+		const form_data = new FormData();
+		form_data.append("file", file);
+		form_data.append("item_type", "fm_settings");
+		form_data.append("upload_image", true);
+
+		$.ajax({
+			type: "POST",
+			url: "fm-modules/facileManager/ajax/processPost.php",
+			data: form_data,
+			contentType: false,
+			processData: false,
+			success: function(response)
+			{
+				if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				} else if (response == "Success") {
+					$("#response").slideUp(400);
+					$("#sm_brand_img").val("/fm-modules/' . $fm_name . '/images/upload/" + file.name).keyup();
+				} else {
+					$("#response").removeClass("static").html(response);
+					$("#response")
+						.addClass("static")
+						.css("opacity", 0)
+						.slideDown(400, function() {
+							$("#response").animate(
+								{ opacity: 1 },
+								{ queue: false, duration: 200 }
+							);
+						});
+					if (response.toLowerCase().indexOf("response_close") == -1) {
+						$("#response").delay(3000).fadeTo(200, 0.00, function() {
+							$("#response").slideUp(400);
+						});
+					}
+				}
+				$this.delay(3000).html("' . _('Upload') . '");
+			}
+		});
+		
+		return false;
+	});
+	
 	/* Account settings */
     $(".account_settings").click(function() {
         var $this 		= $(this);
@@ -897,35 +954,6 @@ if (isset($__FM_CONFIG)) {
 		}
 	});
 
-	$("#tophead .help_link").click(function() {
-		var body_right		= $("#body_container").css("right");
-		var help_right		= $("#help").css("right");
-		
-		if (body_right == "300px") {
-			$("#body_container").animate({right: "0"}, 500);
-			$("#help").hide("slide", { direction: "right" }, 500);
-		} else {
-			$("#body_container").animate({right: "300px"}, 500);
-			$("#help").show("slide", { direction: "right" }, 500);
-		}
-		
-		return false;
-	});
-	
-	$("#help_file_container a.list_title").click(function() {
-		help_block = $(this).next();
-		if ($(help_block).is(":visible")) {
-			$(help_block).slideUp("slow");
-		} else {
-			$(help_block).slideDown("slow");
-		}
-	});
-	
-	$("#help_file_container ul li div a").click(function() {
-		window.opener.location.href = $(this).attr("href");
-		return false;
-	});
-	
 	$("#auth_method").change(function() {
 		if ($(this).val() == 1) {
 			$("#auth_fm_options").show("slow");
@@ -1000,16 +1028,6 @@ if (isset($__FM_CONFIG)) {
 		} else {
 			$("#software_update_options").slideUp();
 		}
-	});
-	
-	$("#help_topbar i.popout").click(function() {
-		$("#tophead .help_link").click();
-		window.open("help.php","1356124444538","' . $__FM_CONFIG['default']['popup']['dimensions'] . ',toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0");
-		return false;
-	});
-	
-	$("#help_topbar .close").click(function() {
-		$("#tophead .help_link").click();
 	});
 	
 	$(function () {

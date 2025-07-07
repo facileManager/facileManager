@@ -48,6 +48,8 @@ fM client requires the following:
 * A running web server if using http(s) update methods
   * The install script supports the following web servers:
     * httpd
+    * lighttpd
+    * nginx
 
 
 Server Installation

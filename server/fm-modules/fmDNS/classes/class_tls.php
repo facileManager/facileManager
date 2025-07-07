@@ -83,7 +83,7 @@ class fm_module_tls {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="tls">%s</p>', __('There are no TLS connections defined.'));
+			printf('<p id="table_edits" class="noresult" name="tls">%s</p>', _('There are no items defined.'));
 		}
 	}
 

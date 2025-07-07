@@ -100,8 +100,7 @@ class fm_module_servers extends fm_shared_module_servers {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			$message = $type == 'servers' ? __('There are no servers.') : __('There are no groups.');
-			printf('<p id="table_edits" class="noresult" name="servers">%s</p>', $message);
+			printf('<p id="table_edits" class="noresult" name="servers">%s</p>', _('There are no items defined.'));
 		}
 	}
 
@@ -490,7 +489,7 @@ class fm_module_servers extends fm_shared_module_servers {
 
 			$edit_actions = $preview = ($row->server_type != 'remote') ? '<a href="preview.php" onclick="javascript:void window.open(\'preview.php?server_serial_no=' . $row->server_serial_no . '\',\'1356124444538\',\'' . $__FM_CONFIG['default']['popup']['dimensions'] . ',toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0\');return false;">' . $__FM_CONFIG['icons']['preview'] . '</a>' : null;
 			if ($row->server_type != 'url-only') $icons[] = sprintf('<a href="config-options.php?server_id=%d" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-sliders" aria-hidden="true"></i></a>', $row->server_id, __('Configure Additional Options'));
-			if ($row->server_url_server_type) $icons[] = sprintf('<a href="JavaScript:void(0);" class="tooltip-top mini-icon" data-tooltip="%s"><i class="fa fa-globe" aria-hidden="true"></i></a>', sprintf(__('This server hosts URL redirects with %s for the URL RR'), $row->server_url_server_type));
+			if ($row->server_url_server_type) $icons[] = sprintf('<a href="#" class="tooltip-top mini-icon" data-tooltip="%s"><i class="fa fa-globe" aria-hidden="true"></i></a>', sprintf(__('This server hosts URL redirects with %s for the URL RR'), $row->server_url_server_type));
 			$checkbox = null;
 
 			if (currentUserCan('build_server_configs', $_SESSION['module']) && $row->server_installed == 'yes') {
