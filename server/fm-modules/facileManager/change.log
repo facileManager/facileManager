@@ -1,3 +1,7 @@
+5.3.4 (2025-??-??)
+==================
+* Server - [bug] Fixed the installer when config.inc.php does not already exist.
+
 5.3.3 (2025-05-27)
 ==================
 * Server - [bug] Fixed grabbing CSS.
