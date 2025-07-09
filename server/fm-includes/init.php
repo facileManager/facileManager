@@ -51,11 +51,15 @@ function checkAppVersions($single_check = true) {
 		if ($single_check) {
 			bailOut($message);
 		} else {
-			$requirement_check .= displayProgress("PHP >= $required_php_version", false, 'display', $message);
+			list($retval, $tmp_content) = displayProgress("PHP >= $required_php_version", false, 'display', $message);
+			$requirement_check .= $tmp_content;
 			$error = true;
 		}
 	} else {
-		if (!$single_check) $requirement_check .= displayProgress("PHP >= $required_php_version", true, 'display');
+		if (!$single_check) {
+			list($retval, $tmp_content) = displayProgress("PHP >= $required_php_version", true, 'display');
+			$requirement_check .= $tmp_content;
+		}
 	}
 
 	/** PHP Extensions */
@@ -69,11 +73,15 @@ function checkAppVersions($single_check = true) {
 			if ($single_check) {
 				bailOut($message);
 			} else {
-				$requirement_check .= displayProgress(_(sprintf('PHP %1s Extension', $extension)), false, 'display', $message);
+				list($retval, $tmp_content) = displayProgress(_(sprintf('PHP %1s Extension', $extension)), false, 'display', $message);
+				$requirement_check .= $tmp_content;
 				$error = true;
 			}
 		} else {
-			if (!$single_check) $requirement_check .= displayProgress(_(sprintf('PHP %1s Extension', $extension)), true, 'display');
+			if (!$single_check) {
+				list($retval, $tmp_content) = displayProgress(_(sprintf('PHP %1s Extension', $extension)), true, 'display');
+				$requirement_check .= $tmp_content;
+			}
 		}
 	}
 	
@@ -84,11 +92,15 @@ function checkAppVersions($single_check = true) {
 			if ($single_check) {
 				bailOut($message);
 			} else {
-				$requirement_check .= displayProgress(_('Apache mod_rewrite Loaded'), false, 'display', $message);
+				list($retval, $tmp_content) = displayProgress(_('Apache mod_rewrite Loaded'), false, 'display', $message);
+				$requirement_check .= $tmp_content;
 				$error = true;
 			}
 		} else {
-			if (!$single_check) $requirement_check .= displayProgress(_('Apache mod_rewrite Loaded'), true, 'display');
+			if (!$single_check) {
+				list($retval, $tmp_content) = displayProgress(_('Apache mod_rewrite Loaded'), true, 'display');
+				$requirement_check .= $tmp_content;
+			}
 		}
 	}
 	
@@ -135,12 +147,16 @@ RewriteRule . index.php [L]
 &lt;/IfModule&gt;
 </textarea>');
 				} else {
-					$requirement_check .= displayProgress(_('.htaccess File Present'), false, 'display', sprintf(_('The %1s.htaccess file from the tar file is missing and is required by %2s.'), ABSPATH, $fm_name));
+					list($retval, $tmp_content) = displayProgress(_('.htaccess File Present'), false, 'display', sprintf(_('The %1s.htaccess file from the tar file is missing and is required by %2s.'), ABSPATH, $fm_name));
+					$requirement_check .= $tmp_content;
 					$error = true;
 				}
 			}
 		} else {
-			if (!$single_check) $requirement_check .= displayProgress(_('.htaccess File Present'), true, 'display');
+			if (!$single_check) {
+				list($retval, $tmp_content) = displayProgress(_('.htaccess File Present'), true, 'display');
+				$requirement_check .= $tmp_content;
+			}
 		}
 	}
 	
@@ -156,18 +172,21 @@ RewriteRule . index.php [L]
 				if ($single_check) {
 					bailOut($message);
 				} else {
-					$requirement_check .= displayProgress(_('Test Rewrites'), false, 'display', $message);
+					list($retval, $tmp_content) = displayProgress(_('Test Rewrites'), false, 'display', $message);
+					$requirement_check .= $tmp_content;
 					$error = true;
 				}
 			} else {
-				if (!$single_check) $requirement_check .= displayProgress(_('Test Rewrites'), true, 'display');
+				if (!$single_check) {
+					list($retval, $tmp_content) = displayProgress(_('Test Rewrites'), true, 'display');
+					$requirement_check .= $tmp_content;
+				}
 			}
 		}
 	}
 	
 	if ($error) {
-		$requirement_check = sprintf('<br /><table class="form-table">%s</table>',
-				$requirement_check);
+		$requirement_check = sprintf('<div class="flex flex-column"><table class="form-table">%s</table></div>', $requirement_check);
 	} else $requirement_check = null;
 	
 	return $requirement_check;

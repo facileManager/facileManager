@@ -34,6 +34,7 @@ setTimezone();
  * @global string $fm_name
  */
 $fm_name = 'facileManager';
+require_once(ABSPATH . 'fm-includes/i18n.php');
 
 /** Set global variables */
 $GLOBALS['REQUEST_PROTOCOL'] = isSiteSecure() ? 'https' : 'http';

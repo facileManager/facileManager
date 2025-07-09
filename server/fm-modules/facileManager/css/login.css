@@ -2,12 +2,17 @@
     color-scheme: light dark;
 }
 
+.default-theme {
+	--tooltip-bg: #5e85a4;
+	--tooltip-text: #fff;
+}
+
 html {
     background: light-dark(#efefef, #464646);
 }
 
 body {
-    color: light-dark(#333, #333);
+    color: light-dark(#333, #c1c1c1);
     font-family: "Open Sans",sans-serif;
     font-size: 13px;
 
@@ -28,6 +33,22 @@ form {
     box-shadow: 0 0 10px light-dark(rgba(60, 72, 88, 0.15), rgba(0, 0, 0, 0.4)) !important;
 }
 
+.text-column {
+    overflow: auto;
+    margin-left: 1em;
+    border-left: 1px solid light-dark(#eeeeee, #626262);
+    font-size: 12px;
+    width: 250px;
+    color: light-dark(#7c7c7c, #c4c4c4);
+	align-items: center;
+	display: none;
+}
+
+.terms {
+	display: none;
+    width: 300px;
+}
+
 .flex {
     display: flex;
 }
@@ -35,18 +56,8 @@ form {
     flex-direction: column;
 }
 
-.terms {
-    overflow: auto;
-    margin-left: 1em;
-    border-left: 1px solid light-dark(#eeeeee, #626262);
-    font-size: 12px;
-    display: none;
-    width: 300px;
-    color: light-dark(#7c7c7c, #c4c4c4);
-}
-
 form div {
-    padding: 0 !important;
+    padding: 0;
 }
 
 #login_form {
@@ -67,17 +78,48 @@ form div {
     border-top: 0px;
 }
 
-#login_form .input-wrapper i.fa {
+.input-wrapper i.fa {
     position: absolute;
     padding: 11px;
     color: light-dark(#3b4b5860, #aac3d760);
+}
+
+#window {
+	max-width: 450px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+  	justify-content: space-between;
+}
+
+#window table,
+#window div table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+#window table th {
+	text-align: right;
+}
+
+#window div table th {
+	text-align: left;
+}
+
+#window table td,
+#window div table td {
+	padding: 2px 1em !important;
+}
+
+#window p {
+	width: 100%;
 }
 
 .button-wrapper {
     margin-top: 1em;
 }
 
-div input[type=text], div input[type=password] {
+div input[type=text], div input[type=password], div input[type=email] {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 12px;
     margin: 0;
@@ -90,8 +132,61 @@ div input[type=text], div input[type=password] {
     padding-right: 2.5em;
 }
 
-div input[type=text]:focus, div input[type=password]:focus {
+div textarea {
+    background-color: light-dark(#fff, #404040);
+    border: 1px solid light-dark(#E0E0E0, #313131);
+	padding: 5px;
+	width: 98%;
+}
+
+div input[type=text]:focus, div input[type=password]:focus, div textarea:focus {
 	outline: none;
+}
+
+/* div#window input {
+	padding-left: 1em;
+	padding-right: 1em;
+} */
+
+div.progress-bar {
+	margin: 5px;
+	overflow: hidden;
+}
+
+div.progress-bar > div > div {
+	margin: 15px;
+	align-content: center;
+}
+
+div.progress-bar > div > div:last-child {
+	margin: 15px 0px;
+}
+
+div.progress-bar .step-number {
+    font-size: 19px;
+	width: 48px; /* Set this to slightly wider than the longest string */
+	align-items: center;  
+	justify-content: center;
+	aspect-ratio: 1 / 1;
+	border-radius: 50%;  
+	border: 2px solid #666;
+	height: 4.4ch;
+}
+div.progress-bar .step {
+    font-size: 1.5em;
+}
+
+div.progress-bar .active,
+div.progress-bar .active .step-number {
+	color: light-dark(#3b8dbc, #fff);
+	border-color: light-dark(#3b8dbc, #276a91);
+	font-weight: bold;
+}
+
+div.progress-bar .complete,
+div.progress-bar .complete .step-number {
+	color: light-dark(#ddd, #464646);
+	border-color: light-dark(#ddd, #464646);
 }
 
 p {
@@ -112,13 +207,8 @@ code {
     text-align: center;
 }
 
-.step {
-    margin: 20px 0 15px;
-    text-align: right;
-}
-
 strong {
-    color: light-dark(red, red);
+    color: light-dark(red, #e66464);
     font-size: 10pt;
 }
 
@@ -143,11 +233,16 @@ strong {
     color: light-dark(#3b4b58, #d2d2d2);
     display: flex;
     align-items: center;
+	margin: .5em 0em;
 }
 
 .fm-branding img {
     height: 48px;
-    margin: .5em 1em .5em 0em;
+}
+
+.fm-branding img,
+.fm-branding i.fa {
+	margin-right: .5em;
 }
 
 .fm-branding span {
@@ -180,11 +275,16 @@ strong {
     text-align: center;
 }
 
-.failed {
+.failed,
+#message.failed {
     color: light-dark(#b95757, #e67e7e);
 }
 
-.terms p {
+#window #message {
+	max-width: unset;
+}
+
+.text-column p {
     text-align: unset;
     padding-left: 1em;
     margin-top: 0;
@@ -202,8 +302,21 @@ i.fail {
 }
 
 #show_password {
-    left: 240px;
+    margin-left: -2.8em;
     cursor: pointer;
+}
+
+form div div#passwd_check {
+	padding: 5px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	width: 231px;
+	text-align: center;
+}
+
+.form-table tr.pwdhint th, .form-table tr.pwdhint td {
+	font-size: 8pt;
+	vertical-align: top;
 }
 
 .copyright {
@@ -213,4 +326,8 @@ i.fail {
 }
 .copyright a {
     color: light-dark(#3b8dbc, #66a1c4);
+}
+
+.error-message {
+	margin-left: 3px;
 }

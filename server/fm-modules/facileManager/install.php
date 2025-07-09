@@ -28,6 +28,46 @@
  */
 
 /**
+ * Processes installation.
+ *
+ * @since 1.0
+ * @package facileManager
+ * @subpackage Installer
+ */
+function processSetup() {
+	global $__FM_CONFIG;
+	extract($_POST);
+
+	foreach ($ssl as $key=>$val) {
+		if (isset($install_enable_ssl)) {
+			$__FM_CONFIG['db'][$key] = $val;
+		} else {
+			unset($_POST['ssl']);
+			break;
+		}
+	}
+	
+	include_once(ABSPATH . 'fm-includes/fm-db.php');
+	$fmdb = new fmdb($dbuser, $dbpass, $dbname, $dbhost, 'silent connect');
+	if (!$fmdb->dbh) {
+		exit(sprintf('ERROR: %s', _('Could not connect to MySQL')));
+	} else {
+		$db_selected = $fmdb->select($dbname, 'silent');
+		if ($fmdb->last_error && strpos($fmdb->last_error, 'Unknown database') === false) {
+			exit(sprintf('ERROR: %s', $fmdb->last_error));
+		}
+		if ($db_selected) {
+			$tables = $fmdb->query('SHOW TABLES FROM `' . $dbname . '`;');
+			if ($fmdb->num_rows) {
+				exit(sprintf('ERROR: %s', _('Database already exists and contains one or more tables.<br />Please choose a different name.')));
+			}
+		}
+	}
+	
+	createConfig();
+}
+
+/**
  * Attempts to create config.inc.php
  *
  * @since 1.0
@@ -35,7 +75,7 @@
  * @subpackage Installer
  */
 function createConfig() {
-	global $fm_name, $branding_logo;
+	global $step;
 	
 	$temp_config = generateConfig();
 	$temp_file = ABSPATH . 'config.inc.php';
@@ -43,40 +83,31 @@ function createConfig() {
 	if (!file_exists($temp_file) || !file_get_contents($temp_file)) {
 		if (@file_put_contents($temp_file, '') === false) {
 
-			printf('
-	<div id="fm-branding">
-		<img src="%s" /><span>%s</span>
-	</div>
-	<div id="window">
-	<p>' . _('I cannot create %s so please manually create it with the following contents:') . '</p>
+			$left_content = sprintf('<div class="flex flex-column">
+	<p>' . _('%s cannot be created. Please manually create it with the following contents:') . '</p>
 	<textarea rows="18">%s</textarea>
 	<p>' . _('Once done, click "Install."') . '</p>
-	<p class="step"><a href="?step=3" class="button click_once">' . _('Install') . '</a></p></div>', 
-			$branding_logo, _('Install'), "<code>$temp_file</code>", $temp_config);
+	</div><div class="button-wrapper"><a href="?step=2" class="button click_once">' . _('Install') . '</a></div>', 
+			"<code>$temp_file</code>", $temp_config);
 		} else {
-			printf('<form method="post" action="?step=3">
-	<div id="fm-branding">
-		<img src="%s" /><span>%s</span>
-	</div>
-	<div id="window">
-		<table class="form-table">' . "\n", $branding_logo, _('Install'));
+			$left_content = '<div class="flex flex-column"><table class="form-table">';
 			
 			$retval = @file_put_contents($temp_file, $temp_config) ? true : false;
-			displayProgress(_('Creating Configuration File'), $retval);
+			list($rv, $tmp_content) = displayProgress(_('Creating Configuration File'), $retval, 'display');
 			
-			echo "</table>\n";
+			$left_content .= $tmp_content . "</table>\n";
 			
 			if ($retval) {
-				echo '<p>' .
+				$left_content .= '<p>' .
 					_("Config file has been created! Now let's create the database schema.") .
-					'</p><p class="step"><a href="?step=3" class="button click_once">' . _('Continue') . '</a></p>';
+					'</p></div><div class="button-wrapper"><a href="?step=2" class="button click_once">' . _('Continue') . '</a></div>';
 			} else {
-				echo '<p>' . _('Config file creation failed. Please try again.') .
-					'</p><p class="step"><a href="?step=2" class="button click_once">' . _('Try Again') . '</a></p>';
+				$left_content .= '<p>' . _('Config file creation failed. Please try again.') .
+					'</p></div><div class="button-wrapper"><a href="?step=2" class="button click_once">' . _('Try Again') . '</a></div>';
 			}
-			
-			echo "</div></form>\n";
 		}
+		
+		echo displayPreAppForm(_('Installation'), 'window', $left_content, displayProgressBar($step), 'flex', null, '?step=3');
 	}
 }
 
@@ -128,10 +159,103 @@ CFG;
 $ssl_config
 require_once(ABSPATH . 'fm-modules/facileManager/functions.php');
 
-?>
 CFG;
 
 	return $config;
+}
+
+/**
+ * Processes account creation.
+ *
+ * @since 1.0
+ * @package facileManager
+ * @subpackage Installer
+ */
+function processAccountSetup($database) {
+	global $fmdb, $fm_name, $__FM_CONFIG;
+	
+	if (!function_exists('sanitize')) {
+		require_once(ABSPATH . '/fm-modules/facileManager/functions.php');
+	}
+	
+	extract($_POST);
+	$user = sanitize($user_login);
+	$pass = sanitize($user_password);
+	$cpass = $cpassword;
+	$email = sanitize($user_email);
+
+	/** Ensure username and password are defined */
+	if (empty($user) || empty($pass)) {
+		exit(sprintf('ERROR: %s', _('Username and password cannot be empty.')));
+	}
+	if ($cpass != $pass) {
+		exit(sprintf('ERROR: %s', _('Passwords do not match.')));
+	}
+	if ($passwd_check != $__FM_CONFIG['password_hint'][$GLOBALS['PWD_STRENGTH']][0]) {
+		exit(sprintf('ERROR: %s', _('Password does not meet the complexity requirements.')));
+	}
+	
+	$query = "INSERT INTO `$database`.fm_users (user_login, user_password, user_email, user_caps, user_ipaddr, user_status) VALUES('$user', '" . password_hash($pass, PASSWORD_DEFAULT) . "', '$email', '" . serialize(array($fm_name => array('do_everything' => 1))). "', '{$_SERVER['REMOTE_ADDR']}', 'active')";
+	$result = $fmdb->query($query) or die($fmdb->last_error);
+	
+	addLogEntry(sprintf(_("Installer created user '%s'"), $user), $fm_name);
+
+	$left_content = sprintf(_("Installation is complete! Click 'Next' to login and start using %s."), $fm_name);
+	$left_content .= sprintf('<div class="button-wrapper"><a href="%s" class="button"><i class="fa fa-sign-in" aria-hidden="true"></i> %s</a></div>', $GLOBALS['RELPATH'], _('Next'));
+	echo displayPreAppForm(_('Installation Complete'), 'window', $left_content, displayProgressBar(4), 'flex');
+}
+
+/**
+ * Ensures the account is unique.
+ *
+ * @since 1.0
+ * @package facileManager
+ * @subpackage Installer
+ */
+function checkAccountCreation($database) {
+	global $fmdb;
+	
+	$query = "SELECT user_id FROM `$database`.fm_users WHERE user_status='active' AND user_auth_type='1' AND user_caps='" . serialize(array('facileManager' => array('do_everything' => 1))) . "' ORDER BY user_id ASC LIMIT 1";
+	$result = $fmdb->query($query);
+
+	return ($result === false || ($result && $fmdb->num_rows)) ? true : false;
+}
+
+/**
+ * Display progress bar
+ *
+ * @since 5.4.0
+ * @package facileManager
+ * @subpackage Installer
+ *
+ * @param integer $step Current step
+ * @return string
+ */
+function displayProgressBar($step = 0) {
+	$form_steps = [
+		1 => _('Configuration File'),
+		2 => _('Load Database'),
+		3 => _('Create Account'),
+		4 => _('Complete!')
+	];
+
+	if ($step <= 1) {
+		$step = 1;
+	}
+
+	$step_progress = '';
+	foreach ($form_steps as $step_number => $title) {
+		$class = '';
+		if ($step_number < $step) {
+			$class = 'complete';
+		} elseif ($step_number == $step) {
+			$class = 'active';
+		}
+		$step_progress .= sprintf('<div class="flex %s"><div class="step-number flex">%s</div><div class="step">%s</div></div>', $class, $step_number, $title);
+	}
+	$return = sprintf('<div class="progress-bar flex flex-column">%s</div>', $step_progress);
+
+	return $return;
 }
 
 /**
@@ -142,48 +266,49 @@ CFG;
  * @subpackage Installer
  */
 function fmInstall($database) {
-	global $fm_name, $branding_logo;
+	global $fm_name, $branding_logo, $step;
 	
-	printf('<form method="post" action="?step=3">
-	<div id="fm-branding">
-		<img src="%s" /><span>%s</span>
-	</div>
-	<div id="window">
-<table class="form-table">' . "\n", $branding_logo, _('Install'));
-
-	$retval = installDatabase($database);
 	
-	echo "</table>\n";
+	list($retval, $left_content) = installDatabase($database);
+	
+	$left_content = '<div class="flex flex-column"><table class="form-table">' . $left_content . "</table>\n";
 
 	if ($retval) {
-		echo '<p>' . _("Database setup is complete! Now let's create your administrative account.") .
-			'</p><p class="step"><a href="?step=4" class="button">' . _('Continue') . '</a></p>';
+		$left_content .= '<p>' . _("Database setup is complete! Now let's create your administrative account.") .
+			'</p></div><div class="button-wrapper"><a href="?step=3" class="button">' . _('Continue') . '</a></div>';
 	} else {
-		echo '<p>' . _("Database setup failed. Please try again.") .
-			'</p><p class="step"><a href="?step=3" class="button click_once">' . _('Try Again') . '</a></p>';
+		$left_content .= '<p>' . _("Database setup failed. Please try again.") .
+			'</p></div><div class="button-wrapper"><a href="?step=2" class="button click_once">' . _('Try Again') . '</a></div>';
 	}
 	
-	echo "</div></form>\n";
+	echo displayPreAppForm(_('Installation'), 'window', $left_content, displayProgressBar($step), 'flex', null, '?step=3');
 }
 
 
 function installDatabase($database) {
 	global $fmdb, $fm_version, $fm_name;
 	
+	$content = '';
+	$output = false;
+
 	$db_selected = $fmdb->select($database, 'silent');
 	if (!$db_selected) {
 		$query = sanitize("CREATE DATABASE IF NOT EXISTS `$database` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci");
 		$fmdb->query($query);
-		$output = displayProgress(_('Creating Database'), $fmdb->result);
+		list($output, $content) = displayProgress(_('Creating Database'), $fmdb->result, 'display');
 	} else {
 		$output = true;
 	}
 	
-	if ($output == true) $output = installSchema($database);
-	if ($output == true) {
+	if ($output === true) {
+		list($output, $tmp_content) = installSchema($database);
+		$content .= $tmp_content;
+	}
+
+	if ($output === true) {
 		$modules = getAvailableModules();
 		if (count($modules)) {
-			printf('<tr><td colspan="2" id="install_module_list"><p><b>%s</b><br />%s</p></td></tr>',
+			$content .= sprintf('<tr><td colspan="2" id="install_module_list"><p><b>%s</b><br />%s</p></td></tr>',
 					_('The following modules were installed as well:'),
 					_('(They can always be uninstalled later.)')
 				);
@@ -194,7 +319,8 @@ function installDatabase($database) {
 					
 					$function = 'install' . $module_name . 'Schema';
 					if (function_exists($function)) {
-						$output = $function($database, $module_name);
+						list($output, $tmp_content) = $function($database, $module_name, 'display');
+						$content .= $tmp_content;
 					}
 					if ($output == true) {
 						addLogEntry(sprintf(_('%s %s was born.'), $module_name, $fm_version), $module_name);
@@ -204,7 +330,7 @@ function installDatabase($database) {
 		}
 	}
 	
-	return ($output == true) ? true : false;
+	return [$output, $content];
 }
 
 
@@ -414,7 +540,7 @@ INSERTSQL;
 	foreach ($table as $schema) {
 		$result = $fmdb->query($schema);
 		if ($fmdb->last_error) {
-			return displayProgress(sprintf(_('Creating %s Schema'), $fm_name), $fmdb->result, 'noisy', $fmdb->last_error);
+			return displayProgress(sprintf(_('Creating %s Schema'), $fm_name), $fmdb->result, 'display', $fmdb->last_error);
 		}
 	}
 
@@ -425,12 +551,12 @@ INSERTSQL;
 		foreach ($inserts as $query) {
 			$fmdb->query($query);
 			if ($fmdb->last_error) {
-				return displayProgress(sprintf(_('Creating %s Schema'), $fm_name), $fmdb->result, 'noisy', $fmdb->last_error);
+				return displayProgress(sprintf(_('Creating %s Schema'), $fm_name), $fmdb->result, 'display', $fmdb->last_error);
 			}
 		}
 	}
 	
 	addLogEntry(sprintf(_('%s %s was born.'), $fm_name, $fm_version), $fm_name);
 
-	return displayProgress(sprintf(_('Creating %s Schema'), $fm_name), $fmdb->result);
+	return displayProgress(sprintf(_('Creating %s Schema'), $fm_name), $fmdb->result, 'display');
 }

@@ -39,9 +39,7 @@ class fm_login {
 		$auth_method = (getOption('fm_db_version') >= 18) ? getOption('auth_method') : false;
 		$forgot_link = ($mail_enable && $auth_method == 1) ? sprintf('<p id="forgotton_link"><a href="?forgot_password">%s</a></p>', _('Forgot your password?')) : null;
 		
-		$branding_logo = getBrandLogo();
-
-		$copyright = sprintf('© 2013 - %d %s<br /><a href="https://raw.githubusercontent.com/facileManager/facileManager/refs/heads/master/LICENSE" target="_blank">View license</a>', date('Y'), $fm_name);
+		$terms_display = '';
 		
 		$login_message = getOption('login_message');
 		$terms_accept = '';
@@ -55,38 +53,25 @@ class fm_login {
 			}
 		}
 
-		printf('<div class="flex flex-column container">
-		<form id="loginform" class="flex" action="%1$s" method="post">
-			<div class="flex flex-column">
-				<div class="fm-branding">
-					<div><img src="%2$s" /></div>
-					<div><span>%3$s</span></div>
-				</div>
-				<div id="login_form">
+		echo displayPreAppForm(_('Login'), 'login_form',
+			sprintf('
 					<div class="input-wrapper">
 						<i class="fa fa-user" aria-hidden="true"></i>
-						<input type="text" size="25" name="username" id="username" placeholder="%4$s" />
+						<input type="text" size="25" name="username" id="username" placeholder="%s" />
 					</div>
 					<div class="input-wrapper">
 						<i class="fa fa-key" aria-hidden="true"></i>
-						<input type="password" size="25" name="password" id="password" placeholder="%5$s" />
-						<i id="show_password" class="fa fa-eye eye-attention" title="%10$s"></i>
+						<input type="password" size="25" name="password" id="password" placeholder="%s" />
+						<i id="show_password" class="fa fa-eye eye-attention" title="%s" aria-hidden="true"></i>
 					</div>
-					<div class="button-wrapper"><a name="submit" id="loginbtn" class="button"><i class="fa fa-sign-in" aria-hidden="true"></i> %3$s</a></div>
-					<div>%6$s</div>
+					<div class="button-wrapper"><a name="submit" id="loginbtn" class="button"><i class="fa fa-sign-in" aria-hidden="true"></i> %s</a></div>
+					<div>%s</div>
 				</div>
 				<div id="form_messaging">
-					<div class="terms-accept">%7$s</div>
+					<div class="terms-accept">%s</div>
 					<div id="message"></div>
-				</div>
-			</div>
-			<div class="terms" %9$s>%8$s</div>
-		</form>
-		<div class="copyright">
-			<p>%11$s</p>
-		</div>
-	</div>', $_SERVER['REQUEST_URI'], $branding_logo, _('Login'), _('Username'),
-			_('Password'), $forgot_link, $terms_accept, nl2br($login_message), $terms_display, _('Show'), $copyright);
+', _('Username'), _('Password'), _('Show'), _('Login'), $forgot_link, $terms_accept),
+			nl2br($login_message), 'terms', 'loginform', $_SERVER['REQUEST_URI'], $terms_display);
 		
 		printFooter();
 		exit();
@@ -109,19 +94,11 @@ class fm_login {
 			exit;
 		}
 
-		global $fm_name;
 		printHeader(_('Password Reset'), 'login');
 		
-		$branding_logo = getBrandLogo();
-		
-		printf('<div class="flex flex-column container">
-		<form id="loginform" action="%s?forgot_password" method="post">
-			<input type="hidden" name="reset_pwd" value="1" />
-			<div class="fm-branding">
-				<div><img src="%s" /></div>
-				<div><span>%s</span></div>
-			</div>
-			<div id="login_form">
+		echo displayPreAppForm(_('Reset Password'), 'login_form',
+		sprintf('
+				<input type="hidden" name="reset_pwd" value="1" />
 				<div class="input-wrapper">
 					<i class="fa fa-user" aria-hidden="true"></i>
 					<input type="text" name="user_login" id="user_login" placeholder="%s" />
@@ -129,10 +106,8 @@ class fm_login {
 				<div class="button-wrapper"><a name="submit" id="forgotbtn" class="button"><i class="fa fa-send" aria-hidden="true"></i> %s</a></div>
 				<p id="forgotton_link"><a href="%s">&larr; %s</a></p>
 				<div id="message">%s</div>
-			</div>
-		</form>
-	</div>', $_SERVER['PHP_SELF'], $branding_logo, _('Reset Password'), _('Username'),
-				_('Submit'), $GLOBALS['RELPATH'], _('Login form'), $message);
+	', _('Username'),
+				_('Submit'), $GLOBALS['RELPATH'], _('Login form'), $message), null, null, 'loginform', $_SERVER['PHP_SELF'] . '?forgot_password', );
 	}
 	
 		

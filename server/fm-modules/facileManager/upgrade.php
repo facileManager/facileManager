@@ -35,7 +35,7 @@
  * @subpackage Upgrader
  */
 function fmUpgrade($database) {
-	global $fmdb, $branding_logo;
+	global $fmdb;
 	include(ABSPATH . 'fm-includes/version.php');
 	include(ABSPATH . 'fm-modules/facileManager/variables.inc.php');
 	
@@ -43,11 +43,6 @@ function fmUpgrade($database) {
 	
 	$GLOBALS['running_db_version'] = getOption('fm_db_version');
 	
-	printf('<div id="fm-branding">
-		<img src="%s" /><span>%s</span>
-	</div>
-	<div id="window"><table class="form-table">' . "\n", $branding_logo, _('Upgrade'));
-
 	/**	Get latest upgrade function */
 	$tmp_all_functions = get_defined_functions();
 	$upgrade_function = preg_grep('/^fmupgrade_.*/', $tmp_all_functions['user']);
@@ -64,7 +59,7 @@ function fmUpgrade($database) {
 		$errors = true;
 	}
 	
-	displayProgress(sprintf(_('Upgrading Core v%s Schema'), $fm_version), $success);
+	list($rv, $content) = displayProgress(sprintf(_('Upgrading Core v%s Schema'), $fm_version), $success, 'display');
 	
 	/** Upgrade any necessary modules */
 	include(ABSPATH . 'fm-modules/'. $fm_name . '/classes/class_tools.php');
@@ -80,19 +75,20 @@ function fmUpgrade($database) {
 			} else {
 				$success = true;
 			}
-			displayProgress(sprintf(_('Upgrading %s Schema'), $module_name), $success);
+			list($rv, $tmp_content) = displayProgress(sprintf(_('Upgrading %s Schema'), $module_name), $success, 'display');
+			$content .= $tmp_content;
 		}
 	}
 
-	echo "</table>";
-	
+	$left_content = '<div class="flex flex-column"><table class="form-table">' . $content . "</table>\n";
+
 	if (!$errors) {
-		displaySetupMessage(1, $GLOBALS['RELPATH']);
+		$left_content .= displaySetupMessage(1, $GLOBALS['RELPATH']);
 	} else {
-		displaySetupMessage(2);
+		$left_content .= displaySetupMessage(2);
 	}
 	
-	echo "</div>";
+	echo displayPreAppForm(_('Upgrade'), 'window', $left_content . '</div>');
 }
 
 
@@ -141,15 +137,13 @@ function displaySetupMessage($message = 1, $url = null) {
 	
 	switch ($message) {
 		case 1:
-			printf('
+			return sprintf('
 	<p>' . _('Database upgrade for %1$s is complete! Click \'Next\' to start using %1$s.') . '</p>
-	<p class="step"><a href="%2$s" class="button">' . _('Next') . '</a></p>', $fm_name, $url);
-			break;
+	<div class="button-wrapper"><a href="%2$s" class="button">' . _('Next') . '</a></div>', $fm_name, $url);
 		case 2:
-			echo '
+			return '
 	<p>' . _('Database upgrade failed. Please try again.') . '</p>
-	<p class="step"><a href="?step=2" class="button">' . _('Try Again') . '</a></p>';
-			break;
+	<div class="button-wrapper"><a href="?step=2" class="button">' . _('Try Again') . '</a></div>';
 	}
 }
 
@@ -1111,7 +1105,8 @@ function fmUpgrade_540($database) {
 		deleteDeprecatedFiles(array(
 			dirname(__FILE__) . 'pages/help.php',
 			dirname(__FILE__) . 'pages/admin-settings.php',
-			dirname(__FILE__) . 'pages/admin-modules.php'
+			dirname(__FILE__) . 'pages/admin-modules.php',
+			dirname(__FILE__) . 'css/install.css'
 		));
 	}
 

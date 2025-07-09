@@ -1,13 +1,15 @@
 5.4.0 (2025-05-??)
 ==================
-* Server - [improvement] CSS tweaks.
+* Server - [improvement] CSS tweaks. (#689)
 * Server - [improvement] Added key icon to user list to signify which users have an API key defined.
 * Server - [improvement] Added associated group column to the user list.
 * Server - [improvement] Renamed settings and modules files.
 * Server - [improvement] Image branding accepts file uploads now.
 * Server - [improvement] Removed in-app help file in favor of docs.facilemanager.com.
 * Server - [improvement] Deleting the last time in a table now displays the default table message.
+* Server - [improvement] Updated login form, installer, and upgrader. (#692)
 * Server - [bug] Fixed URL in error message when attempting to check server connections.
+* Server - [bug] Fixed PHP error during new installs.
 * Both   - [improvement] Code cleanup.
 
 5.3.3 (2025-05-27)

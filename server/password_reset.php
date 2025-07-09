@@ -74,25 +74,31 @@ printPasswordResetForm($message);
 function printPasswordResetForm($message = null) {
 	global $__FM_CONFIG, $fm_name;
 
-	printHeader(_('Password Reset'), 'install');
+	printHeader(_('Password Reset'), 'login');
 	
 	if (class_exists('fmdb')) $strength = getOption('auth_fm_pw_strength');
 	if ($strength) $GLOBALS['PWD_STRENGTH'] = $strength;
-	echo '<form id="forgotpwd" method="post" action="' . $_SERVER['REQUEST_URI'] . '">
-		<input type="hidden" name="reset_pwd" value="1" />
-		<div id="fm-branding">
-			<img src="' . getBrandLogo() . '" /><span>' . _('Password Reset') . '</span>
-		</div>
-		<div id="window">
+	$left_content = '
 		<div id="message">' . $message . '</div>
 		<table class="form-table">
 			<tr>
 				<th><label for="user_password">' . _('New Password') . '</label></th>
-				<td><input type="password" size="25" name="user_password" id="user_password" placeholder="' . _('password') . '" onkeyup="javascript:checkPasswd(\'user_password\', \'resetpwd\', \'' . $GLOBALS['PWD_STRENGTH'] . '\');" /></td>
+				<td>
+					<div class="input-wrapper">
+						<i class="fa fa-key" aria-hidden="true"></i>
+						<input type="password" size="25" name="user_password" id="user_password" placeholder="' . _('password') . '" onkeyup="javascript:checkPasswd(\'user_password\', \'resetpwd\', \'' . $GLOBALS['PWD_STRENGTH'] . '\');" />
+						<i id="show_password" class="fa fa-eye eye-attention" title="%s" aria-hidden="true"></i>
+					</div>
+				</td>
 			</tr>
 			<tr>
 				<th><label for="cpassword">' . _('Confirm Password') . '</label></th>
-				<td><input type="password" size="25" name="cpassword" id="cpassword" placeholder="' . _('password again') . '" onkeyup="javascript:checkPasswd(\'cpassword\', \'resetpwd\', \'' . $GLOBALS['PWD_STRENGTH'] . '\');" /></td>
+				<td>
+					<div class="input-wrapper">
+						<i class="fa fa-key" aria-hidden="true"></i>
+						<input type="password" size="25" name="cpassword" id="cpassword" placeholder="' . _('password again') . '" onkeyup="javascript:checkPasswd(\'cpassword\', \'resetpwd\', \'' . $GLOBALS['PWD_STRENGTH'] . '\');" />
+					</div>
+				</td>
 			</tr>
 			<tr>
 				<th>' . _('Password Validity') . '</th>
@@ -104,9 +110,10 @@ function printPasswordResetForm($message = null) {
 				</td>
 			</tr>
 		</table>
-		<p class="step"><input id="resetpwd" name="submit" type="submit" value="' . _('Submit') . '" class="button" disabled /></p>
-		</div>
-	</form>';
+		<div class="button-wrapper"><input id="resetpwd" name="submit" type="submit" value="' . _('Submit') . '" class="button" disabled /></div>
+';
+
+	echo displayPreAppForm(_('Password Reset'), 'window', $left_content, null, null, 'forgotpwd', $_SERVER['REQUEST_URI']);
 }
 
 
@@ -138,12 +145,10 @@ function checkForgottonPasswordKey($key, $fm_login) {
 function printResetConfirmation() {
 	global $fm_name;
 
-	printHeader(_('Password Reset'), 'install');
+	printHeader(_('Password Reset'), 'login');
 	
-	printf('<div id="fm-branding">
-		<img src="' . getBrandLogo() . '" /><span>' . _('Password Reset') . '</span>
-	</div>
-	<div id="window"><p>' . _("Your password has been updated! Click 'Next' to login and start using %s.") . '</p>
-		<p class="step"><a href="%s" class="button">' . _('Next') . '</a></p>
-		</div>', $fm_name, $GLOBALS['RELPATH']);
+	$left_content = sprintf('<p>' . _("Your password has been updated! Click 'Next' to login and start using %s.") . '</p>
+		<div class="button-wrapper"><a href="%s" class="button">' . _('Next') . '</a></div>', $fm_name, $GLOBALS['RELPATH']);
+
+	echo displayPreAppForm(_('Password Reset'), 'window', $left_content);
 }

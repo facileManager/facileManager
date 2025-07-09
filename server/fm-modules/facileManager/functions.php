@@ -1679,7 +1679,7 @@ function buildPaginationCountMenu($server_serial_no = 0, $class = null) {
  * @param string $title Error message title to display
  * @return null
  */
-function bailOut($message, $tryagain = 'try again', $title = null) {
+function bailOut($message, $retry = 'retry', $title = null) {
 	global $fm_name;
 	
 	if (!$title) $title = _('Requirement Error');
@@ -1688,18 +1688,15 @@ function bailOut($message, $tryagain = 'try again', $title = null) {
 		$message = "<p>$message</p>";
 	}
 	
-	if ($tryagain == 'try again') {
-		$tryagain = sprintf('<p class="step"><a href="%s" class="button">%s</a></p>',
-			$_SERVER['PHP_SELF'], _('Try Again'));
+	if ($retry == 'retry') {
+		$retry = sprintf('<div class="button-wrapper"><a href="" class="button">%s</a></div>',
+			_('Try Again'));
 	} else {
-		$tryagain = null;
+		$retry = null;
 	}
 	
-	printHeader($title, 'install');
-	printf('<div id="fm-branding">
-		<img src="%s" /><span>%s</span>
-	</div>
-	<div id="window">%s%s</div>', getBrandLogo(), $title, $message, $tryagain);
+	printHeader($title, 'login');
+	echo displayPreAppForm($title, 'window', $message . $retry);
 	printFooter();
 	exit();
 }
@@ -1715,11 +1712,11 @@ function bailOut($message, $tryagain = 'try again', $title = null) {
  * @param string $result Result of step
  * @param boolean $noisy Whether the result should be echoed
  * @param string $error Message to display as the tooltip
- * @return string
+ * @return string|array
  */
 function displayProgress($step, $result, $process = 'noisy', $error = null) {
 	if ($result === true) {
-		$output = '<i class="fa fa-check fa-lg"></i>';
+		$output = '<i class="fa fa-check fa-lg ok"></i>';
 		$status = 'success';
 	} else {
 		global $fmdb;
@@ -1729,10 +1726,9 @@ function displayProgress($step, $result, $process = 'noisy', $error = null) {
 				$error = $fmdb->last_error;
 			}
 		}
+		$output = '<i class="fa fa-times fa-lg fail"></i>';
 		if ($error) {
-			$output = '<a href="#" class="error-message tooltip-right" data-tooltip="' . $error . '"><i class="fa fa-times fa-lg"></i></a>';
-		} else {
-			$output = '<i class="fa fa-times fa-lg"></i>';
+			$output .= ' <a href="#" class="error-message tooltip-right" data-tooltip="' . $error . '"><i class="fa fa-question-circle fa-lg"></i></a>';
 		}
 		$status = 'failed';
 	}
@@ -1749,7 +1745,7 @@ HTML;
 		echo $message;
 		return $result;
 	} elseif ($process == 'display') {
-		return $message;
+		return [$result, $message];
 	} else return $result;
 }
 
@@ -2400,17 +2396,15 @@ function formatLogKeyData($strip, $key, $data) {
  * @return string
  */
 function fMDie($message = null, $link_display = 'show', $title = null) {
-	global $fm_name;
-	
 	if (!$message) $message = _('An unknown error occurred.');
 	if (!$title) $title = _('Oops!');
 	
-	printHeader('Error', 'install', 'no-menu');
+	printHeader('Error', 'login', 'no-menu');
 	
-	printf('<div id="fm-branding"><img src="%s" /><span>%s</span></div>
-		<div id="window"><p>%s</p>', getBrandLogo(), $title, $message);
-	if ($link_display == 'show') echo '<p><a href="javascript:history.back();">' . _('&larr; Back') . '</a></p>';
-	echo '</div>';
+	$left_content = sprintf('<p>%s</p>', $message);
+	if ($link_display == 'show') $left_content .= '<div class="button-wrapper"><a href="javascript:history.back();" class="button"><i class="fa fa-long-arrow-left" aria-hidden="true"></i> ' . _('Back') . '</a></div>';
+
+	echo displayPreAppForm($title, 'window', $left_content);
 	
 	exit;
 }
@@ -4134,4 +4128,53 @@ function createDir($dir, $recursive = true) {
 	return $created;
 }
 
+
+/**
+ * Displays form for login, install, upgrade, etc.
+ *
+ * @since 5.4.0
+ * @package facileManager
+ *
+ * @param string|array $page_title Title to display
+ * @param string $content_id CSS ID of the contents
+ * @param string $left_content Actual content
+ * @param string $form_id CSS ID of the form
+ * @param string $form_action Action of the form
+ * @param string $right_content Content for right box
+ * @param string $addl_class Additional classes for the right content
+ * @param string $addl_style Additional style for the right content
+ * @return string
+ */
+function displayPreAppForm($page_title, $content_id, $left_content, $right_content = null, $addl_class = null, $form_id = null, $form_action = null, $addl_style = null) {
+	global $fm_name;
+
+	$branding_logo = sprintf('<img src="%s" />', getBrandLogo());
+
+	if (is_array($page_title)) {
+		list($branding_logo, $page_title) = $page_title;
+	}
+
+	$copyright = sprintf('© 2013 - %d %s<br /><a href="https://raw.githubusercontent.com/facileManager/facileManager/refs/heads/master/LICENSE" target="_blank">View license</a>', date('Y'), $fm_name);
+
+	$form = sprintf('<div class="flex flex-column container">
+	<form id="%s" class="flex" action="%s" method="post">
+		<div class="flex flex-column">
+			<div class="fm-branding">
+				<div>%s</div>
+				<div><span>%s</span></div>
+			</div>
+			<div id="%s">
+				%s
+			</div>
+		</div>
+		<div class="text-column %s" %s>%s</div>
+	</form>
+	<div class="copyright">
+		<p>%s</p>
+	</div>
+</div>', $form_id, $form_action, $branding_logo, $page_title, $content_id,
+		$left_content, $addl_class, $addl_style, $right_content, $copyright);
+
+	return $form;
+}
 

@@ -2,11 +2,62 @@
 if (!defined('FM_NO_CHECKS')) define('FM_NO_CHECKS', true);
 require_once('../../../fm-init.php');
 
-if (isset($__FM_CONFIG)) {
-	header("Content-Type: text/javascript");
+header("Content-Type: text/javascript");
 
-	echo '$(document).ready(function() {
+echo '$(document).ready(function() {
+	$("#show_password").click(function(e) {
+		// Get closest input
+		var input_field = $(this).parent().find("input");
 
+		// Swap between password and text field
+		if (input_field.attr("type") == "password") {
+			input_field.attr("type", "text");
+			$(this).addClass("fa-eye-slash");
+		} else {
+			input_field.attr("type", "password");
+			$(this).removeClass("fa-eye-slash");
+		}
+	});
+';
+
+if (!isset($__FM_CONFIG)) {
+	// Installer jquery
+	echo '
+	$("#install_enable_ssl").click(function() {
+		if ($(this).is(":checked")) {
+			$("#install_ssl_options").show("slow");
+		} else {
+			$("#install_ssl_options").slideUp();
+		}
+	});
+
+	$("#btn_install_config_submit").click(function() {
+		$("#message").html("");
+		$.ajax({
+			type: "POST",
+			url: "fm-modules/facileManager/ajax/installer.php",
+			data: $("#window").find("input").serialize() + "&" + $.param({task: "install_config_test"}),
+			success: function(response)
+			{
+				if (response.indexOf("ERROR") >=0) {
+					$("#message").prepend(response);
+				} else if (response.indexOf("?step=") == 0) {
+					window.location = response;
+				} else if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				} else {
+					$("div.container").replaceWith(response);
+				}
+			}
+		});
+		
+		return false;
+	});
+});
+';
+} else {
+	echo '
 	// Set theme mode from System
 	$.fn.setThemeMode = function() {
 		if ($("html").hasClass("System") && window.matchMedia) {
@@ -121,6 +172,31 @@ if (isset($__FM_CONFIG)) {
 		return false;
 	} );
 	
+	$("#btn_install_create_account").click(function() {
+		$("#message").html("");
+		var pass_check = $("#passwd_check").html();
+		$.ajax({
+			type: "POST",
+			url: "fm-modules/facileManager/ajax/installer.php",
+			data: $("#window").find("input").serialize() + "&" + $.param({passwd_check: pass_check, task: "install_create_account"}),
+			success: function(response)
+			{
+				if (response.indexOf("ERROR") >=0) {
+					$("#message").prepend(response);
+				} else if (response.indexOf("?step=") == 0) {
+					window.location = response;
+				} else if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				} else {
+					$("div.container").replaceWith(response);
+				}
+			}
+		});
+		
+		return false;
+	});
+
 	$("#login_form input, #form_messaging input").on("change", function() {
 		if ($("#login_message_accept").length) {
 			var button = document.getElementById("loginbtn");
@@ -129,14 +205,6 @@ if (isset($__FM_CONFIG)) {
 			} else {
 				button.disabled = true;
 			}
-		}
-	});
-
-	$("#show_password").click(function(e) {
-		if ($("#password").attr("type") == "password") {
-			$("#password").attr("type", "text");
-		} else {
-			$("#password").attr("type", "password");
 		}
 	});
 
