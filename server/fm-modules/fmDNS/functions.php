@@ -1206,13 +1206,14 @@ function getConfigChildren($config_id, $config_type = 'global', $return = null) 
  * @package facileManager
  * @subpackage fmDNS
  *
- * @param string $type Config parent ID to retrieve children for
- * @param string $default Type of configuration item
- * @param string $addl_sql Array keys to populate and return
+ * @param string $type Type of items to retrieve
+ * @param string $default What the default array item will be
+ * @param string $addl_sql Additional SQL to send to the query
+ * @param string $status Item status to retrieve
  * @param string $prefix
- * @return array|null
+ * @return array
  */
-function availableItems($type, $default = 'blank', $addl_sql = null, $prefix = null) {
+function availableItems($type, $default = 'blank', $addl_sql = null, $status = 'active', $prefix = null) {
 	global $fmdb, $__FM_CONFIG;
 	
 	$return = array();
@@ -1224,10 +1225,13 @@ function availableItems($type, $default = 'blank', $addl_sql = null, $prefix = n
 		$j++;
 	}
 	
-	$query = "SELECT * FROM fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}{$type}s WHERE account_id='{$_SESSION['user']['account_id']}' AND {$type}_status='active' $addl_sql ORDER BY {$type}_name ASC";
+	if ($status) {
+		$addl_sql .= "AND `{$type}_status`='{$status}'";
+	}
+	
+	$query = "SELECT * FROM fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}{$type}s WHERE account_id='{$_SESSION['user']['account_id']}' AND {$type}_status!='deleted' $addl_sql ORDER BY {$type}_name ASC";
 	$result = $fmdb->get_results($query);
 	if ($fmdb->num_rows) {
-		$results = $fmdb->last_result;
 		foreach ($fmdb->last_result as $results) {
 			if (property_exists($results, 'server_menu_display') && $results->server_menu_display == 'exclude') continue;
 			$type_name = $type . '_name';

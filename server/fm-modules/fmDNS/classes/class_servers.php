@@ -696,7 +696,7 @@ FORM;
 			/** Advanced tab */
 			$keys = $this->getConfig($server_id, 'keys');
 			$keys = ($keys) ? array($keys) : null;
-			$keys = buildSelect('keys', 'keys', availableItems('key', 'blank', 'AND `key_type`="tsig"', 'key_'), $keys, 1, '', false);
+			$keys = buildSelect('keys', 'keys', availableItems('key', 'blank', 'AND `key_type`="tsig"', 'active', 'key_'), $keys, 1, '', false);
 			$transfers = str_replace(array('"', "'"), '', $this->getConfig($server_id, 'transfers'));
 			$bogus = $this->buildConfigOptions('bogus', $this->getConfig($server_id, 'bogus'));
 			$edns = $this->buildConfigOptions('edns', $this->getConfig($server_id, 'edns'));
@@ -834,8 +834,8 @@ FORM;
 			$group_slaves  = (isset($group_slaves)) ? explode(';', $group_slaves) : null;
 			
 			$group_name_length = getColumnLength('fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'server_groups', 'group_name');
-			$group_masters = buildSelect('group_masters', 'group_masters', availableItems('server'), $group_masters, 1, null, true, null, null, __('Select primary servers'));
-			$group_slaves = buildSelect('group_slaves', 'group_slaves', availableItems('server'), $group_slaves, 1, null, true, null, null, __('Select secondary servers'));
+			$group_masters = buildSelect('group_masters', 'group_masters', availableItems('server', 'blank', null, null), $group_masters, 1, null, true, null, null, __('Select primary servers'));
+			$group_slaves = buildSelect('group_slaves', 'group_slaves', availableItems('server', 'blank', null, null), $group_slaves, 1, null, true, null, null, __('Select secondary servers'));
 			$group_auto_also_notify_checked = ($group_auto_also_notify == 'yes') ? 'checked' : null;
 
 			$return_form .= sprintf('

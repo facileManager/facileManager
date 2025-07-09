@@ -981,6 +981,7 @@ HTML;
 		$addl_zone_options = $domain_dynamic = $domain_template = $domain_dnssec = null;
 		$domain_dnssec_sig_expire = $domain_dnssec_sign_inline = $domain_dnssec_generate_ds = $domain_dnssec_parent_domain_id = null;
 		$disabled = ($action == 'create') ? null : 'disabled';
+		$create_template = null;
 		
 		if (!empty($_POST) && !array_key_exists('is_ajax', $_POST)) {
 			if (is_array($_POST)) {
