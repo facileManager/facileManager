@@ -3819,7 +3819,7 @@ function availableServers($server_id_type = 'serial', $include = array('all'), $
 	if (in_array('all', $include) || in_array('servers', $include)) {
 		$j = 0;
 		/** Server names */
-		$result = basicGetList('fm_' . $__FM_CONFIG[$module]['prefix'] . 'servers', 'server_name', 'server_', 'active');
+		$result = basicGetList('fm_' . $__FM_CONFIG[$module]['prefix'] . 'servers', 'server_name', 'server_');
 		if ($fmdb->num_rows && !$fmdb->sql_errors) {
 			$server_array[_('Servers')][] = null;
 			foreach ($fmdb->last_result as $results) {
