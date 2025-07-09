@@ -10,7 +10,7 @@
 * Server - [improvement] Updated login form, installer, and upgrader. (#692)
 * Server - [improvement] Updated language text.
 * Server - [bug] Fixed URL in error message when attempting to check server connections.
-* Server - [bug] Fixed PHP error during new installs.
+* Server - [bug] Fixed PHP errors.
 * Both   - [improvement] Code cleanup.
 
 5.3.3 (2025-05-27)

@@ -119,7 +119,7 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 					$message = sprintf('<div class="failed"><p><i class="fa fa-times fa-lg fail"></i> %s</p></div>', $result);
 				}
 				
-				if ($_POST['is_ajax']) {
+				if (isset($_POST['is_ajax']) && $_POST['is_ajax']) {
 					exit($message);
 				}
 			}
