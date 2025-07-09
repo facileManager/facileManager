@@ -52,7 +52,7 @@ if ($app_compat = checkAppVersions(false)) {
 
 require_once(ABSPATH . 'fm-modules/facileManager/install.php');
 
-$step = isset($_GET['step']) ? $_GET['step'] : 0;
+$step = (isset($_GET['step']) && $_GET['step'] <= 3 && $_GET['step'] >= 0) ? $_GET['step'] : 0;
 
 $branding_logo = $GLOBALS['RELPATH'] . 'fm-modules/' . $fm_name . '/images/fm.png';
 

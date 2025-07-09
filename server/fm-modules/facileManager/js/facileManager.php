@@ -32,7 +32,6 @@ if (!isset($__FM_CONFIG)) {
 	});
 
 	$("#btn_install_config_submit").click(function() {
-		$("#message").html("");
 		$.ajax({
 			type: "POST",
 			url: "fm-modules/facileManager/ajax/installer.php",

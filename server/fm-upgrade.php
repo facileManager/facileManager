@@ -54,7 +54,7 @@ if ($app_compat = checkAppVersions(false)) {
 	bailOut($app_compat);
 }
 
-$step = isset($_GET['step']) ? $_GET['step'] : 0;
+$step = (isset($_GET['step']) && $_GET['step'] <= 2 && $_GET['step'] >= 0) ? $_GET['step'] : 0;
 
 if (array_key_exists('backup', $_GET)) {
 	if (!class_exists('fm_tools')) {
