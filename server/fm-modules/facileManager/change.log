@@ -8,6 +8,7 @@
 * Server - [improvement] Removed in-app help file in favor of docs.facilemanager.com.
 * Server - [improvement] Deleting the last time in a table now displays the default table message.
 * Server - [improvement] Updated login form, installer, and upgrader. (#692)
+* Server - [improvement] Updated language text.
 * Server - [bug] Fixed URL in error message when attempting to check server connections.
 * Server - [bug] Fixed PHP error during new installs.
 * Both   - [improvement] Code cleanup.
