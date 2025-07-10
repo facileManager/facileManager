@@ -30,7 +30,7 @@ function upgradefmDHCPSchema($module_name) {
 	$running_version = getOption('version', 0, 'fmDHCP');
 	
 	/** Checks to support older versions (ie n-3 upgrade scenarios */
-	$success = version_compare($running_version, '0.9.0', '<') ? upgradefmDHCP_090($__FM_CONFIG, $running_version) : true;
+	$success = version_compare($running_version, '0.11.0', '<') ? upgradefmDHCP_0110($__FM_CONFIG, $running_version) : true;
 	if (!$success) return $fmdb->last_error;
 	
 	setOption('client_version', $__FM_CONFIG['fmDHCP']['client_version'], 'auto', false, 0, 'fmDHCP');
@@ -257,6 +257,32 @@ VALUES
 	
 	/** Handle updating table with module version **/
 	setOption('version', '0.9.0', 'auto', false, 0, 'fmDHCP');
+	
+	return true;
+}
+
+/** 0.11.0 */
+function upgradefmDHCP_0110($__FM_CONFIG, $running_version) {
+	global $fmdb;
+	
+	$success = version_compare($running_version, '0.9.0', '<') ? upgradefmDHCP_090($__FM_CONFIG, $running_version) : true;
+	if (!$success) return false;
+
+	/** Insert upgrade steps here **/
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDHCP']['prefix']}config` DROP `config_assigned_to`";
+	
+	/** Run queries */
+	if (count($queries) && $queries[0]) {
+		foreach ($queries as $schema) {
+			$fmdb->query($schema);
+			if (!$fmdb->result || $fmdb->sql_errors) return false;
+		}
+	}
+
+	// Delete config-peers.php
+	
+	/** Handle updating table with module version **/
+	setOption('version', '0.11.0', 'auto', false, 0, 'fmDHCP');
 	
 	return true;
 }
