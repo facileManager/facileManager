@@ -1,3 +1,7 @@
+7.1.5 (2025-??-??)
+==================
+* Server - [bug] Fixed PHP error during record deletion.
+
 7.1.4 (2025-06-01)
 ==================
 * Server - [bug] Fixed zone reloads for .info zones when syntax checks are enabled. (Issue #682)
