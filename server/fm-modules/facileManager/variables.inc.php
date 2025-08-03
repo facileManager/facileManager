@@ -40,6 +40,9 @@ require_once(ABSPATH . 'fm-includes/i18n.php');
 $GLOBALS['REQUEST_PROTOCOL'] = isSiteSecure() ? 'https' : 'http';
 $GLOBALS['FM_URL'] = $GLOBALS['REQUEST_PROTOCOL'] . '://' . $_SERVER['HTTP_HOST'] . $GLOBALS['RELPATH'];
 
+/** Load languages for translations */
+require_once(ABSPATH . 'fm-includes/i18n.php');
+
 if (!@is_array($__FM_CONFIG)) $__FM_CONFIG = array();
 
 /** Images */
