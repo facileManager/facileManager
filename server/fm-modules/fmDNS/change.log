@@ -5,6 +5,7 @@
 * Server - [improvement] Changed "no results" message to be the same for consistency.
 * Server - [improvement] Allow disabled servers to be selected in drop-down menus. (#686)
 * Server - [bug] Fixed URL in error message when attempting to clear cache.
+* Server - [bug] Fixed PHP error during record deletion.
 * Both   - [improvement] Code cleanup.
 
 7.1.4 (2025-06-01)

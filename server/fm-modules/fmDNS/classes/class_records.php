@@ -151,6 +151,7 @@ class fm_dns_records {
 		global $fmdb, $__FM_CONFIG, $fm_dns_zones;
 		
 		$_domain_id = 0;
+		$log_message = '';
 		
 		/** Get correct domain name */
 		if ($record_type == 'SOA') {
