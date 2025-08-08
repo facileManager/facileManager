@@ -25,7 +25,7 @@ $map = (isset($_GET['map'])) ? strtolower($_GET['map']) : 'forward';
 /** Include module variables */
 if (isset($_SESSION['module'])) include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/variables.inc.php');
 
-$default_record_type = ($map == 'reverse') ? 'PTR' : 'ALL';
+$default_record_type = 'ALL';
 if (isset($_GET['record_type'])) {
 	$record_type = strtoupper($_GET['record_type']);
 } else {

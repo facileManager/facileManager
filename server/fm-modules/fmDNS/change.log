@@ -1,6 +1,7 @@
 7.1.5 (2025-??-??)
 ==================
 * Server - [bug] Fixed PHP error during record deletion.
+* Server - [bug] All records can now be viewed with reverse zones. (#698)
 
 7.1.4 (2025-06-01)
 ==================

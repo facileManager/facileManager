@@ -835,7 +835,7 @@ class fm_dns_zones {
 			if (!$soa_count && $row->domain_type == 'primary' && currentUserCan('manage_zones', $_SESSION['module'])) $type = 'SOA';
 			elseif (!$ns_count && $row->domain_type == 'primary' && currentUserCan('manage_zones', $_SESSION['module'])) $type = 'NS';
 			else {
-				$type = ($row->domain_mapping == 'forward') ? 'ALL' : 'PTR';
+				$type = 'ALL';
 			}
 			if ($soa_count && $ns_count && $row->domain_type == 'primary') {
 				$edit_status = '<a href="preview.php" onclick="javascript:void window.open(\'preview.php?server_serial_no=-1&config=zone&domain_id=' . $row->domain_id . '\',\'1356124444538\',\'' . $__FM_CONFIG['default']['popup']['dimensions'] . ',toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0\');return false;">' . $__FM_CONFIG['icons']['preview'] . '</a>';
