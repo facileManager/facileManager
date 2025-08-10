@@ -4,8 +4,13 @@
 * Server - [improvement] Removed JavaScript:void(0); links.
 * Server - [improvement] Changed "no results" message to be the same for consistency.
 * Server - [improvement] Allow disabled servers to be selected in drop-down menus. (#686)
+* Server - [improvement] Increased the maximum character length for SOA master and email address
+           to 255 characters. (#696)
 * Server - [bug] Fixed URL in error message when attempting to clear cache.
 * Server - [bug] Fixed PHP error during record deletion.
+* Server - [bug] All records can now be viewed with reverse zones. (#698)
+* Server - [bug] When updating a custom SOA, the log now contains the zone name.
+* Server - [bug] Custom SOA form validation now checks for the maximum character length. (#696)
 * Both   - [improvement] Code cleanup.
 
 7.1.4 (2025-06-01)

@@ -292,6 +292,9 @@ $(document).ready(function() {
 					$("body").addClass("fm-noscroll");
 					$("#manage_item").fadeIn(200);
 					$("#manage_item_contents").html(response);
+				} else {
+					$this.after(response);
+					$this.after("<span class=\"submit-success\"><i class=\"fa fa-times fail\" aria-hidden=\"true\"></i></span>");
 				}
 			}
 		});
