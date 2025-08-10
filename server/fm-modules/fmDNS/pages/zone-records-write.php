@@ -107,8 +107,12 @@ if (isset($update) && is_array($update)) {
 			if ($fmdb->num_rows) $old_record = $fmdb->last_result[0];
 		}
 
-		$fm_dns_records->update($domain_id, $id, $record_type, $data);
-		
+		$rv = $fm_dns_records->update($domain_id, $id, $record_type, $data);
+		if ($rv === false) {
+			echo $fmdb->last_error;
+			exit;
+		}
+
 		/** Are we auto-creating a PTR record? */
 		autoManagePTR($domain_id, $record_type, $data, 'update', $old_record);
 	}

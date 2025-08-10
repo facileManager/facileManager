@@ -1389,6 +1389,9 @@ HTML;
 					if ($data['soa_append'] == 'no') {
 						$val .= '.';
 					}
+					/** Check name field length */
+					$field_length = getColumnLength('fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'soa', $key);
+					if ($field_length !== false && strlen($val) > $field_length) $messages['errors'][$key] = sprintf(__('Input is too long (maximum %d characters).'), $field_length);
 				}
 				if ($key != 'soa_append') {
 					if (in_array($key, array('soa_master_server', 'soa_email_address'))) {
