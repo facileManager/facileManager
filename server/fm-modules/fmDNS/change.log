@@ -2,6 +2,7 @@
 ==================
 * Server - [bug] Fixed PHP error during record deletion.
 * Server - [bug] All records can now be viewed with reverse zones. (#698)
+* Server - [bug] When updating a custom SOA, the log now contains the zone name.
 
 7.1.4 (2025-06-01)
 ==================
