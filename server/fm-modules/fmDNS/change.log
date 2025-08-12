@@ -1,5 +1,5 @@
-7.2.0 (2025-0?-??)
-==================
+7.2.0-beta1 (2025-08-12)
+========================
 * Server - [improvement] Moved the 'Create Template' checkbox close to the template selection menu.
 * Server - [improvement] Removed JavaScript:void(0); links.
 * Server - [improvement] Changed "no results" message to be the same for consistency.

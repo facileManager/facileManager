@@ -32,7 +32,7 @@ function upgradefmDNSSchema($running_version) {
 	}
 	
 	/** Checks to support older versions (ie n-3 upgrade scenarios */
-	$success = version_compare($running_version, '7.1.1', '<') ? upgradefmDNS_711($__FM_CONFIG, $running_version) : true;
+	$success = version_compare($running_version, '7.2.0-beta1', '<') ? upgradefmDNS_720b1($__FM_CONFIG, $running_version) : true;
 	if (!$success) return $fmdb->last_error;
 	
 	setOption('client_version', $__FM_CONFIG['fmDNS']['client_version'], 'auto', false, 0, 'fmDNS');
@@ -2957,8 +2957,8 @@ function upgradefmDNS_711($__FM_CONFIG, $running_version) {
 	return true;
 }
 
-/** 7.1.5 */
-function upgradefmDNS_715($__FM_CONFIG, $running_version) {
+/** 7.2.0-beta1 */
+function upgradefmDNS_720b1($__FM_CONFIG, $running_version) {
 	global $fmdb;
 	
 	$success = version_compare($running_version, '7.1.1', '<') ? upgradefmDNS_711($__FM_CONFIG, $running_version) : true;
@@ -2977,7 +2977,7 @@ function upgradefmDNS_715($__FM_CONFIG, $running_version) {
 		}
 	}
 
-	setOption('version', '7.1.5', 'auto', false, 0, 'fmDNS');
+	setOption('version', '7.2.0-beta1', 'auto', false, 0, 'fmDNS');
 	
 	return true;
 }

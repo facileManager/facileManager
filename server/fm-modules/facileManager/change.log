@@ -1,5 +1,5 @@
-5.4.0 (2025-05-??)
-==================
+5.4.0-beta1 (2025-08-12)
+========================
 * Server - [improvement] CSS tweaks. (#689)
 * Server - [improvement] Added key icon to user list to signify which users have an API key defined.
 * Server - [improvement] Added associated group column to the user list.
