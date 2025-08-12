@@ -11,6 +11,7 @@
 * Server - [bug] All records can now be viewed with reverse zones. (#698)
 * Server - [bug] When updating a custom SOA, the log now contains the zone name.
 * Server - [bug] Custom SOA form validation now checks for the maximum character length. (#696)
+* Server - [bug] Fixed zone imports with TXT records. (#697)
 * Both   - [improvement] Code cleanup.
 
 7.1.4 (2025-06-01)

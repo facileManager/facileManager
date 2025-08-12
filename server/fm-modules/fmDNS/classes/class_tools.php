@@ -963,7 +963,7 @@ BODY;
 						$rr['record_value'] = $rr_fields[7];
 						break;
 					case 'TXT':
-						$txt_record = array();
+						$txt_record = '';
 						for ($i=4; $i<count($rr_fields); $i++) {
 							$txt_record .= $rr_fields[$i] . ' ';
 						}
