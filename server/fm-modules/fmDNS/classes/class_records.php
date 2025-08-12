@@ -261,12 +261,13 @@ class fm_dns_records {
 		if ($type == 'SOA') {
 			$show_value = false;
 			$title_array[] = array('title' => __('Name'), 'rel' => 'soa_name');
+			$title_array[] = array('title' => __('TTL'), 'rel' => 'soa_ttl');
 			$title_array[] = array('title' => __('Master'), 'rel' => 'soa_master_server');
 			$title_array[] = array('title' => __('E-mail'), 'rel' => 'soa_email_address');
 			$title_array[] = array('title' => __('Refresh'), 'rel' => 'soa_refresh');
 			$title_array[] = array('title' => __('Retry'), 'rel' => 'soa_retry');
 			$title_array[] = array('title' => __('Expire'), 'rel' => 'soa_expire');
-			$title_array[] = array('title' => __('TTL'), 'rel' => 'soa_ttl');
+			$title_array[] = array('title' => __('Negative Cache'), 'rel' => 'soa_ncache');
 		}
 		if ($type == 'DOMAIN') {
 			$show_value = false;
@@ -787,12 +788,13 @@ HTML;
 		}
 		
 		$labels = array(
+			__('TTL'),
 			__('Master Server'),
 			__('Email Address'),
 			__('Refresh'),
 			__('Retry'),
 			__('Expire'),
-			__('TTL'),
+			__('Negative Cache'),
 		);
 	
 		return <<<HTML
@@ -801,27 +803,31 @@ HTML;
 	<table class="form-table">
 		<tr>
 			<th><label>{$labels[0]}</label></th>
-			<td><input type="text" name="{$action}[$soa_id][soa_master_server]" size="25" value="$soa_master_server" class="required" $disabled /></td>
+			<td><input type="text" name="{$action}[$soa_id][soa_ttl]" size="25" value="$soa_ttl" class="required" onkeydown="return validateTimeFormat(event, this)" $disabled /></td>
 		</tr>
 		<tr>
 			<th><label>{$labels[1]}</label></th>
-			<td><input type="text" name="{$action}[$soa_id][soa_email_address]" size="25" value="$soa_email_address" class="required" $disabled /></td>
+			<td><input type="text" name="{$action}[$soa_id][soa_master_server]" size="25" value="$soa_master_server" class="required" $disabled /></td>
 		</tr>
 		<tr>
 			<th><label>{$labels[2]}</label></th>
-			<td><input type="text" name="{$action}[$soa_id][soa_refresh]" size="25" value="$soa_refresh" class="required" onkeydown="return validateTimeFormat(event, this)" $disabled /></td>
+			<td><input type="text" name="{$action}[$soa_id][soa_email_address]" size="25" value="$soa_email_address" class="required" $disabled /></td>
 		</tr>
 		<tr>
 			<th><label>{$labels[3]}</label></th>
-			<td><input type="text" name="{$action}[$soa_id][soa_retry]" size="25" value="$soa_retry" class="required" onkeydown="return validateTimeFormat(event, this)" $disabled /></td>
+			<td><input type="text" name="{$action}[$soa_id][soa_refresh]" size="25" value="$soa_refresh" class="required" onkeydown="return validateTimeFormat(event, this)" $disabled /></td>
 		</tr>
 		<tr>
 			<th><label>{$labels[4]}</label></th>
-			<td><input type="text" name="{$action}[$soa_id][soa_expire]" size="25" value="$soa_expire" class="required" onkeydown="return validateTimeFormat(event, this)" $disabled /></td>
+			<td><input type="text" name="{$action}[$soa_id][soa_retry]" size="25" value="$soa_retry" class="required" onkeydown="return validateTimeFormat(event, this)" $disabled /></td>
 		</tr>
 		<tr>
 			<th><label>{$labels[5]}</label></th>
-			<td><input type="text" name="{$action}[$soa_id][soa_ttl]" size="25" value="$soa_ttl" class="required" onkeydown="return validateTimeFormat(event, this)" $disabled /></td>
+			<td><input type="text" name="{$action}[$soa_id][soa_expire]" size="25" value="$soa_expire" class="required" onkeydown="return validateTimeFormat(event, this)" $disabled /></td>
+		</tr>
+		<tr>
+			<th><label>{$labels[6]}</label></th>
+			<td><input type="text" name="{$action}[$soa_id][soa_ncache]" size="25" value="$soa_ncache" class="required" onkeydown="return validateTimeFormat(event, this)" $disabled /></td>
 		</tr>
 		$template_append
 		$create_template

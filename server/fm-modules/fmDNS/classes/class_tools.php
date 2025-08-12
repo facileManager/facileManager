@@ -818,8 +818,15 @@ BODY;
 					$soa = explode('IN SOA', $line);
 					$soa_fields = preg_split('/\s+/', trim($soa[1]));
 
+					$soa_ttl_fields = explode(' ', trim($soa[0]));
+					if (count($soa_ttl_fields) > 1) {
+						$soa_array['soa_ttl'] = $soa_ttl_fields[1];
+					} else {
+						$soa_array['soa_ttl'] = $__FM_CONFIG['soa']['soa_ttl']; // Default TTL if not specified
+					}
+
 					list($soa_array['soa_master_server'], $soa_array['soa_email_address'], $soa_serial_no, $soa_array['soa_refresh'],
-						$soa_array['soa_retry'], $soa_array['soa_expire'], $soa_array['soa_ttl']) = $soa_fields;
+						$soa_array['soa_retry'], $soa_array['soa_expire'], $soa_array['soa_ncache']) = $soa_fields;
 					$ttl = $soa_array['soa_ttl'];
 					$soa_array['soa_append'] = 'no';
 

@@ -2966,6 +2966,9 @@ function upgradefmDNS_715($__FM_CONFIG, $running_version) {
 
 	$queries[] = "UPDATE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_master_server` `soa_master_server` VARCHAR(255) NOT NULL";
 	$queries[] = "UPDATE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_email_address` `soa_email_address` VARCHAR(255) NOT NULL";
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_ttl` `soa_ncache` VARCHAR(50) NULL DEFAULT '1200'";
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` ADD `soa_ttl` VARCHAR(50) NULL DEFAULT '1200' AFTER `soa_name`";
+	$queries[] = "UPDATE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` SET `soa_ttl` = `soa_ncache`";
 	
 	/** Run queries */
 	if (isset($queries) && count($queries) && $queries[0]) {

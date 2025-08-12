@@ -1279,7 +1279,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 			$zone_file .= "\t\t$soa_refresh\t\t; Refresh\n";
 			$zone_file .= "\t\t$soa_retry\t\t; Retry\n";
 			$zone_file .= "\t\t$soa_expire\t\t; Expire\n";
-			$zone_file .= "\t\t$soa_ttl )\t\t; Negative caching of TTL\n\n";
+			$zone_file .= "\t\t$soa_ncache )\t\t; Negative caching of TTL\n\n";
 		}
 		
 		return array($zone_file, $this->getSOASeconds($soa_ttl));
