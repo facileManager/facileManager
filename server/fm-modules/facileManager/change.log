@@ -2,6 +2,7 @@
 ==================
 * Server - [bug] Fixed the installer when config.inc.php does not already exist.
 * Server - [bug] Fixed log message sorting.
+* Server - [bug] Fixed the ability to login when an upgrade is available and maintenance mode is enabled.
 
 5.3.3 (2025-05-27)
 ==================
