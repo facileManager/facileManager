@@ -13,6 +13,7 @@
 * Server - [bug] Fixed URL in error message when attempting to check server connections.
 * Server - [bug] Fixed PHP errors.
 * Server - [bug] Fixed the installer when config.inc.php does not already exist.
+* Server - [bug] Fixed log message sorting.
 * Both   - [improvement] Code cleanup.
 
 5.3.3 (2025-05-27)
