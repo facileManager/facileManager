@@ -136,6 +136,11 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 			
 			$logged_in = $fm_login->checkPassword($user_login, $user_pass);
 			if (array_key_exists('is_ajax', $_POST) && $_POST['is_ajax']) {
+				$is_maintanance_mode = isMaintenanceMode();
+				if ($is_maintanance_mode) {
+					$maintenance_message = sprintf(_('%s is currently undergoing maintenance. Please try again later.'), $fm_name);
+				}
+				$is_upgrade_available = isUpgradeAvailable();
 				if ($logged_in === false) {
 					echo (array_key_exists('username', $_POST) && $_POST['username']) ? 'failed' : 'force_logout';
 				} elseif (is_array($logged_in)) {
@@ -143,21 +148,24 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 					echo "password_reset.php?key=$reset_key&login=$user_login";
 				} elseif ($logged_in !== true) {
 					printf('<p class="failed">%s</p>', $logged_in);
-				} elseif (isMaintenanceMode()) {
-					if (currentUserCan('manage_modules')) {
-						echo $_SERVER['REQUEST_URI'];
-					} else {
-						$fm_login->logout();
-						printf('<p class="failed">%s</p>', sprintf(_('%s is currently undergoing maintenance. Please try again later.'), $fm_name));
-					}
 				} elseif (isUpgradeAvailable()) {
 					if (currentUserCan(array('do_everything', 'manage_modules')) || (getOption('fm_db_version') < 32 && $_SESSION['user']['fm_perms'] & 1)) {
 						echo $GLOBALS['RELPATH'] . 'fm-upgrade.php';
 					} else {
 						$fm_login->logout();
-						printf('<p class="failed">%s</p>', sprintf(_('The database for %s and its modules still needs to be upgraded.<br />Please contact a privileged user.'), $fm_name));
+						$message = ($is_maintanance_mode) ? $maintenance_message : sprintf(_('The database for %s and its modules still needs to be upgraded.<br />Please contact a privileged user.'), $fm_name);
+						printf('<p class="failed">%s</p>', $message);
 					}
-				} else echo $_SERVER['REQUEST_URI'];
+				} elseif ($is_maintanance_mode) {
+					if (currentUserCan('manage_modules')) {
+						echo $_SERVER['REQUEST_URI'];
+					} else {
+						$fm_login->logout();
+						printf('<p class="failed">%s</p>', $maintenance_message);
+					}
+				} else {
+					echo $_SERVER['REQUEST_URI'];
+				}
 			} else {
 				if (!$logged_in) {
 					$fm_login->printLoginForm();
