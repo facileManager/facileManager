@@ -1,6 +1,7 @@
 5.3.4 (2025-??-??)
 ==================
 * Server - [bug] Fixed the installer when config.inc.php does not already exist.
+* Server - [bug] Fixed log message sorting.
 
 5.3.3 (2025-05-27)
 ==================
