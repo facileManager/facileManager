@@ -2957,3 +2957,26 @@ function upgradefmDNS_711($__FM_CONFIG, $running_version) {
 	return true;
 }
 
+/** 7.1.5 */
+function upgradefmDNS_715($__FM_CONFIG, $running_version) {
+	global $fmdb;
+	
+	$success = version_compare($running_version, '7.1.1', '<') ? upgradefmDNS_711($__FM_CONFIG, $running_version) : true;
+	if (!$success) return false;
+
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_ttl` `soa_ncache` VARCHAR(50) NULL DEFAULT '1200'";
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` ADD `soa_ttl` VARCHAR(50) NULL DEFAULT '1200' AFTER `soa_name`";
+	$queries[] = "UPDATE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` SET `soa_ttl` = `soa_ncache`";
+	
+	/** Run queries */
+	if (isset($queries) && count($queries) && $queries[0]) {
+		foreach ($queries as $schema) {
+			$fmdb->query($schema);
+		}
+	}
+
+	setOption('version', '7.1.5', 'auto', false, 0, 'fmDNS');
+	
+	return true;
+}
+

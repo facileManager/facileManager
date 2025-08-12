@@ -3,6 +3,7 @@
 * Server - [improvement] Moved the 'Create Template' checkbox close to the template selection menu.
 * Server - [improvement] Removed JavaScript:void(0); links.
 * Server - [improvement] Changed "no results" message to be the same for consistency.
+* Server - [improvement] SOA negative cache can now be set independently of SOA TTL. (#700)
 * Server - [bug] Fixed URL in error message when attempting to clear cache.
 * Both   - [improvement] Code cleanup.
 
