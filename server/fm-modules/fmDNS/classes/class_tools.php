@@ -424,8 +424,13 @@ HTML;
 			}
 			
 			if (empty($array['record_name']) && !empty($array['record_comment'])) continue;
+
+			/** Ensure record_value is present after stripping domain */
+			if (empty($array['record_value'])) {
+				$array['record_value'] = '@';
+			}
 			
-			$array['record_append'] = (substr($array['record_value'], -1) == '.') ? 'no' : 'yes';
+			$array['record_append'] = (substr($array['record_value'], -1) == '.' || $array['record_value'] == '@') ? 'no' : 'yes';
 			
 			/** Set current_name to check for blanks on next run */
 			$current_name = $array['record_name'];
@@ -754,6 +759,9 @@ BODY;
 		$view_name = $ttl = null;
 		$view_id = 0;
 		
+		/* RR types that allow record append */
+		$append_allowed = array('CNAME', 'NS', 'MX', 'SRV', 'DNAME', 'RP', 'NAPTR');
+
 		$file = fopen($_FILES['import-file']['tmp_name'], 'r');
 		while (!feof($file)){
 			/** Change tabs into spaces */
@@ -983,8 +991,16 @@ BODY;
 						break;
 				}
 				
-				if (substr($rr['record_value'], -1) == '.') {
-					$rr['record_append'] = 'no';
+				/** Ensure record_value is present after stripping domain */
+				if (array_key_exists('record_value', $rr) && empty($rr['record_value'])) {
+					$rr['record_value'] = '@';
+				}
+				
+				if (in_array($rr['record_type'], $append_allowed)) {
+					$rr['record_append'] = 'yes';
+					if (substr($rr['record_value'], -1) == '.' || $rr['record_value'] == '@') {
+						$rr['record_append'] = 'no';
+					}
 				}
 				$rr['record_value'] = str_replace('"', '', $rr['record_value']);
 				
