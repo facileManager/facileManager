@@ -978,6 +978,9 @@ BODY;
 				
 				if (substr($rr['record_value'], -1) == '.') {
 					$rr['record_append'] = 'no';
+				/** Ensure record_value is present after stripping domain */
+				if (array_key_exists('record_value', $rr) && empty($rr['record_value'])) {
+					$rr['record_value'] = '@';
 				}
 				$rr['record_value'] = str_replace('"', '', $rr['record_value']);
 				

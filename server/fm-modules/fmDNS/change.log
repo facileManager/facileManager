@@ -7,6 +7,7 @@
 * Server - [bug] When updating a custom SOA, the log now contains the zone name.
 * Server - [bug] Custom SOA form validation now checks for the maximum character length. (#696)
 * Server - [bug] Fixed zone imports with TXT records. (#697)
+* Server - [bug] Fixed zone imports when the record value is the zone name. (#702)
 
 7.1.4 (2025-06-01)
 ==================
