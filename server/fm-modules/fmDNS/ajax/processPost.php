@@ -74,7 +74,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 
 	/* Handle SOA */
 	if ($_POST['item_type'] == 'soa' && isset($_POST['action']) && $_POST['action'] == 'process-record-updates') {
-		list($return, $errors) = $fm_dns_records->validateRecordUpdates('array');
+		list($return, $errors) = $fm_dns_records->validateRecordUpdates($_POST, 'array');
 		/* Submit if there are no errors */
 		if (!count($errors)) {
 			/* Set $_POST var from returned array */

@@ -45,14 +45,11 @@ if (!currentUserCan('manage_records', $_SESSION['module'])) returnUnAuth();
 if (!isset($_POST['uri_params']['domain_id']) || !zoneAccessIsAllowed(array($_POST['uri_params']['domain_id']))) returnUnAuth();
 if (!isset($_POST['uri_params']['record_type']) || (in_array($_POST['uri_params']['record_type'], $__FM_CONFIG['records']['require_zone_rights']) && !currentUserCan('manage_zones', $_SESSION['module']))) returnUnAuth();
 
-/* RR types that allow record append */
-$append = array('CNAME', 'NS', 'MX', 'SRV', 'DNAME', 'RP', 'NAPTR');
-
 if (!isset($global_form_field_excludes)) $global_form_field_excludes = array();
 
 if ($_POST['action'] == 'validate-record-updates') {
 	if (isset($_POST['record_type']) && $_POST['record_type'] == 'SOA') {
-		$validate_response = $fm_dns_records->validateRecordUpdates('array');
+		$validate_response = $fm_dns_records->validateRecordUpdates($_POST, 'array');
 
 		/* Success! */
 		if (!is_array($validate_response)) exit($validate_response);
@@ -66,7 +63,7 @@ if ($_POST['action'] == 'validate-record-updates') {
 		/* Validation is clean, let's save */
 		$_POST['action'] = 'process-record-updates';
 	} else {
-		echo $fm_dns_records->validateRecordUpdates();
+		echo $fm_dns_records->validateRecordUpdates($_POST);
 	}
 }
 

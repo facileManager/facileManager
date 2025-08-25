@@ -43,6 +43,21 @@ if (!defined('AJAX')) {
 $_SERVER['REQUEST_URI'] = !strpos($_SERVER['REQUEST_URI'], '.php') ? str_replace('?', '.php?', $_SERVER['REQUEST_URI']) : $_SERVER['REQUEST_URI'];
 $path_parts = parse_url($_SERVER['REQUEST_URI']);
 $path_parts = array_merge($path_parts, pathinfo($path_parts['path']));
+if (isset($path_parts['basename']) && $path_parts['basename'] == '.php') {
+	$path_parts['path'] = str_replace($path_parts['basename'], '', $path_parts['path']);
+	$path_parts['dirname'] = dirname($path_parts['path']);
+}
+
+/** Invoking API? */
+$invoke_api = false;
+if (isset($path_parts['path']) && strpos($path_parts['path'], '/api/') !== false) {
+	if (!defined('CLIENT')) {
+		define('CLIENT', true);
+	}
+	$GLOBALS['basename'] = 'api.php';
+	$invoke_api = true;
+	$api_call_from_client_app = false;
+}
 
 if (file_exists(ABSPATH . 'config.inc.php')) {
 	/** Ensure session variables are not manually set */
@@ -72,13 +87,18 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 
 	$GLOBALS['URI'] = convertURIToArray();
 
-	$GLOBALS['basename'] = (($path_parts['filename'] && $path_parts['filename'] != str_replace('/', '', $GLOBALS['RELPATH'])) && substr($_SERVER['REQUEST_URI'], -1) != '/') ? $path_parts['filename'] . '.php' : 'index.php';
+	if (!$invoke_api) {
+		$GLOBALS['basename'] = (($path_parts['filename'] && $path_parts['filename'] != str_replace('/', '', $GLOBALS['RELPATH'])) && substr($_SERVER['REQUEST_URI'], -1) != '/') ? $path_parts['filename'] . '.php' : 'index.php';
+	}
 	
-	if (!defined('INSTALL') && !defined('CLIENT') && !defined('FM_NO_CHECKS')) {
+	if (!defined('INSTALL') && !defined('CLIENT') && !defined('FM_NO_CHECKS') && !$invoke_api) {
 		$fmdb = new fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host']);
 
 		/** Trim and sanitize inputs */
 		$_POST = cleanAndTrimInputs($_POST);
+		if (isset($_SERVER['HTTP_AUTHKEY'])) {
+			$_SERVER['HTTP_AUTHKEY'] = sanitize($_SERVER['HTTP_AUTHKEY']);
+		}
 
 		/** Handle special cases with config.inc.php */
 		handleHiddenFlags();
@@ -264,6 +284,34 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 
 		/** Trim and sanitize inputs */
 		$_POST = cleanAndTrimInputs($_POST);
+	}
+	
+	if ($invoke_api) {
+		/** Set the module_name from URI path if available */
+		if (strpos($GLOBALS['path_parts']['path'] . '/', '/api/') !== false) {
+			$_path_parts = explode('/', $GLOBALS['path_parts']['path']);
+			$_api_key = array_search('api', $_path_parts);
+			/** Get the module_name */
+			if (isset($_path_parts[$_api_key + 1])) {
+				$_module = $_path_parts[$_api_key + 1];
+				$_module_arr = getAvailableModules();
+				if ($_arr_key = array_search(strtolower($_module), array_map('strtolower', $_module_arr))) {
+					$_POST['module_name'] = $module_name = $_module_arr[$_arr_key];
+				}
+			}
+			unset($_path_parts, $_api_key, $_module, $_module_arr, $_arr_key);
+		}
+
+		/** Get API input body */
+		parse_str(file_get_contents('php://input'), $api_input);
+		if (count($api_input)) {
+			if (isset($api_input['module_name'])) {
+				$_POST['module_name'] = $api_input['module_name'];
+			}
+			if (isset($api_input['server_client_version'])) {
+				$api_call_from_client_app = true;
+			}
+		}
 	}
 	
 	if (isset($_POST['module_name'])) {

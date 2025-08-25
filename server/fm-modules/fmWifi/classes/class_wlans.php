@@ -895,7 +895,7 @@ HTML;
 		
 		$ap_info = serialize($_POST['ap-info']);
 		
-		$query = "REPLACE INTO `fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}stats` (`account_id`, `server_serial_no`, `stat_last_report`, `stat_info`) VALUES ('" . getAccountID($_POST['AUTHKEY']) . "', '$server_serial_no', '" . strtotime('now') . "', '$ap_info')";
+		$query = "REPLACE INTO `fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}stats` (`account_id`, `server_serial_no`, `stat_last_report`, `stat_info`) VALUES ('" . getAccountID($_SERVER['HTTP_AUTHKEY']) . "', '$server_serial_no', '" . strtotime('now') . "', '$ap_info')";
 		$fmdb->query($query);
 	}
 	

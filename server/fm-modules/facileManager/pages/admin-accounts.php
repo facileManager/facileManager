@@ -26,8 +26,10 @@ if (array_key_exists('verify', $_GET)) {
 	require_once('fm-init.php');
 	include(ABSPATH . 'fm-modules/facileManager/classes/class_accounts.php');
 	
-	if (array_key_exists('compress', $_POST) && $_POST['compress']) echo gzcompress(serialize($fm_accounts->verify($_POST)));
-	else echo serialize($fm_accounts->verify($_POST));
+	$auth['AUTHKEY'] = $_SERVER['HTTP_AUTHKEY'];
+
+	if (array_key_exists('compress', $_POST) && $_POST['compress']) echo gzcompress(serialize($fm_accounts->verify($auth)));
+	else echo serialize($fm_accounts->verify($auth));
 	exit;
 }
 

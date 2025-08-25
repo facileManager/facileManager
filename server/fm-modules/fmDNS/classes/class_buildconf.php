@@ -1154,7 +1154,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 			}
 			
 			/** purge configs first? */
-			$data->purge_config_files = getOption('purge_config_files', getAccountID($post_data['AUTHKEY']), 'fmDNS');
+			$data->purge_config_files = getOption('purge_config_files', getAccountID($_SERVER['HTTP_AUTHKEY']), 'fmDNS');
 			
 			/** process zone reloads if present */
 			$track_reloads = $this->getReloadRequests($server_serial_no);

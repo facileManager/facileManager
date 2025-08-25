@@ -339,8 +339,7 @@ FOOT;
  * @package facileManager
  */
 function getTopHeader() {
-	global $fm_login, $__FM_CONFIG;
-	include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . 'facileManager' . DIRECTORY_SEPARATOR . 'variables.inc.php');
+	global $fm_login, $__FM_CONFIG, $fm_name;
 	include(ABSPATH . 'fm-includes' . DIRECTORY_SEPARATOR . 'version.php');
 	
 	$fm_new_version_available = $account_menu = $user_account_menu = $module_menu = $module_version_info = $return_extra = null;
@@ -1478,7 +1477,7 @@ function generateSerialNo($module = null) {
 	if ($module) {
 		while(1) {
 			if (array_key_exists('server_name', $_POST) && defined('CLIENT')) {
-				$get_query = "SELECT * FROM `fm_{$__FM_CONFIG[$module]['prefix']}servers` WHERE `server_status`!='deleted' AND account_id='" . getAccountID(sanitize($_POST['AUTHKEY'])) . "' AND `server_name`='" . sanitize($_POST['server_name']) . "'";
+				$get_query = "SELECT * FROM `fm_{$__FM_CONFIG[$module]['prefix']}servers` WHERE `server_status`!='deleted' AND account_id='" . getAccountID(sanitize($_SERVER['HTTP_AUTHKEY'])) . "' AND `server_name`='" . sanitize($_POST['server_name']) . "'";
 				$array = $fmdb->get_results($get_query);
 				if ($fmdb->num_rows) {
 					return $array[0]->server_serial_no;
@@ -3992,30 +3991,87 @@ if (!function_exists('array_key_first')) {
  * @package facileManager
  *
  * @param integer $code Error code to throw
+ * @param string $opt_message Optional message to return
+ * @param array $errors Optional errors to return
  * @return mixed
  */
-function throwAPIError($code) {
+function returnAPIStatus($code, $opt_message = null, $errors = null) {
+	global $compress;
+
 	switch ($code) {
+		# General Success
+		case 200:
+		# Successful record create
+		case 201:
+		# Record create was successful, but automatic PTR was not
+		case 202:
+		# Record was successfully deleted
+		case 204:
+		# Record delete was successful, but automatic PTR was not
+		case 205:
+			$message = _('Success');
+			break;
+		# Bad request
+		case 400:
+			$message = _('Bad request');
+			break;
+		# Invalid credentials
+		case 401:
+			$message = _('Invalid credentials');
+			break;
+		# Forbidden access
+		case 403:
+		# User cannot manage records
 		case 1000:
+		# Zone access is not allowed
 		case 1001:
+		# Record management of this type requires elevated privileges
 		case 1002:
-			$message = _('Permission denied.');
+		# Zone reloading is not allowed
+		case 1003:
+			$header_code = 403;
+			$message = _('Permission denied');
 			break;
+		# Record already exists
 		case 1004:
-			$message = _('The record already exists.');
+			$message = _('The record already exists');
 			break;
+		case 404:
+		# Record is not found
 		case 1005:
-			$message = _('The record was not found.');
+			$header_code = 404;
+			$message = _('The record was not found');
 			break;
+		case 405:
+			$message = _('Method not allowed');
+			break;
+		# Dryrun
 		case 3000:
-			$message = _('Dryrun was successful.');
+			$header_code = 202;
+			$message = _('Dryrun was successful');
 			break;
+		# Something is wrong with the request to create/modify the record
 		default:
 			$code = 2000;
-			$message = _('Something was wrong with the request.');
+			$header_code = 400;
+			$message = _('Something was wrong with the request');
 			break;
-		}
-	return array($code, $message);
+	}
+	if (!isset($header_code)) {
+		$header_code = $code;
+	}
+	if ($opt_message) {
+		$message = $opt_message;
+	}
+	if ($errors) {
+		$message = [$message, $errors];
+	}
+	setHeader($header_code);
+	$data = json_encode(['response' => $message, 'status' => $code]);
+
+	if ($compress) echo gzcompress($data);
+	else echo $data;
+	exit;
 }
 
 
@@ -4178,3 +4234,29 @@ function displayPreAppForm($page_title, $content_id, $left_content, $right_conte
 	return $form;
 }
 
+/**
+ * Sets the HTTP header code
+ * @param integer $code Header code to set
+ */
+function setHeader($code) {
+	switch ($code) {
+		case 200:
+			header('HTTP/1.0 200 OK');
+			break;
+		case 201:
+			header('HTTP/1.0 201 Created');
+			break;
+		case 400:
+			header('HTTP/1.0 400 Bad Request');
+			break;
+		case 401:
+			header('HTTP/1.0 401 Unauthorized');
+			break;
+		case 403:
+			header('HTTP/1.0 403 Forbidden');
+			break;
+		case 404:
+			header('HTTP/1.0 404 Not Found');
+			break;
+	}
+}

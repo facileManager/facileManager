@@ -31,6 +31,7 @@ error_reporting(0);
 $compress = true;
 $privileged_user = 'root';
 $url = null;
+$apicreds = 'config.inc.php';
 
 if (!isset($module_name) && isset($_POST['module'])) $module_name = $_POST['module'];
 
@@ -50,8 +51,19 @@ $dryrun		= (in_array('-n', $argv) || in_array('dryrun', $argv)) ? true : false;
 $buildconf	= (in_array('-b', $argv) || in_array('buildconf', $argv)) ? true : false;
 $cron		= (in_array('-c', $argv) || in_array('cron', $argv)) ? true : false;
 
+$invoke_api	= (in_array('api', $argv)) ? true : false;
 $apitest	= (in_array('apitest', $argv)) ? true : false;
+if ($invoke_api) {
+	$proto = 'https';
+}
 $no_ssl		= ($proto == 'http') ? true : false;
+
+/** Get long options */
+for ($i=0; $i < count($argv); $i++) {
+	if (strpos($argv[$i], 'apicreds=') !== false) {
+		$apicreds = substr($argv[$i], 9);
+	}
+}
 
 if ($debug) error_reporting(E_ALL ^ E_NOTICE);
 
@@ -151,7 +163,9 @@ if (!file_exists($config_file)) {
 } else require_once($config_file);
 
 $data['AUTHKEY'] = AUTHKEY;
-$data['SERIALNO'] = SERIALNO;
+if (defined('SERIALNO')) {
+	$data['SERIALNO'] = SERIALNO;
+}
 $data['compress'] = $compress;
 
 /** Check if the port is alive first */
@@ -162,19 +176,21 @@ if (!$server_path['port']) {
 	$port = $server_path['port'];
 }
 if (!socketTest($server_path['hostname'], $port)) {
-	$socket_failure = $server_path['hostname'] . " is currently not available via tcp/$port.  Aborting.\n";
+	$socket_failure = "%s is currently not available via tcp/%d.  Aborting.\n";
 	if ($proto == 'https') {
+		if ($debug) echo fM(sprintf("%s is not available via tcp/%d. Switching to http (tcp/%d).\n", $server_path['hostname'], 443, 80));
 		if (socketTest($server_path['hostname'], 80)) {
 			$proto = 'http';
 		} else {
-			echo fM($socket_failure);
+			echo fM(sprintf($socket_failure, $server_path['hostname'], 80));
 			exit(1);
 		}
 	} else {
-		echo fM($socket_failure);
+		echo fM(sprintf($socket_failure, $server_path['hostname'], $port));
 		exit(1);
 	}
 }
+if ($debug) echo "\n";
 
 /** Set variables to pass */
 $url = $proto . '://' . FMHOST . 'buildconf.php';
@@ -212,7 +228,9 @@ php {$argv[0]} [options]
   -v|version                  Display the client version
      no-sudoers               Do not create/update the sudoers file at install time
      no-update                Do not update the server configuration from the client
+     api                      Invokes an API call (cannot be used with no-ssl)
      apitest                  Perform basic API functionality tests
+     apicreds=/path/to/file   Filename containing API key and secret (default: config.inc.php)
 
 HELP;
 
@@ -229,6 +247,7 @@ HELP;
 	echo <<<HELP
   
      install                  Install the client components
+     install api              Install the client components only for API use
   -o|options                  Installation options comma-delimited to avoid prompts
                                 Valid options: 
                                     FMHOST    fM host url
@@ -251,7 +270,7 @@ HELP;
  * @package facileManager
  */
 function installFM($proto, $compress) {
-	global $argv, $module_name, $data, $no_ssl, $debug;
+	global $argv, $module_name, $data, $no_ssl, $debug, $invoke_api;
 	
 	/** Get long options */
 	for ($i=0; $i < count($argv); $i++) {
@@ -377,33 +396,35 @@ function installFM($proto, $compress) {
 	}
 
 	/** Server serial number **/
-	$data['server_name'] = gethostname();
+	if (!$invoke_api) {
+		$data['server_name'] = gethostname();
 
-	$data['server_os'] = PHP_OS;
-	$data['server_os_distro'] = detectOSDistro();
-	echo fM('Please enter the serial number for ' . $data['server_name'] . ' (or leave blank to create new): ');
-	if (defined('SERIALNO')) {
-		$serialno = $data['server_serial_no'] = intval(SERIALNO);
-		echo SERIALNO . "\n";
-	} else {
-		$serialno = intval(trim(fgets(STDIN)));
+		$data['server_os'] = PHP_OS;
+		$data['server_os_distro'] = detectOSDistro();
+		echo fM('Please enter the serial number for ' . $data['server_name'] . ' (or leave blank to create new): ');
+		if (defined('SERIALNO')) {
+			$serialno = $data['server_serial_no'] = intval(SERIALNO);
+			echo SERIALNO . "\n";
+		} else {
+			$serialno = intval(trim(fgets(STDIN)));
+		}
+		
+		$url = "{$proto}://{$hostname}/{$path}admin-servers.php?genserial";
+		
+		/** Process new server */
+		if (empty($serialno) || $serialno < 1) {
+			/** Generate new serial number */
+			echo fM('  --> Generating new serial number: ');
+			$serialno = $data['server_serial_no'] = generateSerialNo($url, $data);
+			echo $serialno . "\n";
+		}
+
+		/** Add new server */
+		$data = addServer($url, $data);
+
+		$data['SERIALNO'] = $serialno;
+		$data['config'][] = array('SERIALNO', 'Server unique serial number', $serialno);
 	}
-	
-	$url = "{$proto}://{$hostname}/{$path}admin-servers.php?genserial";
-	
-	/** Process new server */
-	if (empty($serialno) || $serialno < 1) {
-		/** Generate new serial number */
-		echo fM('  --> Generating new serial number: ');
-		$serialno = $data['server_serial_no'] = generateSerialNo($url, $data);
-		echo $serialno . "\n";
-	}
-
-	/** Add new server */
-	$data = addServer($url, $data);
-
-	$data['SERIALNO'] = $serialno;
-	$data['config'][] = array('SERIALNO', 'Server unique serial number', $serialno);
 
 	/** Get module-specific data */
 	if (function_exists('installFMModule')) {
@@ -411,22 +432,36 @@ function installFM($proto, $compress) {
 	}
 
 	/** Handle the update method */
-	$data['server_update_method'] = processUpdateMethod($module_name, $update_method, $data, $url);
+	if (!$invoke_api) {
+		$data['server_update_method'] = processUpdateMethod($module_name, $update_method, $data, $url);
 
-	$raw_data = getPostData(str_replace('genserial', 'addserial', $url), $data);
-	$raw_data = $data['compress'] ? @unserialize(gzuncompress($raw_data)) : @unserialize($raw_data);
+		$raw_data = getPostData(str_replace('genserial', 'addserial', $url), $data);
+		$raw_data = $data['compress'] ? @unserialize(gzuncompress($raw_data)) : @unserialize($raw_data);
+	}
+
+	if ($invoke_api) {
+		$data['config'][] = array('APIKEY', 'API authentication key', 'MY_KEY');
+		$data['config'][] = array('APISECRET', 'API authentication secret', 'MY_KEY_SECRET');
+	}
 	
 	/** Save the file */
 	saveFMConfigFile($data);
 	
 	/** Complete installation */
-	$url = "{$proto}://{$hostname}/{$path}admin-servers.php?install";
-	$raw_data = getPostData($url, $data);
+	if (!$invoke_api) {
+		$url = "{$proto}://{$hostname}/{$path}admin-servers.php?install";
+		$raw_data = getPostData($url, $data);
+	}
 	
 	/** Add log entry */
 	addLogEntry('Client installed successfully.');
 	
-	echo fM("Installation is complete. Please login to the UI to ensure the server settings are correct.\n");
+	if (!$invoke_api) {
+		echo fM("Installation is complete. Please login to the UI to ensure the server settings are correct.\n");
+	} else {
+		echo fM("Installation is complete. This system may only use the API.\n");
+		echo fM("Please add your API credentials to config.inc.php.\n");
+	}
 	
 	exit;
 }
@@ -532,6 +567,9 @@ function socketTest($host, $port, $timeout = '20') {
 		}
 		return false;
 	} else {
+		if ($debug) {
+			echo fM(sprintf("Socket test successful to %s tcp/%s.\n", $host, $port));
+		}
 		fclose($fm);
 		return true;
 	}
@@ -544,15 +582,39 @@ function socketTest($host, $port, $timeout = '20') {
  * @since 1.0
  * @package facileManager
  */
-function getPostData($url, $data) {
+function getPostData($url, $data, $method = 'POST') {
 	global $module_name, $debug;
 	
 	$data['module_name'] = $module_name;
 	$data['module_type'] = 'CLIENT';
-	
+
 	$ch = curl_init();
+
+	$headers = array();
+	if (isset($data['AUTHKEY'])) {
+		$headers[] = "AUTHKEY: {$data['AUTHKEY']}";
+		unset($data['AUTHKEY']);
+	}
+	if (isset($data['APIKEY'])) {
+		$headers[] = "X-API-KEY: {$data['APIKEY']}";
+		unset($data['APIKEY']);
+	}
+	if (isset($data['APISECRET'])) {
+		$headers[] = "X-API-SECRET: {$data['APISECRET']}";
+		unset($data['APISECRET']);
+	}
+	
+	if ($debug) {
+		echo fM("Sending data to $url:\n");
+		print_r($data);
+		echo "\n";
+	}
+
 	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_POST, true);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+	if (count($headers)) {
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	}
 	curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -801,9 +863,10 @@ function detectOSDistro() {
 			}
 		}
 	} elseif (PHP_OS == 'Darwin') {
-		$output = passthru(findProgram('system_profiler') . ' SPSoftwareDataType 2>/dev/null | grep "System Version"', $retval);
-		if (!$retval) {
+		$output = shell_exec(findProgram('system_profiler') . ' SPSoftwareDataType 2>/dev/null | grep "System Version"');
+		if ($output) {
 			$array_line = explode(':', $output);
+			/** Check if it's macOS */
 			if (trim($array_line[0]) == 'System Version') {
 				if (preg_match('/(^mac\s?OS)|(^OS X)/i', trim($array_line[1]))) return 'Apple';
 			}
@@ -1658,17 +1721,23 @@ function isDebianSystem($os) {
  * @return array
  */
 function loadAPICredentials($url, $data) {
-	global $proto, $server_path;
+	global $proto, $server_path, $module_name, $apicreds;
 
 	/** Ensure $proto = https */
 	if ($proto != 'https') {
 		echo fM($server_path['hostname'] . " must be configured with https.\n");
-		exit(1);
+		// exit(1);
 	}
 
 	/** Set the API URL */
-	$url = str_replace('buildconf.php', 'api/', $url);
+	$url = str_replace('buildconf.php', "api/$module_name/", $url);
 
+	/** Load $apicreds */
+	if (!defined('APIKEY') || !defined('APISECRET')) {
+		if (file_exists($apicreds)) {
+			include_once($apicreds);
+		}
+	}
 	if (!defined('APIKEY') || !defined('APISECRET')) {
 		echo fM("API credentials are not found in config.inc.php. Please add them using the following format:\n\ndefine('APIKEY', 'MY_KEY');\ndefine('APISECRET', 'MY_KEY_SECRET');\n\n");
 		exit(1);
@@ -1692,12 +1761,29 @@ function loadAPICredentials($url, $data) {
  * @return boolean
  */
 function doAPITest($url, $data) {
+	global $debug;
+
 	list($url, $data) = loadAPICredentials($url, $data);
 
-	$data['test'] = true;
+	$data['apitest'] = true;
 
 	$raw_data = getPostData($url, $data);
-	$raw_data = $data['compress'] ? @unserialize(gzuncompress($raw_data)) : @unserialize($raw_data);
+	if ($data['compress']) {
+		$raw_data = gzuncompress($raw_data);
+	}
+	if (isSerialized($raw_data)) {
+		$raw_data = @unserialize($raw_data);
+	}
+	if (json_validate($raw_data)) {
+		$raw_data = @json_decode($raw_data, true);
+	}
+	if (is_array($raw_data)) {
+		extract($raw_data);
+		if (is_array($response)) {
+			$response = $response[0];
+		}
+		$raw_data = ($debug) ? json_encode($raw_data, JSON_PRETTY_PRINT) : (($status == 3000) ? "$response\n" : sprintf("Response: (%s) %s\n", $status, $response));
+	}
 	echo $raw_data;
 
 	exit;
@@ -1919,4 +2005,47 @@ function installApp($packages, $services = array()) {
 	foreach ($services as $svc) {
 		shell_exec("update-rc.d $svc enable > /dev/null 2>&1");
 	}
+}
+
+/**
+ * Check value to find if it was serialized.
+ *
+ * If $data is not an string, then returned value will always be false.
+ * Serialized data is always a string.
+ *
+ * @since 5.4.0
+ * @package facileManager
+ *
+ * @param mixed $data Value to check to see if was serialized.
+ * @return bool False if not serialized and true if it was.
+ */
+function isSerialized($data) {
+	// if it isn't a string, it isn't serialized
+	if (!is_string($data))
+		return false;
+	$data = trim($data);
+	if ('N;' == $data)
+		return true;
+	$length = strlen($data);
+	if ($length < 4)
+		return false;
+	if (':' !== $data[1])
+		return false;
+	$lastc = $data[$length-1];
+	if (';' !== $lastc && '}' !== $lastc)
+		return false;
+	$token = $data[0];
+	switch ($token ) {
+		case 's' :
+			if ('"' !== $data[$length-2])
+				return false;
+		case 'a' :
+		case 'O' :
+			return (bool) preg_match("/^{$token}:[0-9]+:/s", $data);
+		case 'b' :
+		case 'i' :
+		case 'd' :
+			return (bool) preg_match("/^{$token}:[0-9.E-]+;\$/", $data);
+	}
+	return false;
 }

@@ -105,8 +105,7 @@ class fm_dns_records {
 		if (array_key_exists('record_ttl', $new_array) && !is_numeric($new_array['record_ttl'])) $new_array['record_ttl'] = null;
 
 		foreach ($new_array as $key => $data) {
-			if ($key == 'PTR') continue;
-			if ($key == 'record_type') continue;
+			if (in_array($key, ['PTR', 'record_type', 'reload'])) continue;
 			if ($record_type == 'SOA' && in_array($key, array('record_type', 'record_comment'))) continue;
 			$sql_fields .= $key . ', ';
 			$sql_values .= "'" . sanitize($data) . "', ";
@@ -175,9 +174,7 @@ class fm_dns_records {
 		$table = ($record_type == 'SOA') ? 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'soa' : 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'records';
 		$field = ($record_type == 'SOA') ? 'soa_id' : 'record_id';
 		
-		$record_type_sql = ($record_type != 'SOA') ? ",record_type='$record_type'" : null;
-		
-		$excluded_keys = array('record_skipped', 'PTR');
+		$excluded_keys = array('record_skipped', 'PTR', 'reload');
 		$null_keys = array('record_key_tag');
 		
 		$sql_edit = '';
@@ -213,7 +210,7 @@ class fm_dns_records {
 			$data = $array['record_status'] == 'active' ? 'no' : 'yes';
 			$log_message .= formatLogKeyData('', 'Included', $data);
 		} else {
-			$query = "UPDATE `$table` SET $sql_edit $record_type_sql WHERE `$field`='$id' AND `account_id`='{$_SESSION['user']['account_id']}'";
+			$query = "UPDATE `$table` SET $sql_edit WHERE `$field`='$id' AND `account_id`='{$_SESSION['user']['account_id']}'";
 		}
 		$result = $fmdb->query($query);
 		
@@ -253,7 +250,7 @@ class fm_dns_records {
 	}
 	
 	function getHeader($type, $include = 'actions') {
-		global $zone_access_allowed;
+		global $zone_access_allowed, $__FM_CONFIG;
 		
 		$show_value = true;
 		$rr_with_actions = array('A');
@@ -334,11 +331,8 @@ class fm_dns_records {
 			$title_array[] = array('title' => __('Text'), 'rel' => 'record_text');
 		}
 		
-		$priority = array('MX', 'SRV', 'KX', 'URI');
-		$weight = array('SRV', 'URI');
-		
-		if (in_array($type, $priority)) $title_array[] = array('title' => __('Priority'), 'rel' => 'record_priority');
-		if (in_array($type, $weight)) $title_array[] = array('title' => __('Weight'), 'rel' => 'record_weight');
+		if (in_array($type, $__FM_CONFIG['records']['priority'])) $title_array[] = array('title' => __('Priority'), 'rel' => 'record_priority');
+		if (in_array($type, $__FM_CONFIG['records']['weight'])) $title_array[] = array('title' => __('Weight'), 'rel' => 'record_weight');
 		
 		if ($type == 'SRV') {
 			$title_array[] = array('title' => __('Port'), 'rel' => 'record_port');
@@ -375,9 +369,6 @@ class fm_dns_records {
 		$value_textarea = false;
 
 		$rr_with_actions = array('A');
-		$append = array('CNAME', 'NS', 'MX', 'SRV', 'DNAME', 'RP', 'NAPTR');
-		$priority = array('MX', 'SRV', 'KX', 'URI');
-		$weight = array('SRV', 'URI');
 
 		if ($results) {
 			$results = get_object_vars($results);
@@ -510,8 +501,8 @@ class fm_dns_records {
 				$field_values['data']['Value']['Text'] = '<input maxlength="255" type="text" name="' . $action . '[_NUM_][record_text]" value="' . $record_text . '" />';
 			}
 			
-			if (in_array($record_type, $priority) || in_array($selected_type, $priority)) $field_values['data']['Value']['subgroup-1']['Priority'] = '<input style="width: 35px;" type="text" name="' . $action . '[_NUM_][record_priority]" value="' . $record_priority . '" onkeydown="return validateNumber(event)" />';
-			if (in_array($record_type, $weight)) $field_values['data']['Value']['subgroup-1']['Weight'] = '<input style="width: 35px;" type="text" name="' . $action . '[_NUM_][record_weight]" value="' . $record_weight . '" onkeydown="return validateNumber(event)" />';
+			if (in_array($record_type, $__FM_CONFIG['records']['priority']) || in_array($selected_type, $__FM_CONFIG['records']['priority'])) $field_values['data']['Value']['subgroup-1']['Priority'] = '<input style="width: 35px;" type="text" name="' . $action . '[_NUM_][record_priority]" value="' . $record_priority . '" onkeydown="return validateNumber(event)" />';
+			if (in_array($record_type, $__FM_CONFIG['records']['weight'])) $field_values['data']['Value']['subgroup-1']['Weight'] = '<input style="width: 35px;" type="text" name="' . $action . '[_NUM_][record_weight]" value="' . $record_weight . '" onkeydown="return validateNumber(event)" />';
 	
 			if ($record_type == 'SRV') {
 				$field_values['data']['Value']['subgroup-1']['Port'] = '<input style="width: 35px;" type="text" name="' . $action . '[_NUM_][record_port]" value="' . $record_port . '" onkeydown="return validateNumber(event)" />';
@@ -540,7 +531,7 @@ class fm_dns_records {
 				}
 
 				/** Append */
-				if (in_array($record_type, $append)) $field_values['data']['Value']['Append'] = '<p class="record-sub-value"><label><input ' . $yeschecked . ' type="checkbox" id="record_append[_NUM_][0]" name="' . $action . '[_NUM_][record_append]" value="yes" /> ' . __('Append Domain') . '</label></p>';
+				if (in_array($record_type, $__FM_CONFIG['records']['append'])) $field_values['data']['Value']['Append'] = '<p class="record-sub-value"><label><input ' . $yeschecked . ' type="checkbox" id="record_append[_NUM_][0]" name="' . $action . '[_NUM_][record_append]" value="yes" /> ' . __('Append Domain') . '</label></p>';
 			}
 
 			if (in_array($record_type, $rr_with_actions)) {
@@ -617,8 +608,8 @@ class fm_dns_records {
 				$field_values['data']['Value']['subgroup-1']['Port'] = $record_port;
 			}
 			
-			if (in_array($record_type, $priority) || in_array($selected_type, $priority)) $field_values['data']['Value']['subgroup-1']['Priority'] = $record_priority;
-			if (in_array($record_type, $weight)) $field_values['data']['Value']['subgroup-1']['Weight'] = $record_weight;
+			if (in_array($record_type, $__FM_CONFIG['records']['priority']) || in_array($selected_type, $__FM_CONFIG['records']['priority'])) $field_values['data']['Value']['subgroup-1']['Priority'] = $record_priority;
+			if (in_array($record_type, $__FM_CONFIG['records']['weight'])) $field_values['data']['Value']['subgroup-1']['Weight'] = $record_weight;
 			
 			if ($record_type == 'SRV') {
 				$field_values['data']['Value']['subgroup-1']['Weight'] = $record_weight;
@@ -633,7 +624,7 @@ class fm_dns_records {
 				}
 				
 				$field_values['data']['Value']['Value'] = $record_value;
-				if ((in_array($record_type, $append) || in_array($selected_type, $append)) && $record_append == 'yes') $field_values['data']['Value']['Value'] .= '<span class="grey">.' . $domain . '</span>';
+				if ((in_array($record_type, $__FM_CONFIG['records']['append']) || in_array($selected_type, $__FM_CONFIG['records']['append'])) && $record_append == 'yes') $field_values['data']['Value']['Value'] .= '<span class="grey">.' . $domain . '</span>';
 			}
 			
 			$field_values['data']['Comment'] = $record_comment;
@@ -1178,40 +1169,38 @@ HTML;
 	 * @package facileManager
 	 * @subpackage fmDNS
 	 *
+	 * @param array $content Array containing content to validate
 	 * @param string $output Output format to return
 	 */
-	function validateRecordUpdates($output = 'json') {
-		global $__FM_CONFIG, $append;
+	function validateRecordUpdates($content, $output = 'json') {
+		global $__FM_CONFIG;
 
-		extract($_POST);
-		if (isset($_POST['uri_params'])) {
-			extract($_POST['uri_params'], EXTR_OVERWRITE);
+		extract($content);
+		if (isset($content['uri_params'])) {
+			extract($content['uri_params'], EXTR_OVERWRITE);
 		}
-
-		/* RR types that allow record append */
-		$append = array('CNAME', 'NS', 'MX', 'SRV', 'DNAME', 'RP', 'NAPTR');
 
 		$create_update = 'update';
 		$GLOBALS['new_cname_rrs'] = array();
 
-		if (isset($_POST['create'])) {
+		if (isset($content['create'])) {
 			$create_update = 'create';
 		}
 
 		/** Get real record_type */
-		if ($record_type == 'ALL') {
-			$record_type = ($create_update == 'update') ? getNameFromID(array_keys($_POST[$create_update])[0], 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'records', 'record_', 'record_id', 'record_type') : $_POST[$create_update][array_keys($_POST[$create_update])[0]]['record_type'];
+		if ($record_type == 'ALL' || !isset($record_type)) {
+			$record_type = ($create_update == 'update') ? getNameFromID(array_keys($content[$create_update])[0], 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'records', 'record_', 'record_id', 'record_type') : $content[$create_update][array_keys($content[$create_update])[0]]['record_type'];
 		}
 
-		if (isset($_POST[$create_update]['soa_template_chosen']) && $_POST[$create_update]['soa_template_chosen']) {
+		if (isset($content[$create_update]['soa_template_chosen']) && $content[$create_update]['soa_template_chosen']) {
 			/** Save the soa_template_chosen in domains table and end */
-			$this->assignSOA($_POST[$create_update]['soa_template_chosen'], $domain_id);
+			$this->assignSOA($content[$create_update]['soa_template_chosen'], $domain_id);
 			return 'Success';
 		}
-		unset($_POST[$create_update]['soa_template_chosen']);
+		unset($content[$create_update]['soa_template_chosen']);
 	
-		if (isset($_POST['update'])) {
-			$_POST[$create_update] = $this->buildUpdateArray($domain_id, $record_type, $_POST[$create_update], $append);
+		if (isset($content['update'])) {
+			$content[$create_update] = $this->buildUpdateArray($domain_id, $record_type, $content[$create_update]);
 		}
 
 		/** Fix this! */
@@ -1221,8 +1210,8 @@ HTML;
 		// $domain_info['clone_of']    = getNameFromID($domain_id, 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_clone_domain_id');
 		// $domain_info['template_id'] = getNameFromID($domain_id, 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_template_id');
 
-		foreach ($_POST[$create_update] as $id => $data) {
-			list($valid_data, $input_error) = $this->validateEntry($create_update, $id, $data, $record_type, $append, $_POST[$create_update], $domain_info);
+		foreach ($content[$create_update] as $id => $data) {
+			list($valid_data, $input_error) = $this->validateEntry($create_update, $id, $data, $record_type, $content[$create_update], $domain_info);
 			if (!isset($input_error)) unset($input_error);
 		}
 
@@ -1235,9 +1224,11 @@ HTML;
 	}
 
 
-	function buildUpdateArray($domain_id, $record_type, $data_array, $append) {
+	private function buildUpdateArray($domain_id, $record_type, $data_array) {
+		global $__FM_CONFIG;
+
 		$exclude_keys = array('record_skipped');
-		if (!in_array($record_type, $append)) {
+		if (!in_array($record_type, $__FM_CONFIG['records']['append'])) {
 			$exclude_keys[] = 'record_append';
 		}
 		
@@ -1264,12 +1255,12 @@ HTML;
 	}
 
 
-	function validateEntry($action, $id, $data, $record_type, $append, $data_array, $domain_info) {
+	private function validateEntry($action, $id, $data, $record_type, $data_array, $domain_info) {
 		global $map, $__FM_CONFIG, $fmdb;
 
 		$messages = array();
 		
-		if (!isset($data['record_append']) && in_array($record_type, $append)) {
+		if (!isset($data['record_append']) && in_array($record_type, $__FM_CONFIG['records']['append'])) {
 			$data['record_append'] = 'no';
 		}
 		if (isset($data['Delete'])) {
@@ -1292,7 +1283,7 @@ HTML;
 				$data['record_name'] = '@';
 			}
 			foreach ($data as $key => $val) {
-				$data[$key] = trim($val, '"\'');
+				$data[$key] = @trim($val, '"\'');
 				
 				if ($key == 'record_name' && $record_type != 'PTR') {
 					if ($data['record_status'] == 'active' && !$this->verifyName($domain_info['id'], $val, $id, true, $record_type, $data_array)) {
@@ -1437,7 +1428,7 @@ HTML;
 	}
 
 
-	function verifyName($domain_id, $record_name, $id, $allow_null = true, $record_type = null, $data_array = null) {
+	private function verifyName($domain_id, $record_name, $id, $allow_null = true, $record_type = null, $data_array = null) {
 		global $fmdb, $__FM_CONFIG;
 		
 		if (!$allow_null && !strlen($record_name)) return false;
@@ -1497,7 +1488,7 @@ HTML;
 		return false;
 	}
 
-	function verifyCNAME($append, $record, $allow_null = true, $allow_underscore = false) {
+	private function verifyCNAME($append, $record, $allow_null = true, $allow_underscore = false) {
 		if (!$allow_null && !strlen($record)) return false;
 		
 		if (preg_match('/^[a-z0-9_\-.]+$/i', $record) == true) {
@@ -1526,7 +1517,7 @@ HTML;
 	 * @param string $hostname Hostname to check
 	 * @return boolean
 	 */
-	function validateHostname($hostname) {
+	private function validateHostname($hostname) {
 		if ($hostname[0] == '-' || strpos($hostname, '_') !== false) {
 			return false;
 		}
@@ -1543,7 +1534,7 @@ HTML;
 	 * @param string $ttl TTL to check
 	 * @return boolean
 	 */
-	function verifyTTL($ttl) {
+	private function verifyTTL($ttl) {
 		/** Return true if $ttl is a number */
 		if (verifyNumber($ttl)) return true;
 

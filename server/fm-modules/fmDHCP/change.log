@@ -1,3 +1,7 @@
+0.11.0 (2025-??-??)
+===================
+* Both   - [improvement] Code changes to support fM core API changes.
+
 0.10.2 (2025-05-27)
 ===================
 * Server - [bug] Fixed inconsistent tooltips for "Configure Additional Options."
