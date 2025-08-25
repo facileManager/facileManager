@@ -35,25 +35,6 @@ error_reporting(0);
 
 $module_name = basename(dirname(__FILE__));
 
-/** Check for options */
-$api_call = ($argv[1] == 'setHost') ? true : false;
-if (!$api_call) {
-	$zones = (in_array('-z', $argv) || in_array('zones', $argv)) ? true : false;
-	$dump_cache = in_array('dump-cache', $argv) ? true : false;
-	$clear_cache = in_array('clear-cache', $argv) ? true : false;
-	$dump_zone = in_array('dump-zone', $argv) ? true : false;
-	$enable_url = in_array('enable', $argv) && in_array('url', $argv) ? true : false;
-} else {
-	$api_supported_rr = array('A', 'AAAA', 'CNAME', 'DNAME', 'MX', 'NS', 'PTR', 'TXT');
-	$api_params = array(
-		'common' => array('action', 'id', 'type', 'name', 'value', 'ttl', 'comment', 'status', 'reload'),
-		'CNAME'  => array('append'),
-		'DNAME'  => array('append'),
-		'MX'  => array('priority', 'append'),
-		'update' => array('newname', 'newvalue')
-	);
-}
-
 /** Include shared client functions */
 $fm_client_functions = dirname(dirname(__FILE__)) . '/functions.php';
 if (file_exists($fm_client_functions)) {
@@ -63,9 +44,28 @@ if (file_exists($fm_client_functions)) {
 	exit(1);
 }
 
-/** Get domain_id */
+/** Check for options */
+if (!$invoke_api) {
+	$zones = (in_array('-z', $argv) || in_array('zones', $argv)) ? true : false;
+	$dump_cache = in_array('dump-cache', $argv) ? true : false;
+	$clear_cache = in_array('clear-cache', $argv) ? true : false;
+	$dump_zone = in_array('dump-zone', $argv) ? true : false;
+	$enable_url = in_array('enable', $argv) && in_array('url', $argv) ? true : false;
+} else {
+	$zones = $dump_cache = $clear_cache = $dump_zone = $enable_url = false;
+	$api_supported_rr = array('A', 'AAAA', 'CNAME', 'DNAME', 'MX', 'NS', 'PTR', 'TXT');
+	$api_params = array(
+		'common' => array('action', 'id', 'type', 'name', 'value', 'ttl', 'comment', 'status', 'reload', 'soa-only', 'setPTR'),
+		'CNAME'  => array('append'),
+		'DNAME'  => array('append'),
+		'MX'  => array('priority', 'append'),
+		'update' => array('newname', 'newvalue')
+	);
+}
+
+/** Get long options */
 for ($i=0; $i < count($argv); $i++) {
-	if (strncmp(strtolower($argv[$i]), 'id=', 3) == 0) {
+	if (strpos($argv[$i], 'id=') !== false) {
 		$data['domain_id'] = substr($argv[$i], 3);
 	}
 	if ($argv[$i] == '-D') {
@@ -78,11 +78,11 @@ for ($i=0; $i < count($argv); $i++) {
 	}
 
 	/** Get API parameters */
-	if ($api_call) {
+	if ($invoke_api) {
 		foreach (array_unique(call_user_func_array('array_merge', array_values($api_params))) as $param) {
-			if (strncmp(strtolower($argv[$i]), $param . '=', strlen($param) + 1) == 0) {
+			if (strpos($argv[$i], $param . '=') === 0) {
 				$prefix = ($param == 'id') ? 'domain_' : 'record_';
-				if (in_array($param, array('action', 'reload'))) $prefix = null;
+				if (in_array($param, array('action', 'reload', 'soa-only', 'setPTR'))) $prefix = null;
 				$data['api'][$prefix . $param] = substr($argv[$i], strlen($param) + 1);
 
 				validateAPIParam($param, $data['api'][$prefix . $param]);
@@ -93,36 +93,47 @@ for ($i=0; $i < count($argv); $i++) {
 
 if (isset($data['domain_id'])) $data['api']['domain_id'] = $data['domain_id'];
 
-if ($api_call) {
-	/** Verify type is supported */
-	if (!isset($data['api']['record_type'])) {
-		echo fM("type is a required parameter.\n");
-		exit(1);
-	} else {
-		$data['api']['record_type'] = strtoupper($data['api']['record_type']);
-		if (!in_array($data['api']['record_type'], $api_supported_rr)) {
-			echo fM(sprintf("%s is not a supported RR type.\nSupported types: %s\n", $data['api']['record_type'], join(', ', $api_supported_rr)));
-			exit(1);
-		}
-	}
-
-	/** Remove optional parameters */
-	for ($x = 1; $x <= 3; $x++) {
-		array_pop($api_params['common']);
-	}
-	if ($data['api']['action'] == 'delete') {
-		array_pop($api_params['CNAME']);
-		unset($api_params['common'][array_search('value', $api_params['common'])]);
-	}
-
-	/** Check if all required parameters are given for API calls */
+if ($invoke_api) {
 	$validation_error = false;
-	foreach (@array_merge($api_params['common'], (array) $api_params[$data['api']['record_type']]) as $key) {
-		if (!array_key_exists($key, $data['api']) && !array_key_exists('record_' . $key, $data['api']) && !array_key_exists('domain_' . $key, $data['api'])) {
-			echo fM($key . " is a required parameter.\n");
+
+	if ((!isset($data['api']['action']) && isset($data['api']['reload']) && $data['api']['reload'] == 'yes')
+		|| (!isset($data['api']['action']) && isset($data['api']['soa-only']) && $data['api']['soa-only'] == 'yes')) {
+		if (!array_key_exists('domain_id', $data['api'])) {
+			echo fM("id is a required parameter.\n");
 			$validation_error = true;
 		}
+		$data['api']['action'] = 'RELOAD';
+	} else {
+		/** Verify type is supported */
+		if (!isset($data['api']['record_type'])) {
+			echo fM("type is a required parameter.\n");
+			exit(1);
+		} else {
+			$data['api']['record_type'] = strtoupper($data['api']['record_type']);
+			if (!in_array($data['api']['record_type'], $api_supported_rr)) {
+				echo fM(sprintf("%s is not a supported RR type.\nSupported types: %s\n", $data['api']['record_type'], join(', ', $api_supported_rr)));
+				exit(1);
+			}
+		}
+
+		/** Remove optional parameters */
+		for ($x = 1; $x <= 6; $x++) {
+			array_pop($api_params['common']);
+		}
+		if ($data['api']['action'] == 'delete') {
+			array_pop($api_params['CNAME']);
+			unset($api_params['common'][array_search('value', $api_params['common'])]);
+		}
+
+		/** Check if all required parameters are given for API calls */
+		foreach (@array_merge($api_params['common'], (array) $api_params[$data['api']['record_type']]) as $key) {
+			if (!array_key_exists($key, $data['api']) && !array_key_exists('record_' . $key, $data['api']) && !array_key_exists('domain_' . $key, $data['api'])) {
+				echo fM($key . " is a required parameter.\n");
+				$validation_error = true;
+			}
+		}
 	}
+
 	if ($validation_error) {
 		exit(1);
 	}
@@ -160,6 +171,6 @@ if ($dump_zone) {
 }
 
 /** Build the configs provided by $url */
-$retval = ($api_call) ? callAPI($url, $data) : buildConf($url, $data);
+$retval = ($invoke_api) ? callAPI($url, $data, strtoupper($data['api']['action'])) : buildConf($url, $data);
 
 if (!$retval) exit(1);

@@ -47,7 +47,7 @@ function printModuleHelp () {
      clear-cache              Clear the DNS cache
      id=XX                    Specify the individual ZoneID to build and reload
 	 
-     setHost                  Invokes the API functionality
+    API parameters:
      action=XX                Defines API action to take on a record (add, update, delete)
      type=XX                  Defines the RR type (A, AAAA, CNAME, DNAME, MX, NS, PTR, TXT)
      name=XX                  Defines the name of the RR
@@ -59,17 +59,21 @@ function printModuleHelp () {
      status=XX                Defines the record status (active, disabled)
      newname=XX               Defines the new record name (when action=update)
      newvalue=XX              Defines the new record value (when action=update)
+     setPTR=XX                Defines whether to automatically create/update the PTR (yes, no)
+     soa-only=XX              Defines whether to only increment the SOA serial number (yes, no)
      reload=XX                Defines whether to reload the zone or not (yes, no)
 
      install url-only         Installs the client app to be a URL RR web server only
      enable url               Enables the URL RR web server support on a previous installation
-  
+
 HELP;
 }
 
 
 function installFMModule($module_name, $proto, $compress, $data, $server_location, $url) {
-	global $argv, $module_name, $update_method;
+	global $argv, $module_name, $invoke_api;
+
+	if ($invoke_api) return $data;
 	
 	extract($server_location);
 
@@ -586,16 +590,31 @@ function addChrootFiles() {
  * @since 4.0
  * @package fmDNS
  */
-function callAPI($url, $data) {
+function callAPI($url, $data, $method) {
+	global $debug;
 	list($url, $data) = loadAPICredentials($url, $data);
+
+	if ($method == 'ADD') {
+		$method = 'POST';
+	}
+	if ($method == 'UPDATE') {
+		$method = 'PATCH';
+	}
+	if ($method == 'RELOAD') {
+		$method = 'PATCH';
+		unset($data['api']['action']);
+	}
 
 	$retval = 0;
 
-	$raw_data = getPostData($url, $data);
-	$raw_data = $data['compress'] ? @unserialize(gzuncompress($raw_data)) : @unserialize($raw_data);
+	$raw_data = getPostData($url . "zones/{$data['domain_id']}/", $data, $method);
+	$raw_data = $data['compress'] ? @json_decode(gzuncompress($raw_data), true) : @json_decode($raw_data, true);
 	if (is_array($raw_data)) {
-		list($retval, $message) = $raw_data;
-		$raw_data = ($retval == 3000) ? "$message\n" : sprintf("ERROR (%s) %s\n", $retval, $message);
+		extract($raw_data);
+		if (is_array($response)) {
+			$response = $response[0];
+		}
+		$raw_data = ($debug) ? json_encode($raw_data, JSON_PRETTY_PRINT) : (($status == 3000) ? "$response\n" : sprintf("Response: (%s) %s\n", $status, $response));
 		$retval = 1;
 	}
 	echo $raw_data;
@@ -615,10 +634,12 @@ function callAPI($url, $data) {
  */
 function validateAPIParam($param, $value) {
 	$api_quick_validation = array(
-		'append' => array('yes', 'no'),
-		'action' => array('add', 'update', 'delete'),
-		'status' => array('active', 'disabled'),
-		'reload' => array('yes', 'no')
+		'append'   => array('yes', 'no'),
+		'action'   => array('add', 'update', 'delete'),
+		'status'   => array('active', 'disabled'),
+		'reload'   => array('yes', 'no'),
+		'soa-only' => array('yes', 'no'),
+		'setPTR'   => array('yes', 'no')
 	);
 
 	if (array_key_exists($param, $api_quick_validation)) {
@@ -627,9 +648,12 @@ function validateAPIParam($param, $value) {
 			exit(1);
 		}
 	} else {
-		if (in_array($param, array('ttl', 'priority')) && !is_numeric($value)) {
-			echo fM(sprintf("'%s' must be an integer.\n", $param));
-			exit(1);
+		if (in_array($param, array('ttl', 'priority'))) {
+			if (!is_numeric($value) || $value < 0) {
+				if ($param == 'ttl' && !$value) return;
+				echo fM(sprintf("'%s' must be a positive integer.\n", $param));
+				exit(1);
+			}
 		}
 	}
 }

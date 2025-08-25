@@ -1304,7 +1304,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 		global $fmdb, $__FM_CONFIG;
 		
 		$query = "UPDATE `fm_{$__FM_CONFIG['fmFirewall']['prefix']}servers` SET `server_version`='" . $_POST['server_version'] . "', `server_os`='" . $_POST['server_os'] . "' WHERE `server_serial_no`='" . $_POST['SERIALNO'] . "' AND `account_id`=
-			(SELECT account_id FROM `fm_accounts` WHERE `account_key`='" . $_POST['AUTHKEY'] . "')";
+			(SELECT account_id FROM `fm_accounts` WHERE `account_key`='" . $_SERVER['HTTP_AUTHKEY'] . "')";
 		$fmdb->query($query);
 	}
 	

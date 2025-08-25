@@ -133,7 +133,7 @@ class fm_module_servers extends fm_shared_module_servers {
 		}
 		
 		/** Add default fM interaction rules */
-		$account_id = (isset($post['AUTHKEY'])) ? getAccountID($post['AUTHKEY']) : $_SESSION['user']['account_id'];
+		$account_id = (isset($_SERVER['HTTP_AUTHKEY'])) ? getAccountID($_SERVER['HTTP_AUTHKEY']) : $_SESSION['user']['account_id'];
 		include_once(ABSPATH . 'fm-modules/' . $module . '/classes/class_policies.php');
 		$fm_host_id = getNameFromID($fm_name, 'fm_' . $__FM_CONFIG[$module]['prefix'] . 'objects', 'object_', 'object_name', 'object_id', $account_id);
 		

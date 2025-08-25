@@ -37,9 +37,6 @@ checkMaxInputVars();
 extract($_POST);
 if (isset($_POST['uri_params'])) extract($_POST['uri_params'], EXTR_OVERWRITE);
 
-/* RR types that allow record append */
-$append = array('CNAME', 'NS', 'MX', 'SRV', 'DNAME', 'RP', 'NAPTR');
-
 /** Should the user be here? */
 if (!currentUserCan('manage_records', $_SESSION['module'])) {
 	if (!defined('AJAX')) returnUnAuth();
@@ -56,7 +53,7 @@ if (in_array($record_type, $__FM_CONFIG['records']['require_zone_rights']) && !c
 
 if (isset($update) && is_array($update)) {
 	if (defined('AJAX')) {
-		// $update = buildUpdateArray($domain_id, $record_type, $update, $append);
+		// $update = buildUpdateArray($domain_id, $record_type, $update, $__FM_CONFIG['records']['append']);
 	}
 
 	foreach ($update as $id => $data) {
@@ -67,7 +64,7 @@ if (isset($update) && is_array($update)) {
 			$tmp_record_type = $record_type;
 			$record_type = isset($data['record_type']) ? $data['record_type'] : getNameFromID($id, 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'records', 'record_', 'record_id', 'record_type');
 		}
-		if (!isset($data['record_append']) && in_array($record_type, $append)) {
+		if (!isset($data['record_append']) && in_array($record_type, $__FM_CONFIG['records']['append'])) {
 			$data['record_append'] = 'no';
 		}
 		if (isset($data['Delete']) || ($record_type == 'CUSTOM' && !$data['record_value'])) {
@@ -182,92 +179,5 @@ if (isset($record_type) && ($domain_id || (!$domain_id && $record_type == 'SOA')
 	} else {
 		header('Location: ' . $menu[getParentMenuKey(__('SOA'))][5]);
 		exit;
-	}
-}
-
-
-/**
- * Manages the PTR record
- *
- * @since 3.0
- * @package facileManager
- * @subpackage fmDNS
- *
- * @param int $domain_id domain_id
- * @param string $record_type Type of RR
- * @param array $data RR data to process
- * @param string $operation Add or Update
- * @param object $old_record Old RR information
- * @return null
- */
-function autoManagePTR($domain_id, $record_type, $data, $operation = 'add', $old_record = null) {
-	global $__FM_CONFIG, $fmdb;
-
-	$forward_record_id = ($old_record) ? $old_record->record_id : $fmdb->insert_id;
-
-	/* We must have the PTR checkbox checked */
-	if (!isset($data['PTR'])) return;
-
-	/* Get the proper reverse domain_id for the PTR */
-	if (!is_numeric($data['PTR'])) {
-		$retval = checkPTRZone($data['record_value'], $domain_id);
-		list($data['PTR'], $error_msg) = $retval;
-	}
-	
-	if ($record_type == 'A' && zoneAccessIsAllowed(array($data['PTR']))) {
-		$domain = '.' . trimFullStop(getNameFromID($domain_id, 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_name')) . '.';
-		if ($data['record_name'][0] == '@') {
-			$data['record_name'] = null;
-			$domain = substr($domain, 1);
-		}
-
-		/** Get reverse zone */
-		if (!strrpos($data['record_value'], ':')) {
-			$rev_domain = trimFullStop(getNameFromID($data['PTR'], 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_name'));
-			$domain_pieces = array_reverse(explode('.', $rev_domain));
-			$domain_parts = count($domain_pieces);
-
-			$subnet_ips = '';
-			for ($i=2; $i<$domain_parts; $i++) {
-				if (strpos($domain_pieces[$i], '-')) break;
-				$subnet_ips .= $domain_pieces[$i] . '.';
-			}
-			$record_octets = array_reverse(explode('.', substr($data['record_value'], strlen($subnet_ips))));
-			$temp_record_value = '';
-			for ($j=0; $j<count($record_octets); $j++) {
-				$temp_record_value .= $record_octets[$j] . '.';
-			}
-			$data['record_value'] = rtrim($temp_record_value, '.');
-		} else {
-			/** IPv6 not yet supported */
-			return;
-		}
-
-		if (isset($data['record_status'])) {
-			$array['record_status'] = $data['record_status'];
-		}
-		if (!isset($data['record_status']) || $data['record_status'] != 'deleted') {
-			$array = array(
-					'record_name' => $data['record_value'],
-					'record_ttl' => $data['record_ttl'],
-					'record_value' => $data['record_name'] . $domain,
-					'record_comment' => $data['record_comment']
-					);
-		}
-
-		global $fm_dns_records;
-		if ($operation == 'update') {
-			$fm_dns_records->update($data['PTR'], $old_record->record_ptr_id, 'PTR', $array);
-			
-			if ($fmdb->rows_affected) return;
-			array_pop($array);
-		}
-		
-		if (!isset($data['record_status']) || $data['record_status'] != 'deleted') {
-			$fm_dns_records->add($data['PTR'], 'PTR', $array, 'replace');
-			if ($fmdb->insert_id != $forward_record_id) {
-				basicUpdate('fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'records', $forward_record_id, 'record_ptr_id', $fmdb->insert_id, 'record_id');
-			}
-		}
 	}
 }

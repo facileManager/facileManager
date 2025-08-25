@@ -32,9 +32,14 @@ if (arrayKeysExist(array('genserial', 'addserial', 'install', 'upgrade', 'ssh'),
 	}
 	include(ABSPATH . 'fm-includes/version.php');
 	
+	/** Support old clients */
+	if (isset($_POST['AUTHKEY']) && !isset($_SERVER['HTTP_AUTHKEY'])) {
+		$_SERVER['HTTP_AUTHKEY'] = $_POST['AUTHKEY'];
+	}
+
 	/** Check account key */
 	include(ABSPATH . 'fm-modules/facileManager/classes/class_accounts.php');
-	$account_status = $fm_accounts->verifyAccount($_POST['AUTHKEY']);
+	$account_status = $fm_accounts->verifyAccount($_SERVER['HTTP_AUTHKEY']);
 
 	if ($account_status !== true) {
 		$data = $account_status;
@@ -119,7 +124,7 @@ if (arrayKeysExist(array('genserial', 'addserial', 'install', 'upgrade', 'ssh'),
 			}
 			
 			if (array_key_exists('ssh', $_GET)) {
-				$data = getOption('ssh_' . sanitize($_GET['ssh']), getAccountID($_POST['AUTHKEY']));
+				$data = getOption('ssh_' . sanitize($_GET['ssh']), getAccountID($_SERVER['HTTP_AUTHKEY']));
 			}
 		} else {
 			$data = sprintf(_("failed\n\nInstallation aborted. %s is not an active module."), $_POST['module_name']) . "\n";

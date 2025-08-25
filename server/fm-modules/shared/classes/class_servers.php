@@ -164,7 +164,7 @@ class fm_shared_module_servers {
 		global $fmdb, $__FM_CONFIG;
 		
 		$query = "UPDATE `fm_{$__FM_CONFIG[$_POST['module_name']]['prefix']}servers` SET `server_version`='" . sanitize($_POST['server_version']) . "', `server_os`='" . sanitize($_POST['server_os']) . "' WHERE `server_serial_no`='" . sanitize($_POST['SERIALNO']) . "' AND `account_id`=
-			(SELECT account_id FROM `fm_accounts` WHERE `account_key`='" . sanitize($_POST['AUTHKEY']) . "')";
+			(SELECT account_id FROM `fm_accounts` WHERE `account_key`='" . sanitize($_SERVER['HTTP_AUTHKEY']) . "')";
 		$fmdb->query($query);
 	}
 	
@@ -180,13 +180,13 @@ class fm_shared_module_servers {
 		
 		if (array_key_exists('server_client_version', $_POST)) {
 			$query = "UPDATE `fm_{$__FM_CONFIG[$_POST['module_name']]['prefix']}servers` SET `server_client_version`='" . sanitize($_POST['server_client_version']) . "' WHERE `server_serial_no`='" . sanitize($_POST['SERIALNO']) . "' AND `account_id`=
-				(SELECT account_id FROM `fm_accounts` WHERE `account_key`='" . sanitize($_POST['AUTHKEY']) . "')";
+				(SELECT account_id FROM `fm_accounts` WHERE `account_key`='" . sanitize($_SERVER['HTTP_AUTHKEY']) . "')";
 			$fmdb->query($query);
 		}
 		
 		if (array_key_exists('server_os_distro', $_POST)) {
 			$query = "UPDATE `fm_{$__FM_CONFIG[$_POST['module_name']]['prefix']}servers` SET `server_os_distro`='" . sanitize($_POST['server_os_distro']) . "' WHERE `server_serial_no`='" . sanitize($_POST['SERIALNO']) . "' AND `account_id`=
-				(SELECT account_id FROM `fm_accounts` WHERE `account_key`='" . sanitize($_POST['AUTHKEY']) . "')";
+				(SELECT account_id FROM `fm_accounts` WHERE `account_key`='" . sanitize($_SERVER['HTTP_AUTHKEY']) . "')";
 			$fmdb->query($query);
 		}
 	}
@@ -322,7 +322,7 @@ class fm_shared_module_servers {
 
 				basicGet('fm_accounts', $_SESSION['user']['account_id'], 'account_', 'account_id');
 				$account_result = $fmdb->last_result;
-				$data['AUTHKEY'] = $account_result[0]->account_key;
+				$_SERVER['HTTP_AUTHKEY'] = $account_result[0]->account_key;
 
 				list($raw_data, $response) = $fm_module_buildconf->buildServerConfig($data);
 

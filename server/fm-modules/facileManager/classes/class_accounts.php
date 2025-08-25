@@ -30,8 +30,8 @@ class fm_accounts {
 	function verify($data) {
 		global $fmdb, $__FM_CONFIG;
 		
-		if (!isset($data['AUTHKEY'])) return _('Account is not found.') . "\n";
 		extract($data);
+		if (!isset($AUTHKEY)) return _('Account is not found.') . "\n";
 		
 		include(ABSPATH . 'fm-modules/' . $module_name . '/variables.inc.php');
 

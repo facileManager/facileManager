@@ -805,10 +805,12 @@ function buildModuleMenu() {
  * @return string
  */
 function displayFriendlyDomainName($domain_name) {
-	$new_domain_name = function_exists('idn_to_utf8') ? idn_to_utf8($domain_name, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46) : $domain_name;
-	if ($new_domain_name != $domain_name) $new_domain_name = $domain_name . ' (' . $new_domain_name . ')';
-	
-	return $new_domain_name;
+	if ($domain_name) {
+		$new_domain_name = function_exists('idn_to_utf8') ? idn_to_utf8($domain_name, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46) : $domain_name;
+		if ($new_domain_name != $domain_name) $new_domain_name = $domain_name . ' (' . $new_domain_name . ')';
+	}
+
+	return isset($new_domain_name) ? $new_domain_name : $domain_name;
 }
 
 
@@ -1202,6 +1204,98 @@ function getDNSSECExpiration($data, $type = 'calculated') {
 	$domain_dnssec_sig_expires = ($type == 'calculated') ? strtotime(date('YmdHis', $data->domain_dnssec_signed) . ' + ' . $domain_dnssec_sig_expires . ' days') : date('YmdHis', strtotime('now + ' . $domain_dnssec_sig_expires . ' days'));
 	
 	return $domain_dnssec_sig_expires;
+}
+
+
+/**
+ * Manages the PTR record
+ *
+ * @since 3.0
+ * @package facileManager
+ * @subpackage fmDNS
+ *
+ * @param int $domain_id domain_id
+ * @param string $record_type Type of RR
+ * @param array $data RR data to process
+ * @param string $operation Add or Update
+ * @param object $old_record Old RR information
+ * @return boolean
+ */
+function autoManagePTR($domain_id, $record_type, $data, $operation = 'add', $old_record = null) {
+	global $__FM_CONFIG, $fmdb;
+
+	$forward_record_id = ($old_record) ? $old_record->record_id : $fmdb->insert_id;
+
+	/* We must have the PTR checkbox checked */
+	if (!isset($data['PTR'])) return false;
+
+	/* Get the proper reverse domain_id for the PTR */
+	if (!is_numeric($data['PTR'])) {
+		$retval = checkPTRZone($data['record_value'], $domain_id);
+		list($data['PTR'], $error_msg) = $retval;
+	}
+	
+	if ($record_type == 'A' && zoneAccessIsAllowed(array($data['PTR']))) {
+		$domain = '.' . trimFullStop(getNameFromID($domain_id, 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_name')) . '.';
+		if ($data['record_name'][0] == '@') {
+			$data['record_name'] = null;
+			$domain = substr($domain, 1);
+		}
+
+		/** Get reverse zone */
+		if (!strrpos($data['record_value'], ':')) {
+			$rev_domain = trimFullStop(getNameFromID($data['PTR'], 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_name'));
+			$domain_pieces = array_reverse(explode('.', $rev_domain));
+			$domain_parts = count($domain_pieces);
+
+			$subnet_ips = '';
+			for ($i=2; $i<$domain_parts; $i++) {
+				if (strpos($domain_pieces[$i], '-')) break;
+				$subnet_ips .= $domain_pieces[$i] . '.';
+			}
+			$record_octets = array_reverse(explode('.', substr($data['record_value'], strlen($subnet_ips))));
+			$temp_record_value = '';
+			for ($j=0; $j<count($record_octets); $j++) {
+				$temp_record_value .= $record_octets[$j] . '.';
+			}
+			$data['record_value'] = rtrim($temp_record_value, '.');
+		} else {
+			/** IPv6 not yet supported */
+			return false;
+		}
+
+		if (isset($data['record_status'])) {
+			$array['record_status'] = $data['record_status'];
+		}
+		if (!isset($data['record_status']) || $data['record_status'] != 'deleted') {
+			$array = array(
+					'record_name' => $data['record_value'],
+					'record_ttl' => $data['record_ttl'],
+					'record_value' => $data['record_name'] . $domain,
+					'record_comment' => $data['record_comment']
+					);
+		}
+
+		global $fm_dns_records;
+		if ($operation == 'update') {
+			$fm_dns_records->update($data['PTR'], $old_record->record_ptr_id, 'PTR', $array);
+			
+			if ($fmdb->rows_affected) return true;
+			array_pop($array);
+		}
+		
+		if (!isset($data['record_status']) || $data['record_status'] != 'deleted') {
+			$fm_dns_records->add($data['PTR'], 'PTR', $array, 'replace');
+			if ($fmdb->insert_id != $forward_record_id) {
+				basicUpdate('fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'records', $forward_record_id, 'record_ptr_id', $fmdb->insert_id, 'record_id');
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+	return false;
 }
 
 

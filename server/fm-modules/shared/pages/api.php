@@ -21,53 +21,88 @@
  +-------------------------------------------------------------------------+
 */
 
-/** Ensure we have data to process */
-if (!isset($_POST) || !count($_POST)) {
-	exit;
-}
+header("Content-Type: application/json");
 
 /** Handle client interactions */
 if (!defined('CLIENT')) define('CLIENT', true);
+
+$message = '';
+
+/** Get the request method */
+$method = $_SERVER['REQUEST_METHOD'];
+$valid_api_request_methods = ['GET', 'POST', 'PATCH', 'DELETE'];
+if (!in_array($method, $valid_api_request_methods)) {
+	returnAPIStatus(405);
+}
+
+if (is_array($_REQUEST)) {
+	extract(cleanAndTrimInputs($_REQUEST));
+}
+if (is_array($api_input)) {
+	extract($api_input, EXTR_OVERWRITE);
+	if (isset($api)) {
+		$api = cleanAndTrimInputs($api);
+	}
+}
+
+if (!isset($_SERVER['HTTP_X_API_KEY']) || !isset($_SERVER['HTTP_X_API_SECRET']) || !isset($_SERVER['HTTP_AUTHKEY'])) {
+	returnAPIStatus(401);
+}
+
+$auth['AUTHKEY'] = $_SERVER['HTTP_AUTHKEY'];
+$auth['API_KEY'] = cleanAndTrimInputs($_SERVER['HTTP_X_API_KEY']);
+$auth['API_SECRET'] = cleanAndTrimInputs($_SERVER['HTTP_X_API_SECRET']);
+
+// /** Ensure we have data to process */
+// if (!isset($_POST) || !count($_POST)) {
+// 	exit;
+// }
 
 require_once('fm-init.php');
 include(ABSPATH . 'fm-modules/facileManager/classes/class_accounts.php');
 
 /** Ensure we have a valid account */
-$account_verify = $fm_accounts->verify($_POST);
+$account_verify = $fm_accounts->verify($auth);
 if ($account_verify != 'Success') {
-	if ($_POST['compress']) echo gzcompress(serialize($account_verify));
-	else echo serialize($account_verify);
-	exit;
+	returnAPIStatus(401, $account_verify);
 }
 
-/** Authenticate token */
+/** Authenticate key */
 require_once(ABSPATH . 'fm-modules/facileManager/classes/class_logins.php');
-$logged_in = @$fm_login->doAPIAuth(sanitize($_POST['APIKEY']), sanitize($_POST['APISECRET']));
+$logged_in = @$fm_login->doAPIAuth($auth['API_KEY'], $auth['API_SECRET'], $auth['AUTHKEY']);
 
 if (!$logged_in) {
-	$message = _('Invalid credentials.') . "\n";
-	if ($_POST['compress']) echo gzcompress(serialize($message));
-	else echo serialize($message);
-	exit;
+	returnAPIStatus(401);
 }
 
-if (isset($_POST['test'])) {
-	$message = _('API functionality tests were successful.') . "\n";
-	if ($_POST['compress']) echo gzcompress(serialize($message));
-	else echo serialize($message);
-	exit;
+if (isset($apitest)) {
+	returnAPIStatus(200, _('API functionality tests were successful.'));
+}
+
+if (!isset($module_name)) {
+	returnAPIStatus(400);
+}
+
+/** Parse REST API URI */
+$uri_path_dir = (substr($GLOBALS['path_parts']['path'], -1) == '/') ? $GLOBALS['path_parts']['path'] : $GLOBALS['path_parts']['dirname'];
+$uri_path_dir = strtolower($uri_path_dir);
+$_path_parts = array_map('strtolower', explode('/', $uri_path_dir));
+$lower_module_name = strtolower($module_name);
+$api_root_key = array_search($lower_module_name, $_path_parts);
+
+if (strpos($uri_path_dir . '/', "/api/$lower_module_name/") === false) {
+	returnAPIStatus(400);
 }
 
 /** Include actions from module */
-$module_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_POST['module_name'] . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'api.inc.php';
+$module_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $module_name . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'api.inc.php';
 if (file_exists($module_file)) {
 	include($module_file);
 }
 
 /** Output $data */
 if (!empty($data)) {
-	if ($_POST['compress']) echo gzcompress(serialize($data));
-	else echo serialize($data);
+	returnAPIStatus(200, $data);
 }
 
 exit;

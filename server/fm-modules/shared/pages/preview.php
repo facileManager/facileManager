@@ -52,7 +52,7 @@ if (array_key_exists('server_serial_no', $_GET) && is_numeric($_GET['server_seri
 
 	basicGet('fm_accounts', $_SESSION['user']['account_id'], 'account_', 'account_id');
 	$account_result = $fmdb->last_result;
-	$data['AUTHKEY'] = $account_result[0]->account_key;
+	$_SERVER['HTTP_AUTHKEY'] = $account_result[0]->account_key;
 	
 	if (!isset($config)) $config = 'server';
 	

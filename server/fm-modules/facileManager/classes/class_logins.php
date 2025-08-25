@@ -670,8 +670,8 @@ This link expires in %s.',
 	 * @since 3.0
 	 * @package facileManager
 	 *
-	 * @param resource $ldap_connect Resource to close
-	 * @return boolean
+	 * @param LDAP\Connection $ldap_connect Resource to close
+	 * @return null
 	 */
 	private function closeLDAPConnect($ldap_connect) {
 		if (is_resource($ldap_connect)) {
@@ -687,10 +687,10 @@ This link expires in %s.',
 	 * @since 3.0
 	 * @package facileManager
 	 *
-	 * @param resource $ldap_connect Resource to use
+	 * @param LDAP\Connection $ldap_connect Resource to use
 	 * @param string $samaccountname SAM Account name to search for
 	 * @param string $basedn Base DN to use
-	 * @return boolean
+	 * @return boolean|string
 	 */
 	private function getDN($ldap_connect, $samaccountname, $basedn) {
 		$attributes = array('dn');
@@ -709,7 +709,7 @@ This link expires in %s.',
 	 * @since 3.0
 	 * @package facileManager
 	 *
-	 * @param resource $ldap_connect Resource to use
+	 * @param LDAP\Connection $ldap_connect Resource to use
 	 * @param string $userdn
 	 * @param string $groupdn
 	 * @param string $ldap_group_attribute
@@ -742,16 +742,17 @@ This link expires in %s.',
 	 *
 	 * @param string $token API key
 	 * @param string $secret API secret key
+	 * @param string $authkey Account authentication key
 	 * @return boolean
 	 */
-	function doAPIAuth($token, $secret) {
+	function doAPIAuth($token, $secret, $authkey = 'default') {
 		global $fmdb;
 
-		$result = $fmdb->get_results("SELECT * FROM `fm_keys` WHERE `key_status`='active' AND `key_token`='$token' AND `account_id`='" . getAccountID($_POST['AUTHKEY']) . "'");
+		$result = $fmdb->get_results("SELECT * FROM `fm_keys` WHERE `key_status`='active' AND `key_token`='$token' AND `account_id`='" . getAccountID($authkey) . "'");
 		if (!$fmdb->num_rows) {
 			return false;
 		}
-		$apikey = $fmdb->last_result[0];
+		$apikey = $result[0];
 		
 		/** Check token secret */
 		/** PHP hashing */
@@ -759,12 +760,12 @@ This link expires in %s.',
 			return false;
 		}
 		
-		$result = $fmdb->get_results("SELECT * FROM `fm_users` WHERE `user_status`='active' AND `user_template_only`='no' AND `user_id`=" . $apikey->user_id . " AND `account_id`='" . getAccountID($_POST['AUTHKEY']) . "'");
+		$result = $fmdb->get_results("SELECT * FROM `fm_users` WHERE `user_status`='active' AND `user_template_only`='no' AND `user_id`=" . $apikey->user_id . " AND `account_id`='" . getAccountID($authkey) . "'");
 		if (!$fmdb->num_rows) {
 			return false;
 		}
 
-		$this->setSession($fmdb->last_result[0]);
+		$this->setSession($result[0]);
 
 		return true;
 	}
