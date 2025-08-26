@@ -95,6 +95,9 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 		$fmdb = new fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host']);
 
 		/** Trim and sanitize inputs */
+		if (array_key_exists('uri_params', $_POST) && !is_array($_POST['uri_params']) && json_validate($_POST['uri_params'])) {
+			$_POST['uri_params'] = json_decode($_POST['uri_params'], true);
+		}
 		$_POST = cleanAndTrimInputs($_POST);
 		if (isset($_SERVER['HTTP_AUTHKEY'])) {
 			$_SERVER['HTTP_AUTHKEY'] = sanitize($_SERVER['HTTP_AUTHKEY']);

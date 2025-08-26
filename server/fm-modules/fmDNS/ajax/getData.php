@@ -284,6 +284,22 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 	}
 	
 	exit($server_zone_data);
+} elseif (is_array($_POST) && array_key_exists('zone_records_import_form', $_POST) && currentUserCan('manage_records', $_SESSION['module']) && zoneAccessIsAllowed(array($_POST['domain_id']))) {
+	$import_form = sprintf('
+			<form id="import-zone-file" name="import-zone-file" enctype="multipart/form-data">
+			<input type="hidden" name="item_type" value="domain" />
+			<p>%s</p>
+			<table class="form-table">
+				<tr>
+					<th>%s:</th>
+					<td><input id="import-file" name="import-file" type="file" /></td>
+				</tr>
+			</table>
+			</form>
+			', __('Import records from a BIND-compatible zone file.'),
+				__('File to import'));
+	$import_form = buildPopup('header', __('Import Zone File')) . '<p>' . $import_form . '</p>' . buildPopup('footer', __('Verify'));
+	exit($import_form);
 }
 
 if (is_array($_GET) && array_key_exists('action', $_GET) && $_GET['action'] == 'display-process-all') {

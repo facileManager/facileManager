@@ -4234,6 +4234,7 @@ function displayPreAppForm($page_title, $content_id, $left_content, $right_conte
 	return $form;
 }
 
+
 /**
  * Sets the HTTP header code
  * @param integer $code Header code to set
@@ -4260,3 +4261,18 @@ function setHeader($code) {
 			break;
 	}
 }
+
+
+/**
+ * Checks if a string is valid JSON
+ * @param string $json JSON string to validate
+ * @return boolean
+ */
+if (!function_exists('json_validate')) {
+	function json_validate(string $json) {
+		json_decode($json);
+		return json_last_error() === JSON_ERROR_NONE;
+	}
+}
+
+
