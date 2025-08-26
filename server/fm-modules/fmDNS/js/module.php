@@ -389,6 +389,40 @@ $(document).ready(function() {
 		}
 	});
 
+	/* Zone record import form */
+	$(".import-records-form").on("click tap", function(e) {
+		var $this 		= $(this);
+
+		$("body").addClass("fm-noscroll");
+		$("#manage_item").fadeIn(200);
+		$(".popup-wait").show();
+		$("#response").fadeOut();
+
+		var form_data = {
+			add_form: true,
+			zone_records_import_form: true,
+			domain_id: getUrlVars()["domain_id"],
+			is_ajax: 1
+		};
+
+		$.ajax({
+			type: "POST",
+			url: "fm-modules/' . $module_name . '/ajax/getData.php",
+			data: form_data,
+			success: function(response)
+			{
+				if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				}
+				$("#manage_item_contents").html(response);
+				$(".popup-wait").hide();
+			}
+		});
+
+		return false;
+	});
+
 	/* Zone reload button */
 	$("#zones").delegate("form", "click tap", function(e) {
 		var $this 	= $(this);

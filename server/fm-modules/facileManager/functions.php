@@ -4322,3 +4322,22 @@ function getThemes() {
 function isMaintenanceMode() {
 	return getOption('maintenance_mode');
 }
+
+
+/**
+ * Checks if a string is valid JSON
+ *
+ * @since 5.4.0
+ * @package facileManager
+ *
+ * @param string $json JSON string to validate
+ * @return boolean
+ */
+if (!function_exists('json_validate')) {
+	function json_validate(string $json) {
+		json_decode($json);
+		return json_last_error() === JSON_ERROR_NONE;
+	}
+}
+
+

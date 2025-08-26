@@ -103,6 +103,7 @@ if ($current_user_can_manage_records && $zone_access_allowed) {
 	if ($soa_count && $ns_count && getNameFromID($domain_id, 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_type') == 'primary') {
 		$addl_buttons[] = '<a href="preview.php" onclick="javascript:void window.open(\'preview.php?server_serial_no=-1&config=zone&domain_id=' . $domain_id . '\',\'1356124444538\',\'' . $__FM_CONFIG['default']['popup']['dimensions'] . ',toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0\');return false;" class="button"><i class="fa fa-search" aria-hidden="true"></i>' . __('Preview') . '</a>';
 	}
+	$addl_buttons[] = sprintf('<a class="button import-records-form" /><i class="fa fa-upload" aria-hidden="true"></i>%s</a>' . "\n", __('Import'));
 } else $addl_buttons = null;
 
 echo printPageHeader(array('message' => $response, 'class' => $response_class), null, !in_array($record_type, array('SOA', 'CUSTOM')) && $current_user_can_manage_records && $zone_access_allowed, 'zone-records', null, 'noscroll', $addl_title_blocks);

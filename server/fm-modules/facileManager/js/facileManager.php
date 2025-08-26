@@ -690,13 +690,19 @@ if (isset($__FM_CONFIG)) {
 		}
 		$form_table = $("div.popup-contents table");
 
-		var uri_params = {"uri_params":getUrlVars()};
-		var form_data = $("div.popup-contents form").serialize() + "&" + $.param(uri_params);
+		var form_data = new FormData($("div.popup-contents form")[0]);
+		form_data.append("uri_params", JSON.stringify(getUrlVars()));
+		var file = $("#import-file")[0].files[0];
+		if (file) {
+			form_data.append("import-file", file);
+		}
 
 		$.ajax({
 			type: "POST",
 			url: "fm-modules/facileManager/ajax/processPost.php",
 			data: form_data,
+			processData: false,      // Prevent jQuery from processing the data
+			contentType: false,      // Prevent jQuery from setting content type header
 			success: function(response)
 			{
 				if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
@@ -720,33 +726,38 @@ if (isset($__FM_CONFIG)) {
 						});
 					}
 				} else if (response != "Success" && !$.isNumeric(response)) {
-					$("#popup_response").html("<p>" + response + "</p>");
+					/* Response contains popup */
+					if (response.indexOf("popup-header") >= 0) {
+						$("#manage_item_contents").html(response);
+					} else {
+						$("#popup_response").html("<p>" + response + "</p>");
 
-					/* Popup response more link */
-					$("#popup_response").delegate("a.more", "click tap", function(e1) {
-						e1.preventDefault();
-						error_div = $("#popup_response div#error")
-						if (error_div.is(":visible")) {
-							error_div.hide();
-							$(this).text("' . _('more') . '");
-						} else {
-							error_div.show();
-							$(this).text("' . _('less') . '");
+						/* Popup response more link */
+						$("#popup_response").delegate("a.more", "click tap", function(e1) {
+							e1.preventDefault();
+							error_div = $("#popup_response div#error")
+							if (error_div.is(":visible")) {
+								error_div.hide();
+								$(this).text("' . _('more') . '");
+							} else {
+								error_div.show();
+								$(this).text("' . _('less') . '");
+							}
+						});
+						$("#popup_response").delegate("#response_close i.close", "click tap", function(e2) {
+							e2.preventDefault();
+							$("#popup_response").fadeOut(200, function() {
+								$("#popup_response").html();
+							});
+						});
+					
+						$("#popup_response").fadeIn(200);
+
+						if (response.indexOf("a class=\"more\"") <= 0) {
+							$("#popup_response").delay(2000).fadeOut(200, function() {
+								$("#popup_response").html();
+							});
 						}
-					});
-					$("#popup_response").delegate("#response_close i.close", "click tap", function(e2) {
-						e2.preventDefault();
-						$("#popup_response").fadeOut(200, function() {
-							$("#popup_response").html();
-						});
-					});
-				
-					$("#popup_response").fadeIn(200);
-
-					if (response.indexOf("a class=\"more\"") <= 0) {
-						$("#popup_response").delay(2000).fadeOut(200, function() {
-							$("#popup_response").html();
-						});
 					}
 				} else {
 					location.reload();
