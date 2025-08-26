@@ -21,6 +21,7 @@
 * Server - [improvement] Increased the maximum character length for SOA master and email address
            to 255 characters. (#696)
 * Server - [improvement] SOA negative cache can now be set independently of SOA TTL. (#700)
+* Server - [improvement] Records can now be imported into a zone from the records page.
 * Server - [bug] Fixed URL in error message when attempting to clear cache.
 * Server - [bug] Fixed PHP error during record deletion.
 * Server - [bug] All records can now be viewed with reverse zones. (#698)

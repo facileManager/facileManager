@@ -4265,6 +4265,10 @@ function setHeader($code) {
 
 /**
  * Checks if a string is valid JSON
+ *
+ * @since 5.4.0
+ * @package facileManager
+ *
  * @param string $json JSON string to validate
  * @return boolean
  */
