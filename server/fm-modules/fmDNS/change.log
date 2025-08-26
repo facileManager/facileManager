@@ -1,5 +1,6 @@
 7.2.0-beta2 (2025-08-??)
 ========================
+* Server - [bug] The 'reload' message appears after changing the SOA for a zone.
 * Both   - [improvement] API changes:
              - Rewritten to support REST and provide JSON output.
              - Supports automatically managing the PTR for A records. (Issue #579)

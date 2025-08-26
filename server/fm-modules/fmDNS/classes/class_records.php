@@ -1197,7 +1197,7 @@ HTML;
 			$this->assignSOA($content[$create_update]['soa_template_chosen'], $domain_id);
 			return 'Success';
 		}
-		unset($content[$create_update]['soa_template_chosen']);
+		unset($content[$create_update]['soa_template_chosen'], $_POST[$create_update]['soa_template_chosen']);
 	
 		if (isset($content['update'])) {
 			$content[$create_update] = $this->buildUpdateArray($domain_id, $record_type, $content[$create_update]);

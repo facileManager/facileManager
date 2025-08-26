@@ -287,6 +287,19 @@ $(document).ready(function() {
 						$(".submit-success").delay(2000).fadeOut(200, function() {
 							$(".submit-success").remove();
 						});
+						if (!$("#response").is(":visible")) {
+							var text = "<p>' . sprintf(__('You need to %s this zone'), sprintf("<a href='' class='zone_reload' id='_DOMAIN_ID_'>%s</a>", __('reload'))) . '</p>";
+							text = text.replace("_DOMAIN_ID_", getUrlVars()["domain_id"]);
+							$("#response").html(text);
+							$("#response")
+								.css("opacity", 0)
+								.slideDown(400, function() {
+									$("#response").animate(
+										{ opacity: 1 },
+										{ queue: false, duration: 200 }
+									);
+								});
+						}
 					}
 				} else if (response.indexOf("popup_response") >= 0) {
 					$("body").addClass("fm-noscroll");
@@ -432,7 +445,7 @@ $(document).ready(function() {
 	});
 
 	/* Zone reload link */
-	$("a.zone_reload").click(function(e) {
+	$("#response").delegate("a.zone_reload", "click tap", function(e) {
 		var $this 	= $(this);
 		domain_id	= $this.attr("id");
 
