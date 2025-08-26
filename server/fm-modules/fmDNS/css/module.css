@@ -14,7 +14,8 @@ tr.import_swap select {
 }
 
 tr.import_swap td {
-	white-space: nowrap;
+	white-space: break-spaces;
+	word-wrap: break-word;
 }
 
 #server_update_port_style,

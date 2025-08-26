@@ -2,6 +2,7 @@
 ========================
 * Server - [improvement] Records can now be imported into a zone from the records page.
 * Server - [bug] The 'reload' message appears after changing the SOA for a zone.
+* Server - [bug] Fixed PHP errors when importing zone files.
 * Both   - [improvement] API changes:
              - Rewritten to support REST and provide JSON output.
              - Supports automatically managing the PTR for A records. (Issue #579)
