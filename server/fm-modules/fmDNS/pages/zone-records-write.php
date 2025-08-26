@@ -169,6 +169,12 @@ if (isset($create) && is_array($create)) {
 
 if (isset($record_type) && ($domain_id || (!$domain_id && $record_type == 'SOA')) && !isset($import_records)) {
 	if (defined('AJAX')) {
+		/** Determine if zone reload is appropriate */
+		if ($record_type == 'SOA' && $domain_id && reloadZone($domain_id)) {
+			if (reloadAllowed($domain_id) && currentUserCan('reload_zones', $_SESSION['module']) && zoneAccessIsAllowed(getZoneParentID($domain_id))) {
+				exit('Reload');
+			}
+		}
 		exit('Success');
 	} elseif (isset($_POST['uri'])) {
 		header('Location: ' . $_POST['uri']);

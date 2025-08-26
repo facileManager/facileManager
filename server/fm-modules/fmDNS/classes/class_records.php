@@ -1195,6 +1195,11 @@ HTML;
 		if (isset($content[$create_update]['soa_template_chosen']) && $content[$create_update]['soa_template_chosen']) {
 			/** Save the soa_template_chosen in domains table and end */
 			$this->assignSOA($content[$create_update]['soa_template_chosen'], $domain_id);
+			if (reloadZone($domain_id)) {
+				if (reloadAllowed($domain_id) && currentUserCan('reload_zones', $_SESSION['module']) && zoneAccessIsAllowed(getZoneParentID($domain_id))) {
+					return 'Reload';
+				}
+			}
 			return 'Success';
 		}
 		unset($content[$create_update]['soa_template_chosen'], $_POST[$create_update]['soa_template_chosen']);
