@@ -37,7 +37,7 @@ class fm_module_servers extends fm_shared_module_servers {
 		echo displayPagination($page, $total_pages);
 
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="servers">%s</p>', __('There are no servers defined.'));
+			printf('<p id="table_edits" class="noresult" name="servers">%s</p>', _('There are no items defined.'));
 		} else {
 			$table_info = array(
 							'class' => 'display_results',

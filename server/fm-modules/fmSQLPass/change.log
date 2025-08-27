@@ -1,3 +1,8 @@
+1.11.0 (2025-??-??)
+===================
+* Server - [improvement] Code cleanup.
+* Server - [improvement] Changed "no results" message to be the same for consistency.
+
 1.10.0 (2025-01-18)
 ===================
 * Server - [improvement] Code clean up.

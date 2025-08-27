@@ -35,7 +35,7 @@ class fm_sqlpass_groups {
 		echo displayPagination($page, $total_pages);
 
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="groups">%s</p>', __('There are no server groups.'));
+			printf('<p id="table_edits" class="noresult" name="groups">%s</p>', _('There are no items defined.'));
 		} else {
 			$table_info = array(
 							'class' => 'display_results',
