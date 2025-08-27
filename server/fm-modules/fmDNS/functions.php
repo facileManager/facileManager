@@ -58,9 +58,11 @@ function buildModuleDashboard() {
 	global $fmdb, $__FM_CONFIG;
 
 	$errors = '';
-	
+	$display_server_count = false;
+
 	/** Name server stats */
 	if (currentUserCan('manage_servers', $_SESSION['module'])) {
+		$display_server_count = true;
 		basicGetList('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'servers', 'server_id', 'server_', 'AND server_type!="remote"');
 		$server_count = $fmdb->num_rows;
 		$server_results = $fmdb->last_result;
@@ -76,24 +78,32 @@ function buildModuleDashboard() {
 	}
 	
 	/** Zone stats */
-	basicGet('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'no', 'domain_', 'domain_template');
-	$domain_count = $fmdb->num_rows;
+	basicGetList('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_id', 'domain_');
+	$domain_count = $fmdb->num_rows; 
 	$domain_results = $fmdb->last_result;
+	$privileged_domain_count = $record_count = 0;
 	for ($i=0; $i<$domain_count; $i++) {
+		$zone_access_allowed = currentUserCan(array('access_specific_zones'), $_SESSION['module'], array(0, $domain_results[$i]->domain_id));
+		if ($zone_access_allowed) {
+			$privileged_domain_count++;
+
+			/** Get record count */
+			basicGet('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'records', $domain_results[$i]->domain_id, 'record_', 'domain_id');
+			if (!$fmdb->sql_errors) $record_count += $fmdb->num_rows;
+		}
+
+		/** Get zones that need attention */
 		if (!getSOACount($domain_results[$i]->domain_id) && !$domain_results[$i]->domain_clone_domain_id && 
-				$domain_results[$i]->domain_type == 'primary' && 
-				currentUserCan(array('access_specific_zones'), $_SESSION['module'], array(0, $domain_results[$i]->domain_id))) {
+				$domain_results[$i]->domain_type == 'primary' && $zone_access_allowed) {
 			$errors .= '<a href="zone-records.php?map=' . $domain_results[$i]->domain_mapping . '&domain_id=' . $domain_results[$i]->domain_id;
 			if (currentUserCan('manage_zones', $_SESSION['module'])) $errors .= '&record_type=SOA';
 			$errors .= '">' . displayFriendlyDomainName($domain_results[$i]->domain_name) . '</a> - ' . __('Zone does not have a SOA defined.') . "\n";
 		} elseif (!getNSCount($domain_results[$i]->domain_id) && !$domain_results[$i]->domain_clone_domain_id && 
-				$domain_results[$i]->domain_type == 'primary' && 
-				currentUserCan(array('access_specific_zones'), $_SESSION['module'], array(0, $domain_results[$i]->domain_id))) {
+				$domain_results[$i]->domain_type == 'primary' && $zone_access_allowed) {
 			$errors .= '<a href="zone-records.php?map=' . $domain_results[$i]->domain_mapping . '&domain_id=' . $domain_results[$i]->domain_id;
 			if (currentUserCan('manage_zones', $_SESSION['module'])) $errors .= '&record_type=NS';
 			$errors .= '">' . displayFriendlyDomainName($domain_results[$i]->domain_name) . '</a> - ' . __('Zone does not have any NS records defined.') . "\n";
-		} elseif ($domain_results[$i]->domain_reload != 'no' && 
-				currentUserCan(array('access_specific_zones'), $_SESSION['module'], array(0, $domain_results[$i]->domain_id)) &&
+		} elseif ($domain_results[$i]->domain_reload != 'no' && $zone_access_allowed &&
 				currentUserCan('reload_zones', $_SESSION['module'])) {
 			$errors .= '<a href="' . getMenuURL(ucfirst($domain_results[$i]->domain_mapping)) . '"><b>' . displayFriendlyDomainName($domain_results[$i]->domain_name) . '</b></a> - ' . __('Zone needs to be reloaded.') . "\n";
 		}
@@ -103,25 +113,18 @@ function buildModuleDashboard() {
 		$error_display = rtrim($error_display, '<li>');
 	} else $error_display = null;
 
-	/** Record stats */
-	$query = 'SELECT COUNT(*) record_count FROM fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'records WHERE record_status!="deleted" AND account_id=' . $_SESSION['user']['account_id'] .
-			' AND domain_id NOT IN (SELECT domain_id FROM fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains WHERE domain_status!="deleted" AND account_id=' . $_SESSION['user']['account_id'] .
-			' AND domain_template="yes")';
-	$fmdb->get_results($query);
-	$record_count = $fmdb->last_result[0]->record_count;
-
 	$dashboard = sprintf('<div>
 	<div id="shadow_box">
 		<div id="shadow_container">
 		<h3>%s</h3>
-		<li>%s</li>
+		%s
 		<li>%s</li>
 		<li>%s</li>
 		</div>
 	</div>
 	</div>', __('Summary'),
-			sprintf(ngettext('You have <b>%s</b> name server configured.', 'You have <b>%s</b> name servers configured.', $server_count), formatNumber($server_count)),
-			sprintf(ngettext('You have <b>%s</b> zone defined.', 'You have <b>%s</b> zones defined.', $domain_count), formatNumber($domain_count)),
+			($display_server_count == true) ? '<li>' . sprintf(ngettext('You have <b>%s</b> name server configured.', 'You have <b>%s</b> name servers configured.', $server_count), formatNumber($server_count)) . '</li>' : '',
+			sprintf(ngettext('You have <b>%s</b> zone defined.', 'You have <b>%s</b> zones defined.', $privileged_domain_count), formatNumber($privileged_domain_count)),
 			sprintf(ngettext('You have <b>%s</b> record.', 'You have <b>%s</b> records.', $record_count), formatNumber($record_count))
 			);
 
