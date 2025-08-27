@@ -102,8 +102,7 @@ class fm_module_servers extends fm_shared_module_servers {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			$message = $type == 'servers' ? __('There are no access points.') : __('There are no access point groups.');
-			printf('<p id="table_edits" class="noresult" name="servers">%s</p>', $message);
+			printf('<p id="table_edits" class="noresult" name="servers">%s</p>', _('There are no items defined.'));
 		}
 	}
 

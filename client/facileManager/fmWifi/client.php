@@ -44,7 +44,7 @@ $ebtables = (in_array('-e', $argv) || in_array('ebtables', $argv)) ? true : fals
 $output_type = 'human';
 
 /** Include shared client functions */
-$fm_client_functions = dirname(dirname(__FILE__)) . '/functions.php';
+$fm_client_functions = dirname(__FILE__, 2) . '/functions.php';
 if (file_exists($fm_client_functions)) {
 	include_once($fm_client_functions);
 } else {
