@@ -7,7 +7,7 @@ Please see LICENSE for license.
 
 Official site: https://www.facilemanager.com
 
-Official git repository: https://github.com/WillyXJ/facileManager
+Official git repository: https://github.com/facileManager/facileManager
 
 Official documentation: https://docs.facilemanager.com
 
