@@ -842,9 +842,12 @@ if (!isset($__FM_CONFIG)) {
 
 		var form_data = new FormData($("div.popup-contents form")[0]);
 		form_data.append("uri_params", JSON.stringify(getUrlVars()));
-		var file = $("#import-file")[0].files[0];
-		if (file) {
-			form_data.append("import-file", file);
+		var import_file = $("#import-file");
+		if (import_file.length) {
+			var file = import_file[0].files[0];
+			if (file) {
+				form_data.append("import-file", file);
+			}
 		}
 
 		$.ajax({
