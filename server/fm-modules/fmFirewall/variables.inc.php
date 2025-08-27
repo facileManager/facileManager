@@ -40,7 +40,6 @@ $__FM_CONFIG['fmFirewall'] = array(
 	);
 
 if($_SESSION['module'] == 'fmFirewall' && !defined('NO_DASH')) define('NO_DASH', true);
-$__FM_CONFIG['homepage'] = 'config-servers.php';
 
 /** Images */
 if (isset($__FM_CONFIG['module']['path'])) {

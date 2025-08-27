@@ -38,7 +38,6 @@ $__FM_CONFIG['fmSQLPass'] = array(
 	);
 
 if($_SESSION['module'] == 'fmSQLPass' && !defined('NO_DASH')) define('NO_DASH', true);
-$__FM_CONFIG['homepage'] = 'config-passwords.php';
 
 /** Default values */
 $pwd_strength_desc = null;
