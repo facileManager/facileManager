@@ -1,4 +1,4 @@
-5.4.0-beta2 (2025-08-??)
+5.4.0-beta2 (2025-08-26)
 ========================
 * Client - [improvment] The client may be installed on any system to only use the API. (Issue #589)
            Example: sudo php /usr/local/facileManager/<module>/client.php install api

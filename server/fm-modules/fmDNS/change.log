@@ -1,4 +1,4 @@
-7.2.0-beta2 (2025-08-??)
+7.2.0-beta2 (2025-08-26)
 ========================
 * Server - [improvement] Records can now be imported into a zone from the records page.
 * Server - [bug] The 'reload' message appears after changing the SOA for a zone.

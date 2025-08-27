@@ -30,7 +30,7 @@ function upgradefmDHCPSchema($module_name) {
 	$running_version = getOption('version', 0, 'fmDHCP');
 	
 	/** Checks to support older versions (ie n-3 upgrade scenarios */
-	$success = version_compare($running_version, '0.11.0', '<') ? upgradefmDHCP_0110($__FM_CONFIG, $running_version) : true;
+	$success = version_compare($running_version, '0.11.0-beta1', '<') ? upgradefmDHCP_0110b1($__FM_CONFIG, $running_version) : true;
 	if (!$success) return $fmdb->last_error;
 	
 	setOption('client_version', $__FM_CONFIG['fmDHCP']['client_version'], 'auto', false, 0, 'fmDHCP');
@@ -261,8 +261,8 @@ VALUES
 	return true;
 }
 
-/** 0.11.0 */
-function upgradefmDHCP_0110($__FM_CONFIG, $running_version) {
+/** 0.11.0-beta1 */
+function upgradefmDHCP_0110b1($__FM_CONFIG, $running_version) {
 	global $fmdb;
 	
 	$success = version_compare($running_version, '0.9.0', '<') ? upgradefmDHCP_090($__FM_CONFIG, $running_version) : true;
@@ -285,7 +285,7 @@ function upgradefmDHCP_0110($__FM_CONFIG, $running_version) {
 	));
 	
 	/** Handle updating table with module version **/
-	setOption('version', '0.11.0', 'auto', false, 0, 'fmDHCP');
+	setOption('version', '0.11.0-beta1', 'auto', false, 0, 'fmDHCP');
 	
 	return true;
 }

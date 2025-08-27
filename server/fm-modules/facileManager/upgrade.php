@@ -1084,8 +1084,8 @@ function fmUpgrade_531($database) {
 }
 
 
-/** fM v5.4.0 **/
-function fmUpgrade_540($database) {
+/** fM v5.4.0-beta1 **/
+function fmUpgrade_540b1($database) {
 	global $fmdb;
 	
 	/** Prereq */
