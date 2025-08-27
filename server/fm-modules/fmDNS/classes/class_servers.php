@@ -488,7 +488,6 @@ class fm_module_servers extends fm_shared_module_servers {
 			$os_image = ($row->server_type == 'remote') ? '<i class="fa fa-globe fa-2x grey" style="font-size: 1.5em" title="' . __('Remote server') . '" aria-hidden="true"></i>' : setOSIcon($row->server_os_distro);
 
 			$edit_actions = $preview = ($row->server_type != 'remote') ? '<a href="preview.php" onclick="javascript:void window.open(\'preview.php?server_serial_no=' . $row->server_serial_no . '\',\'1356124444538\',\'' . $__FM_CONFIG['default']['popup']['dimensions'] . ',toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0\');return false;">' . $__FM_CONFIG['icons']['preview'] . '</a>' : null;
-			if ($row->server_type != 'url-only') $icons[] = sprintf('<a href="config-options.php?server_id=%d" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-sliders" aria-hidden="true"></i></a>', $row->server_id, __('Configure Additional Options'));
 			if ($row->server_url_server_type) $icons[] = sprintf('<a href="#" class="tooltip-top mini-icon" data-tooltip="%s"><i class="fa fa-globe" aria-hidden="true"></i></a>', sprintf(__('This server hosts URL redirects with %s for the URL RR'), $row->server_url_server_type));
 			$checkbox = null;
 
@@ -499,6 +498,7 @@ class fm_module_servers extends fm_shared_module_servers {
 				}
 			}
 			if (currentUserCan('manage_servers', $_SESSION['module'])) {
+				if ($row->server_type != 'url-only') $icons[] = sprintf('<a href="config-options.php?server_id=%d" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-sliders" aria-hidden="true"></i></a>', $row->server_id, __('Configure Additional Options'));
 				$edit_status = '<a class="edit_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 				if ($row->server_installed == 'yes' || $row->server_type == 'remote') {
 					$edit_status .= '<a class="status_form_link" href="#" rel="';

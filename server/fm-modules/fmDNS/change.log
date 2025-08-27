@@ -4,6 +4,7 @@
 * Server - [bug] The 'reload' message appears after changing the SOA for a zone.
 * Server - [bug] Fixed PHP errors when importing zone files.
 * Server - [bug] Fixed unprivileged user dashboard statistics. (#699)
+* Server - [bug] Removed server configuration icon for unprivileged users.
 * Both   - [improvement] API changes:
              - Rewritten to support REST and provide JSON output.
              - Supports automatically managing the PTR for A records. (Issue #579)
