@@ -279,7 +279,10 @@ function upgradefmDHCP_0110($__FM_CONFIG, $running_version) {
 		}
 	}
 
-	// Delete config-peers.php
+	/** Delete unused files */
+	deleteDeprecatedFiles(array(
+		dirname(__FILE__) . 'pages/config-peers.php'
+	));
 	
 	/** Handle updating table with module version **/
 	setOption('version', '0.11.0', 'auto', false, 0, 'fmDHCP');

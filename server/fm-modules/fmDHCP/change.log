@@ -2,6 +2,7 @@
 ===================
 * Server - [improvement] Changed "no results" message to be the same for consistency.
 * Server - [improvement] Removed unused database table columns.
+* Server - [improvement] Removed unused files.
 * Server - [bug] PHP error fixes.
 * Both   - [improvement] Code changes to support fM core API changes.
 * Both   - [improvement] Code cleanup.
