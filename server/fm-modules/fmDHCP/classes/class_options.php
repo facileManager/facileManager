@@ -71,7 +71,7 @@ class fm_module_options {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="options">%s</p>', __('There are no options.'));
+			printf('<p id="table_edits" class="noresult" name="options">%s</p>', _('There are no items defined.'));
 		}
 	}
 

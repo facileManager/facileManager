@@ -61,7 +61,6 @@ CREATE TABLE IF NOT EXISTS `$database`.`fm_{$__FM_CONFIG[$module]['prefix']}conf
   `config_parent_id` int(11) NOT NULL DEFAULT '0',
   `config_name` varchar(50) NOT NULL,
   `config_data` text NOT NULL,
-  `config_assigned_to` int(11) NOT NULL DEFAULT '0',
   `config_comment` text,
   `config_status` enum('active','disabled','deleted') NOT NULL DEFAULT 'active',
   PRIMARY KEY (`config_id`)

@@ -1,6 +1,10 @@
 0.11.0 (2025-??-??)
 ===================
+* Server - [improvement] Changed "no results" message to be the same for consistency.
+* Server - [improvement] Removed unused database table columns.
+* Server - [bug] PHP error fixes.
 * Both   - [improvement] Code changes to support fM core API changes.
+* Both   - [improvement] Code cleanup.
 
 0.10.2 (2025-05-27)
 ===================
