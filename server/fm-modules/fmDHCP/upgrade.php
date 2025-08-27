@@ -269,12 +269,12 @@ function upgradefmDHCP_0110b1($__FM_CONFIG, $running_version) {
 	if (!$success) return false;
 
 	/** Insert upgrade steps here **/
-	if (columnExists("fm_{$__FM_CONFIG['fmDNS']['prefix']}config", 'config_assigned_to')) {
+	if (columnExists("fm_{$__FM_CONFIG['fmDHCP']['prefix']}config", 'config_assigned_to')) {
 		$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDHCP']['prefix']}config` DROP `config_assigned_to`";
 	}
 	
 	/** Run queries */
-	if (count($queries) && $queries[0]) {
+	if (isset($queries) && count($queries) && $queries[0]) {
 		foreach ($queries as $schema) {
 			$fmdb->query($schema);
 			if (!$fmdb->result || $fmdb->sql_errors) return false;
