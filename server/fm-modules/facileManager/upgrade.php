@@ -176,9 +176,7 @@ function columnExists($table, $column) {
  * @param array $files_to_delete Array of files to delete
  */
 function deleteDeprecatedFiles($files_to_delete) {
-	$this_dir = dirname(__FILE__, 3);
-	foreach ($files_to_delete as $file) {
-		$filename = $this_dir . '/' . $file;
+	foreach ($files_to_delete as $filename) {
 		if (is_writable($filename)) {
 			unlink($filename);
 		}
@@ -1103,10 +1101,10 @@ function fmUpgrade_540b1($database) {
 
 		/** Delete unused files */
 		deleteDeprecatedFiles(array(
-			dirname(__FILE__) . 'pages/help.php',
-			dirname(__FILE__) . 'pages/admin-settings.php',
-			dirname(__FILE__) . 'pages/admin-modules.php',
-			dirname(__FILE__) . 'css/install.css'
+			dirname(__FILE__) . '/pages/help.php',
+			dirname(__FILE__) . '/pages/admin-settings.php',
+			dirname(__FILE__) . '/pages/admin-modules.php',
+			dirname(__FILE__) . '/css/install.css'
 		));
 	}
 

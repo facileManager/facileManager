@@ -281,7 +281,7 @@ function upgradefmDHCP_0110b1($__FM_CONFIG, $running_version) {
 
 	/** Delete unused files */
 	deleteDeprecatedFiles(array(
-		dirname(__FILE__) . 'pages/config-peers.php'
+		dirname(__FILE__) . '/pages/config-peers.php'
 	));
 	
 	/** Handle updating table with module version **/

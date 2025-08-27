@@ -2838,7 +2838,7 @@ function upgradefmDNS_700b2($__FM_CONFIG, $running_version) {
 
 	/** Delete unused files */
 	deleteDeprecatedFiles(array(
-		dirname(__FILE__) . 'pages/config-rpz.php'
+		dirname(__FILE__) . '/pages/config-rpz.php'
 	));
 
 	setOption('version', '7.0.0-beta2', 'auto', false, 0, 'fmDNS');
@@ -2949,7 +2949,7 @@ function upgradefmDNS_711($__FM_CONFIG, $running_version) {
 
 	/** Delete unused files */
 	deleteDeprecatedFiles(array(
-		dirname(__FILE__) . 'pages/zone-records-validate.php'
+		dirname(__FILE__) . '/pages/zone-records-validate.php'
 	));
 
 	setOption('version', '7.1.1', 'auto', false, 0, 'fmDNS');
@@ -2976,6 +2976,12 @@ function upgradefmDNS_720b1($__FM_CONFIG, $running_version) {
 			$fmdb->query($schema);
 		}
 	}
+
+	/** Delete unused files */
+	deleteDeprecatedFiles(array(
+		dirname(__FILE__) . '/pages/config-rpz.php',
+		dirname(__FILE__) . '/pages/zone-records-validate.php'
+	));
 
 	setOption('version', '7.2.0-beta1', 'auto', false, 0, 'fmDNS');
 	
