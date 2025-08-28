@@ -151,8 +151,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 			$prefix = 'config_';
 			$field = 'config_id';
 			$field_data = $prefix . 'data';
-			$type_map = $_POST['item_type'];
-			$type_map = @isset($_POST['request_uri']['option_type']) ? sanitize($_POST['request_uri']['option_type']) : 'global';
+			$type_map = @isset($_POST['item_id']) ? 'wlan' : 'global';
 			break;
 	}
 	

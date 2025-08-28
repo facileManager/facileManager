@@ -283,7 +283,7 @@ HTML;
 		$avail_options_array = $this->availableOptions($action, $server_serial_no, $config_type, $config_name);
 		$config_avail_options = buildSelect('config_name', 'config_name', $avail_options_array, $config_name, 1, $disabled, false, 'displayOptionPlaceholder()');
 
-		$query = "SELECT def_type FROM fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}functions WHERE def_function='$config_type' AND 
+		$query = "SELECT def_type FROM fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}functions WHERE def_function='options' AND def_option_type='$config_type' AND 
 				def_option=";
 		if ($action != 'add') {
 			$query .= "'$config_name'";
@@ -397,17 +397,8 @@ HTML;
 				}
 			}
 			
-			$query = "SELECT * FROM fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}functions WHERE def_function='options'";
-			$query .= " AND def_option_type IN ('";
-			if (isset($_POST['item_id']) && $_POST['item_id'] != 0) {
-				$query .= $_POST['item_sub_type'];
-				if ($_POST['item_sub_type'] != 'failover') {
-					$query .= "','global";
-				}
-			} else {
-				$query .= 'global';
-			}
-			$query .= "')";
+			$query = "SELECT * FROM fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}functions WHERE def_function='options'
+				AND def_option_type = '$option_type' AND def_option NOT IN ('ssid', 'driver')";
 		} else {
 			$query = "SELECT * FROM fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}functions WHERE def_function='options'
 				AND def_option='$config_name'";

@@ -2,6 +2,7 @@
 ==================
 * Server - [improvement] Changed "no results" message to be the same for consistency.
 * Server - [bug] Global WLAN options are now included in the configuration.
+* Server - [bug] Fixed issue where some WLAN options were not being applied.
 * Both - [improvement] Code cleanup.
 
 0.7.1 (2025-05-27)
