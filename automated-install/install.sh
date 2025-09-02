@@ -193,7 +193,7 @@ installDependentPackage() {
     local str="Installing facileManager dependency package (${package})"
     printf "  %b %s" "${INFO}" "${str}"
 
-    if [ eval "${PKG_INSTALL}" "${package}" &>/dev/null ]; then
+    if eval "${PKG_INSTALL}" "${package}" &>/dev/null; then
         printf "%b  %b %s\\n" "${OVER}" "${PASS}" "${str}"
     else
         printf "%b  %b %s\\n" "${OVER}" "${FAIL}" "${str}"
@@ -408,6 +408,7 @@ installCore() {
     detectPackageManager "${dependencies[@]}"
 
     local str='Checking for package dependencies'
+    local install_error=0
 
     printf "\\n  %b %s" "${DASH}" "${str}"
 
@@ -416,10 +417,37 @@ installCore() {
         printf "%b  %b %s\\n" "${OVER}" "${QUESTION}" "${str}"
         printf "  %b %bFM_SKIP_DEP_CHECK or FM_SKIP_ALL_CHECKS env variable set - Skipping%b\\n" "${INFO}" "${COLOR_YELLOW}" "${COLOR_NONE}"
     else
-        # Install the dependencies
-        for p in "${dependencies[@]}"; do
-            installDependentPackage "${p}"
-        done
+        echo
+        
+        # Check if php exists
+        if ! findProgram php; then
+            installDependentPackage "php-cli"
+            if [ $? -ne 0 ]; then
+                install_error=1
+            fi
+        fi
+
+        # Remove php-cli from dependencies since it's already installed
+        dependencies=("${dependencies[@]/php-cli}")
+
+        # Check php module dependencies and install if missing
+        if [ "${install_error}" -eq 0 ]; then
+            for p in "${dependencies[@]}"; do
+                if ! php -m | grep -q "^${p##php-}$"; then
+                    installDependentPackage "${p}"
+                    if [ $? -ne 0 ]; then
+                        install_error=1
+                    fi
+                fi
+            done
+        fi
+    fi
+    if [ "${install_error}" -eq 1 ]; then
+        printf "  %b One or more dependency packages could not be installed.\\n" "${FAIL}"
+        printf "      Please install the missing packages and then re-run the installer.\\n"
+        printf "      This check can be skipped by setting the environment variable to true\\n"
+        printf "        %bexport FM_SKIP_DEP_CHECK=true%b\\n" "${COLOR_CYAN}" "${COLOR_NONE}"
+        exit 1
     fi
 
     # Move into the tmp directory
