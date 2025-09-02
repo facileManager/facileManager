@@ -208,9 +208,9 @@ checkDownloadLink() {
     local status=$(curl --head --silent "${1}" | head -n 1)
 
     # Check the status code
-    if grep -q "200" <<<"$status"; then
+    if grep -q '200' <<<"$status"; then
         return 0
-    elif grep -q "404" <<<"$status"; then
+    elif grep -q '404' <<<"$status"; then
         return 1
     fi
 
@@ -431,7 +431,7 @@ installCore() {
         dependencies=("${dependencies[@]/php-cli}")
 
         # Check php module dependencies and install if missing
-        if [ "${install_error}" -eq 0 ]; then
+    if [ "${install_error}" -eq 0 ]; then
             for p in "${dependencies[@]}"; do
                 if ! php -m | grep -q "^${p##php-}$"; then
                     installDependentPackage "${p}"
@@ -454,7 +454,7 @@ installCore() {
     pushd /tmp &>/dev/null || return 1
 
     # Delete any previous temporary install files
-    removeFiles "facileManager"
+    removeFiles 'facileManager'
 
     printf "\\n  %b Installing facileManager-core files...\\n" "${DASH}"
 
@@ -507,7 +507,7 @@ installModule() {
 
     # Check if $FM_INSTALL_MODULE is valid
     if [ ! -z $FM_INSTALL_MODULE ]; then
-        str="Validating FM_INSTALL_MODULE"
+        str='Validating FM_INSTALL_MODULE'
         printf "  %b %s" "${DASH}" "${str}"
         selected_module=$(inArray "${FM_INSTALL_MODULE}" "${AVAILABLE_MODULES[@]}")
         if [ "${selected_module}" != false ]; then
@@ -528,17 +528,17 @@ installModule() {
     # Prompt for module to install
     while [ -z "$FM_INSTALL_MODULE" ]; do
         # Display module selection
-        echo "Listing available modules"
+        echo 'Listing available modules'
         for (( i = 0 ; i < ${#AVAILABLE_MODULES[@]} ; i++ )); do
             echo "$i: ${AVAILABLE_MODULES[$i]}"
         done
         echo
         read -p "Enter the number for the module to install ('q' quits) [${AVAILABLE_MODULES[0]}]: " module
         module=$(echo "$module" | awk '{print tolower($0)}')
-        if [ "$module" == "q" ]; then
+        if [ "$module" == 'q' ]; then
             exit
         fi
-        if [ "$module" == "" ]; then
+        if [ "$module" == '' ]; then
             module=0
         fi
         if [[ $(echo $module | sed 's/ //g' | sed 's/^[0-9]*//' | wc -c) -ne 1 ]]; then
@@ -568,7 +568,7 @@ installModule() {
     pushd /tmp &>/dev/null || return 1
 
     # Delete any previous temporary install files
-    removeFiles "facileManager"
+    removeFiles 'facileManager'
 
     printf "\\n  %b Installing ${FM_INSTALL_MODULE} files...\\n" "${DASH}"
     # Already installed!
@@ -642,7 +642,7 @@ runClientInstaller() {
 }
 
 # Must be root
-str="Checking for root user"
+str='Checking for root user'
 printf "\\n%b%bWelcome to the facileManager app installer%b%b\\n\\n" "${COLOR_CYAN}" "${COLOR_BOLD}" "${COLOR_NO_BOLD}" "${COLOR_NONE}"
 
 # If the user's id is zero,
@@ -663,7 +663,7 @@ else
         printf "%b  %b %s\\n" "${OVER}" "${PASS}" "${str}"
 
         # when run via curl piping
-        if [[ "$0" == "bash" ]]; then
+        if [[ "$0" == 'bash' ]]; then
             # Download the install script and run it with admin rights
             exec curl -sSL https://install.facilemanager.com | sudo bash "$@"
         else
