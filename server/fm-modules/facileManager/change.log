@@ -7,6 +7,7 @@
 * Server - [improvement] Image branding accepts file uploads now.
 * Server - [improvement] Deleting the last time in a table now displays the default table message.
 * Server - [bug] Fixed URL in error message when attempting to check server connections.
+* Server - [bug] Item delete icon remains when there is an error deleting an item.
 * Both   - [improvement] Code cleanup.
 
 5.3.3 (2025-05-27)

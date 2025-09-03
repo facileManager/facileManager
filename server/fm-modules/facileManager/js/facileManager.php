@@ -407,7 +407,7 @@ if (isset($__FM_CONFIG)) {
 		};
 
 		if (confirm("' . _('Are you sure you want to delete this item?') . ' ("+ item_name +")")) {
-			$this.html("<i class=\"fa fa-spinner fa-spin\"></i>");
+			$this.html("<i class=\"fa fa-spinner fa-spin\" aria-hidden=\"true\"></i>");
 			$.ajax({
 				type: "POST",
 				url: "fm-modules/facileManager/ajax/processPost.php",
@@ -426,6 +426,9 @@ if (isset($__FM_CONFIG)) {
 							}
 						});
 					} else {
+						setTimeout(function() {
+					    	$this.html("<i class=\"fa fa-trash delete\" alt=\"Delete\" title=\"Delete\" aria-hidden=\"true\"></i>");
+						}, 2000);
 						var eachLine = response.split("\n");
 						if (eachLine.length <= 2) {
 							$("#response").html("<p class=\"error\">"+response+"</p>");
