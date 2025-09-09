@@ -140,6 +140,7 @@ checkSupportedOS() {
     fi
 
     # To be written for future use
+    
     printf "%b  %b %s\\n" "${OVER}" "${PASS}" "${str}"
     return
 }
@@ -178,8 +179,8 @@ detectPackageManager() {
     
     # Nothing else is supported so exit
     if [ -z $PKG_MANAGER ]; then
-        printf "\\n  %b No supported package manager was found. Please install %b%s%b and rerun the installer with FM_SKIP_DEP_CHECK set to true.\\n" "${FAIL}" "${COLOR_BOLD}" "${packages[@]}" "${COLOR_NO_BOLD}"
-        printf "        %bexport FM_SKIP_DEP_CHECK=true%b\\n" "${COLOR_CYAN}" "${COLOR_NONE}"
+        printf "\\n  %b No supported package manager was found. Please install %b%s%b and re-run the installer with FM_SKIP_DEP_CHECK set to true.\\n" "${FAIL}" "${COLOR_BOLD}" "${packages[@]}" "${COLOR_NO_BOLD}"
+        printf "        %bexport FM_SKIP_DEP_CHECK=true%b\\n\\n" "${COLOR_CYAN}" "${COLOR_NONE}"
         exit 1
     fi
 
@@ -187,10 +188,43 @@ detectPackageManager() {
     printf "  %b Found %s\\n\\n" "${INFO}" "${PKG_MANAGER}"
 }
 
+functionalCheck() {
+    local dependencies=('curl' 'tar')
+    local install_error=0
+
+    for program in "${dependencies[@]}"; do
+        local str="Checking for ${program}"
+        printf "  %b %s" "${DASH}" "${str}"
+
+        if findProgram "${program}"; then
+            printf "%b  %b %s\\n" "${OVER}" "${PASS}" "${str}"
+        else
+            printf "%b  %b %s\\n" "${OVER}" "${FAIL}" "${str}"
+
+            # Make sure we can install packages
+            detectPackageManager "${dependencies[@]}"
+
+            installDependentPackage "${program}"
+            if [ $? -ne 0 ]; then
+                install_error=1
+            fi
+        fi
+    done
+
+    if [ "${install_error}" -eq 1 ]; then
+        printf "  %b %s are required to run this installer. Please install %b%s%b and then re-run the installer.\\n" "${FAIL}" "${dependencies[@]}" "${COLOR_BOLD}" "${dependencies[@]}" "${COLOR_NO_BOLD}"
+        exit 1
+    fi
+
+    checkSELinux
+
+    checkSupportedOS
+}
+
 # Install any package dependencies
 installDependentPackage() {
     local package="$1"
-    local str="Installing facileManager dependency package (${package})"
+    local str="Installing dependency package (${package})"
     printf "  %b %s" "${INFO}" "${str}"
 
     if eval "${PKG_INSTALL}" "${package}" &>/dev/null; then
@@ -302,9 +336,21 @@ digAvailableModuleList() {
     local ns="$3"
     local response
 
-    response="$(dig +short -"${ipv}" -t txt "${domain}" ${ns} 2>&1
-    echo $?
-    )"
+    # Are we using dig or nslookup?
+    if findProgram dig; then
+        if [ -n "${ns}"]; then
+            ns="@{$ns}"
+        fi
+        response="$(dig +short -"${ipv}" -t txt "${domain}" ${ns} 2>&1
+        echo $?
+        )"
+    elif findProgram nslookup; then
+        # Use nslookup instead of dig
+        response="$(nslookup -query=TXT "${domain}" ${ns} | grep 'text = ' | awk '{print $NF}' 2>&1
+        echo $?
+        )"
+    fi
+
     echo "${response}"
 }
 
@@ -368,7 +414,7 @@ getAvailableModuleList() {
         unset valid_response
         unset dig_result
 
-        dig_result=$(digAvailableModuleList 6 "${domain_to_query}" "@${hardcoded_ns}")
+        dig_result=$(digAvailableModuleList 6 "${domain_to_query}" "${hardcoded_ns}")
         valid_response=$(checkDigResponse "${dig_result}")
     fi
 
@@ -392,6 +438,7 @@ getAvailableModuleList() {
         printf "\\n  %b %bCould not retrieve the list of available modules from %s%b.\\n" "${FAIL}" "${COLOR_LIGHT_RED}" "${domain_to_query}" "${COLOR_NONE}"
         printf "      Possible causes include:\\n"
         printf "        - A local firewall is blocking DNS lookups to %s\\n" "${hardcoded_ns}"
+        printf "        - This system does not have dig nor nslookup installed\\n"
         printf "        - This system has general DNS resolution problems\\n"
         printf "        - Some other Internet connectivity issue\\n\\n"
         exit 1
@@ -405,7 +452,9 @@ installCore() {
     local fm_core_root_path=$(dirname ${INSTALL_DIR_CLIENT})
 
     # Make sure we can install packages
-    detectPackageManager "${dependencies[@]}"
+    if [ -z $PKG_MANAGER ]; then
+        detectPackageManager "${dependencies[@]}"
+    fi
 
     local str='Checking for package dependencies'
     local install_error=0
@@ -431,7 +480,7 @@ installCore() {
         dependencies=("${dependencies[@]/php-cli}")
 
         # Check php module dependencies and install if missing
-    if [ "${install_error}" -eq 0 ]; then
+        if [ "${install_error}" -eq 0 ]; then
             for p in "${dependencies[@]}"; do
                 if ! php -m | grep -q "^${p##php-}$"; then
                     installDependentPackage "${p}"
@@ -446,7 +495,7 @@ installCore() {
         printf "  %b One or more dependency packages could not be installed.\\n" "${FAIL}"
         printf "      Please install the missing packages and then re-run the installer.\\n"
         printf "      This check can be skipped by setting the environment variable to true\\n"
-        printf "        %bexport FM_SKIP_DEP_CHECK=true%b\\n" "${COLOR_CYAN}" "${COLOR_NONE}"
+        printf "        %bexport FM_SKIP_DEP_CHECK=true%b\\n\\n" "${COLOR_CYAN}" "${COLOR_NONE}"
         exit 1
     fi
 
@@ -629,12 +678,12 @@ runClientInstaller() {
     fi
 
     # Launch module installer
-    printf "\\n  %b Launching ${FM_INSTALL_MODULE} Installer...\\n" "${DASH}"
+    printf "\\n  %b %bLaunching ${FM_INSTALL_MODULE} Installer...%b\\n\\n" "${DASH}" "${COLOR_CYAN}" "${COLOR_NONE}"
     if findProgram php; then
         php ${INSTALL_DIR_CLIENT}/${FM_INSTALL_MODULE}/client.php install ${install_options}
     else
         printf "  %b %bCould not find php. Please install php and then run the installer manually.%b\\n" "${FAIL}" "${COLOR_LIGHT_RED}" "${COLOR_NONE}"
-        printf "      sudo php ${INSTALL_DIR_CLIENT}/${FM_INSTALL_MODULE}/client.php install ${install_options}\\n\\n"
+        printf "        %bsudo php ${INSTALL_DIR_CLIENT}/${FM_INSTALL_MODULE}/client.php install ${install_options}%b\\n\\n" "${COLOR_CYAN}" "${COLOR_NONE}"
         exit 1
     fi
 
@@ -658,13 +707,17 @@ else
     str='Checking for sudo'
     printf "  %b %s" "${INFO}" "${str}"
 
-    # If the sudo command exists, try rerunning as admin
+    # If the sudo command exists, try re-running as admin
     if findProgram sudo; then
         printf "%b  %b %s\\n" "${OVER}" "${PASS}" "${str}"
 
         # when run via curl piping
         if [[ "$0" == 'bash' ]]; then
-            # Download the install script and run it with admin rights
+            # Download the install script and run it with admin rights if curl is installed
+            if ! findProgram curl; then
+                printf "  %b Unable to find curl. Please install %bcurl%b and then re-run the installer.%b\\n" "${FAIL}" "${COLOR_BOLD}" "${COLOR_NO_BOLD}"
+                exit 1
+            fi
             exec curl -sSL https://install.facilemanager.com | sudo bash "$@"
         else
             # when run via calling local bash script
@@ -681,9 +734,7 @@ else
     fi
 fi
 
-checkSELinux
-
-checkSupportedOS
+functionalCheck
 
 installModule
 
