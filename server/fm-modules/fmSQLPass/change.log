@@ -1,5 +1,5 @@
-1.11.0-beta1 (2025-08-26)
-=========================
+1.11.0 (2025-09-15)
+===================
 * Server - [improvement] Code cleanup.
 * Server - [improvement] Changed "no results" message to be the same for consistency.
 

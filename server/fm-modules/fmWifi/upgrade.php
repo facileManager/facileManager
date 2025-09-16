@@ -30,7 +30,7 @@ function upgradefmWifiSchema($module_name) {
 	$running_version = getOption('version', 0, 'fmWifi');
 	
 	/** Checks to support older versions (ie n-3 upgrade scenarios */
-	$success = version_compare($running_version, '0.7.0-beta3', '<') ? upgradefmWifi_070b3($__FM_CONFIG, $running_version) : true;
+	$success = version_compare($running_version, '0.8.0', '<') ? upgradefmWifi_080($__FM_CONFIG, $running_version) : true;
 	if (!$success) return $fmdb->last_error;
 	
 	setOption('client_version', $__FM_CONFIG['fmWifi']['client_version'], 'auto', false, 0, 'fmWifi');
@@ -298,8 +298,8 @@ function upgradefmWifi_070b3($__FM_CONFIG, $running_version) {
 	return true;
 }
 
-/** 0.8.0-beta2 */
-function upgradefmWifi_080b2($__FM_CONFIG, $running_version) {
+/** 0.8.0 */
+function upgradefmWifi_080($__FM_CONFIG, $running_version) {
 	global $fmdb, $module_name;
 	
 	/** Check if previous upgrades have run (to support n+1) **/
@@ -321,7 +321,7 @@ WHERE fm_{$__FM_CONFIG['fmWifi']['prefix']}config.config_status != 'deleted'";
 		}
 	}
 	
-	setOption('version', '0.8.0-beta2', 'auto', false, 0, 'fmWifi');
+	setOption('version', '0.8.0', 'auto', false, 0, 'fmWifi');
 	
 	return true;
 }

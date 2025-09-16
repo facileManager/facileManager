@@ -1,21 +1,5 @@
-5.4.0-beta3 (2025-??-??)
-========================
-* Server - [bug] Item delete icon remains when there is an error deleting an item.
-
-5.4.0-beta2 (2025-08-26)
-========================
-* Server - [bug] Fixed the module homepage for unprivileged users.
-* Client - [improvment] The client may be installed on any system to only use the API. (Issue #589)
-           Example: sudo php /usr/local/facileManager/<module>/client.php install api
-* Client - [bug] Fixed Apple OS detection.
-* Both   - [improvement] API changes:
-             - Rewritten to support REST and provide JSON output.
-             - API is no longer invoked with `setHost` but rather `api` for future module support.
-             - Credentials may be stored in another file and referenced via `apicreds=`
-               Example: sudo php /usr/local/facileManager/<module>/client.php api apicreds=/path/to/creds.inc.php ...
-
-5.4.0-beta1 (2025-08-12)
-========================
+5.4.0 (2025-09-15)
+==================
 * Server - [improvement] CSS tweaks. (#689)
 * Server - [improvement] Added key icon to user list to signify which users have an API key defined.
 * Server - [improvement] Added associated group column to the user list.
@@ -26,12 +10,22 @@
 * Server - [improvement] Updated login form, installer, and upgrader. (#692)
 * Server - [improvement] Updated language text.
 * Server - [improvement] Allow disabled servers to be selected in drop-down menus. (#686)
+* Server - [bug] Item delete icon remains when there is an error deleting an item.
+* Server - [bug] Fixed the module homepage for unprivileged users.
 * Server - [bug] Fixed URL in error message when attempting to check server connections.
 * Server - [bug] Fixed PHP errors.
 * Server - [bug] Fixed the installer when config.inc.php does not already exist.
 * Server - [bug] Fixed log message sorting.
 * Server - [bug] Fixed the ability to login when an upgrade is available and maintenance mode is enabled.
+* Client - [improvment] The client may be installed on any system to only use the API. (Issue #589)
+           Example: sudo php /usr/local/facileManager/<module>/client.php install api
+* Client - [bug] Fixed Apple OS detection.
 * Both   - [improvement] Code cleanup.
+* Both   - [improvement] API changes:
+             - Rewritten to support REST and provide JSON output.
+             - API is no longer invoked with `setHost` but rather `api` for future module support.
+             - Credentials may be stored in another file and referenced via `apicreds=`
+               Example: sudo php /usr/local/facileManager/<module>/client.php api apicreds=/path/to/creds.inc.php ...
 
 5.3.3 (2025-05-27)
 ==================

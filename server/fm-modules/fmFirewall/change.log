@@ -1,5 +1,5 @@
-3.3.0-beta1 (2025-08-26)
-========================
+3.3.0 (2025-09-15)
+==================
 * Server - [improvement] Changed "no results" message to be the same for consistency.
 * Both   - [improvement] Code changes to support fM core API changes.
 * Both   - [improvement] Code cleanup.
