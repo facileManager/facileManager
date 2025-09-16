@@ -297,3 +297,31 @@ function upgradefmWifi_070b3($__FM_CONFIG, $running_version) {
 	
 	return true;
 }
+
+/** 0.8.0-beta2 */
+function upgradefmWifi_080b2($__FM_CONFIG, $running_version) {
+	global $fmdb, $module_name;
+	
+	/** Check if previous upgrades have run (to support n+1) **/
+	$success = version_compare($running_version, '0.7.0-beta3', '<') ? upgradefmWifi_070b3($__FM_CONFIG, $running_version) : true;
+	if (!$success) return false;
+	
+	/** Insert upgrade steps here **/
+	$queries[] = "UPDATE fm_{$__FM_CONFIG['fmWifi']['prefix']}config
+JOIN fm_{$__FM_CONFIG['fmWifi']['prefix']}functions
+  ON fm_{$__FM_CONFIG['fmWifi']['prefix']}functions.def_option = fm_{$__FM_CONFIG['fmWifi']['prefix']}config.config_name
+SET fm_{$__FM_CONFIG['fmWifi']['prefix']}config.config_type = fm_{$__FM_CONFIG['fmWifi']['prefix']}functions.def_option_type
+WHERE fm_{$__FM_CONFIG['fmWifi']['prefix']}config.config_status != 'deleted'";
+	
+	/** Create table schema */
+	if (isset($queries) && count($queries) && $queries[0]) {
+		foreach ($queries as $schema) {
+			$fmdb->query($schema);
+			if (!$fmdb->result || $fmdb->sql_errors) return false;
+		}
+	}
+	
+	setOption('version', '0.8.0-beta2', 'auto', false, 0, 'fmWifi');
+	
+	return true;
+}
