@@ -9,7 +9,7 @@
 * Server - [improvement] SOA negative cache can now be set independently of SOA TTL. (#700)
 * Server - [improvement] Records can now be imported into a zone from the records page.
 * Server - [bug] Fixed URL in error message when attempting to clear cache.
-* Server - [bug] Fixed PHP error during record deletion.
+* Server - [bug] Fixed PHP error during record deletion. (#694)
 * Server - [bug] All records can now be viewed with reverse zones. (#698)
 * Server - [bug] When updating a custom SOA, the log now contains the zone name.
 * Server - [bug] Custom SOA form validation now checks for the maximum character length. (#696)
