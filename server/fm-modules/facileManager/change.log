@@ -1,4 +1,4 @@
-5.4.0 (2025-09-16)
+5.4.1 (2025-09-16)
 ==================
 * Server - [bug] Fixed client authentication. (#706)
 * Client - [bug] Fixed PHP error when using PHP<8.3.0.
