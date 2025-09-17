@@ -30,6 +30,9 @@ class fm_accounts {
 	function verify($data) {
 		global $fmdb, $__FM_CONFIG;
 		
+		if (array_key_exists('HTTP_AUTHKEY', $_SERVER)) {
+			$data['AUTHKEY'] = $_SERVER['HTTP_AUTHKEY'];
+		}
 		extract($data);
 		if (!isset($AUTHKEY)) return _('Account is not found.') . "\n";
 		
