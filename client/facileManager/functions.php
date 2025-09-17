@@ -1578,7 +1578,7 @@ function versionCheck($app_version, $serverhost, $compress) {
  * @since 3.2.1
  * @package facileManager
  *
- * @return array
+ * @return array|null
  */
 function getInterfaceNames() {
 	$interfaces = array();
@@ -1726,7 +1726,7 @@ function loadAPICredentials($url, $data) {
 	/** Ensure $proto = https */
 	if ($proto != 'https') {
 		echo fM($server_path['hostname'] . " must be configured with https.\n");
-		// exit(1);
+		exit(1);
 	}
 
 	/** Set the API URL */
@@ -2049,3 +2049,21 @@ function isSerialized($data) {
 	}
 	return false;
 }
+
+
+/**
+ * Checks if a string is valid JSON
+ *
+ * @since 5.4.0
+ * @package facileManager
+ *
+ * @param string $json JSON string to validate
+ * @return boolean
+ */
+if (!function_exists('json_validate')) {
+	function json_validate(string $json) {
+		json_decode($json);
+		return json_last_error() === JSON_ERROR_NONE;
+	}
+}
+
