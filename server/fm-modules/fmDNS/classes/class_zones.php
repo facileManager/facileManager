@@ -1111,7 +1111,11 @@ HTML;
 					<th>' . __('Template') . '</th>
 					<td>' . $template_options . $create_template;
 			if ($action == 'edit') {
-				$select_template .= sprintf('<p>%s</p>', __('Changing the template will delete all config options for this zone.'));
+				if (count($available_templates) > 1) {
+					$select_template .= sprintf('<p>%s</p>', __('Changing the template will delete all config options for this zone.'));
+				} else {
+					$select_template = '<tr><td>' . $template_options;
+				}
 			}
 			$select_template .= '</td></tr>';
 		} else {
