@@ -112,7 +112,7 @@ checkSELinux() {
         printf "  %b %bSELinux is not detected%b\\n" "${INFO}" "${COLOR_LIGHT_GREEN}" "${COLOR_NONE}"
     fi
     # Exit the installer if any SELinux checks toggled the flag
-    if [[ "${selinux_enforcing}" -eq 1 ]] && [[ -z "${FM_SKIP_SELINUX_CHECK}" ]]; then
+    if [[ "${selinux_enforcing}" -eq 1 ]] && [[ -z ${FM_SKIP_SELINUX_CHECK} ]]; then
         printf "  facileManager does not provide an SELinux policy.\\n"
         printf "  Please refer to https://wiki.centos.org/HowTos/SELinux if SELinux is required for your deployment.\\n"
         printf "      This check can be skipped by setting the environment variable to true\\n"
@@ -575,14 +575,14 @@ installModule() {
     fi
 
     # Prompt for module to install
-    while [ -z "$FM_INSTALL_MODULE" ]; do
+    while [ -z $FM_INSTALL_MODULE ]; do
         # Display module selection
         echo 'Listing available modules'
         for (( i = 0 ; i < ${#AVAILABLE_MODULES[@]} ; i++ )); do
             echo "$i: ${AVAILABLE_MODULES[$i]}"
         done
         echo
-        read -p "Enter the number for the module to install ('q' quits) [${AVAILABLE_MODULES[0]}]: " module
+        read -p "Enter the number for the module to install ('q' quits) [${AVAILABLE_MODULES[0]}]: " module < /dev/tty
         module=$(echo "$module" | awk '{print tolower($0)}')
         if [ "$module" == 'q' ]; then
             exit
@@ -680,7 +680,7 @@ runClientInstaller() {
     # Launch module installer
     printf "\\n  %b %bLaunching ${FM_INSTALL_MODULE} Installer...%b\\n\\n" "${DASH}" "${COLOR_CYAN}" "${COLOR_NONE}"
     if findProgram php; then
-        php ${INSTALL_DIR_CLIENT}/${FM_INSTALL_MODULE}/client.php install ${install_options}
+        php ${INSTALL_DIR_CLIENT}/${FM_INSTALL_MODULE}/client.php install ${install_options} < /dev/tty
     else
         printf "  %b %bCould not find php. Please install php and then run the installer manually.%b\\n" "${FAIL}" "${COLOR_LIGHT_RED}" "${COLOR_NONE}"
         printf "        %bsudo php ${INSTALL_DIR_CLIENT}/${FM_INSTALL_MODULE}/client.php install ${install_options}%b\\n\\n" "${COLOR_CYAN}" "${COLOR_NONE}"
