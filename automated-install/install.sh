@@ -338,7 +338,7 @@ digAvailableModuleList() {
 
     # Are we using dig or nslookup?
     if findProgram dig; then
-        if [ -n "${ns}"]; then
+        if [ -n "${ns}" ]; then
             ns="@{$ns}"
         fi
         response="$(dig +short -"${ipv}" -t txt "${domain}" ${ns} 2>&1
