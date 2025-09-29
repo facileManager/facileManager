@@ -503,7 +503,7 @@ class fm_dns_zones {
 		$rows_affected = $fmdb->rows_affected;
 
 		/** Update the child zones */
-		if ($post['domain_template'] == 'yes') {
+		if (isset($post['domain_template']) && $post['domain_template'] == 'yes') {
 			$query_arr[] = "UPDATE `fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}domains` SET domain_view='{$post['domain_view']}', domain_check_config='yes' WHERE `domain_template_id`='$domain_id' AND `account_id`='{$_SESSION['user']['account_id']}'";
 			$query_arr[] = "UPDATE `fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}domains` SET domain_name_servers='{$post['domain_name_servers']}', domain_check_config='yes' WHERE `domain_template_id`='$domain_id' AND `account_id`='{$_SESSION['user']['account_id']}'";
 			foreach ($query_arr as $query) {
@@ -1895,7 +1895,7 @@ HTML;
 			}
 		}
 
-		if (!$post['domain_default']) $post['domain_default'] = 'no';
+		if (!isset($post['domain_default'])) $post['domain_default'] = 'no';
 		
 		/** Empty domain names are not allowed */
 		if (empty($post['domain_name'])) return __('No zone name defined.');
