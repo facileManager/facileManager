@@ -31,12 +31,12 @@ if (!@is_array($__FM_CONFIG)) $__FM_CONFIG = array();
 
 /** Module Information */
 $__FM_CONFIG['fmDNS'] = array(
-		'version'							=> '7.1.4',
-		'client_version'					=> '7.1.2',
+		'version'							=> '7.2.0',
+		'client_version'					=> '7.2.0',
 		'description'						=> __('Easily manage one or more ISC BIND servers through a web interface. No more editing configuration and zone files manually.', 'fmDNS'),
 		'prefix'							=> 'dns_',
 		'required_dns_version'				=> '9.3',
-		'required_fm_version'				=> '5.2.0',
+		'required_fm_version'				=> '5.4.0',
 		'min_client_auto_upgrade_version'	=> '2.2'
 	);
 
@@ -46,7 +46,7 @@ if (isset($__FM_CONFIG['module']['path'])) {
 	$__FM_CONFIG['module']['icons']['reload']		= sprintf('<i class="fa fa-refresh preview" alt="%1$s" title="%1$s" aria-hidden="true"></i>', _('Reload Zone'));
 }
 if (isset($fm_name)) {
-	$__FM_CONFIG['module']['icons']['sub_delete']	= sprintf('<a href="JavaScript:void(0);" class="tooltip-bottom mini-icon" data-tooltip="%s"><i id="__ID__" class="fa fa-trash delete subelement_remove" aria-hidden="true"></i></a>', _('Delete'));
+	$__FM_CONFIG['module']['icons']['sub_delete']	= sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i id="__ID__" class="fa fa-trash delete subelement_remove" aria-hidden="true"></i></a>', _('Delete'));
 }
 
 $__FM_CONFIG['icons'] = @array_merge((array) $__FM_CONFIG['module']['icons'], (array) $__FM_CONFIG['icons']);
@@ -87,6 +87,9 @@ $__FM_CONFIG['records']['digest_types'] = array(
 $__FM_CONFIG['records']['tlsa_flags'] 	= array('0', '1', '2', '3');
 $__FM_CONFIG['records']['caa_flags']	= array('0', '128');
 $__FM_CONFIG['records']['caa_tags']		= array('issue', 'issuewild', 'iodef');
+$__FM_CONFIG['records']['append']		= array('CNAME', 'NS', 'MX', 'SRV', 'DNAME', 'RP', 'NAPTR');
+$__FM_CONFIG['records']['priority']		= array('MX', 'SRV', 'KX', 'URI');
+$__FM_CONFIG['records']['weight']		= array('SRV', 'URI');
 
 $__FM_CONFIG['servers']['avail_types']    = array('servers' => _('Servers'), 'groups' => _('Groups'));
 $__FM_CONFIG['options']['avail_types']    = array('global' => __('Global'), 'ratelimit' => __('Rate Limit'), 'rrset' => __('RRSet'), 'rpz' => __('Response Policy'));
@@ -104,6 +107,7 @@ $__FM_CONFIG['soa']['soa_ttl']				= '1d';
 $__FM_CONFIG['soa']['soa_refresh']			= '2h';
 $__FM_CONFIG['soa']['soa_retry']			= '1h';
 $__FM_CONFIG['soa']['soa_expire']			= '2w';
+$__FM_CONFIG['soa']['soa_ncache']			= '1d';
 
 /** Name Server Default Values */
 $__FM_CONFIG['ns']['named_root_dir']		= '/var/named';

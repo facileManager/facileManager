@@ -10,11 +10,11 @@
 /* Define default-theme here */
 .default-theme {
 	/* Common color changes */
-	--top-header-bg: light-dark(#3b4b58, #2c3236);
-	--top-header-border: light-dark(#383e43, #393939);
-	--top-header-divider: light-dark(#56575c, #5c5956);
-	--top-header-search-bg: light-dark(#585f76, var(--form-field-bg));
-	--top-header-search-border: light-dark(#6b7388, var(--form-input-border));
+	--top-header-bg: light-dark(var(--menu-divider), #2c3236);
+	--top-header-border: #2d2d2d;
+	--top-header-divider: #dcdcdc36;
+	--top-header-search-bg: #00000042;
+	--top-header-search-hover-bg: light-dark(#ffffff25, #ffffff1f);
 
 	--menu-bg: #2f3235;
 	--menu-divider: #3b4b58;
@@ -76,7 +76,7 @@
 
 	--table-header-bg: light-dark(#464646, #2e2e2e);
 	--table-header-text: #f1f1f1;
-	--table-header-border: light-dark(#fff, var(--top-header-bg));
+	--table-header-border: light-dark(#fff, var(--menu-divider));
 	--table-header-sorted: var(--menu-select-highlight);
 
 	--table-rows-grabbing-border: #dfdfdf;
@@ -86,11 +86,11 @@
 	--form-popup-title-primary-color: var(--primary-body-text);
 	--form-popup-title-secondary-color: light-dark(#fff, #bebebe);
 	--form-popup-bg: light-dark(var(--background-default), var(--menu-bg));
-	--form-input-border: light-dark(#dfdfdf, #4c4c4c);
-	--form-input-disabled: light-dark(#aeaeae, #848484);
-	--form-input-disabled-primary: light-dark(#fbfbfb, #5f5e5e);
+	--form-input-border: light-dark(#00000025, #00000060);
+	--form-input-disabled: light-dark(#aeaeae, #696969);
+	--form-input-disabled-primary: light-dark(#fbfbfb, #353535);
 	--form-input-disabled-secondary: var(--form-popup-primary-color);
-	--form-field-bg: light-dark(#fff, #616161);
+	--form-field-bg: light-dark(#fff, #262626);
 	--form-label-text: var(--primary-body-text);
 	--form-field-text: light-dark(var(--primary-body-text), #f0f0f0);
 	--placeholder: light-dark(#bcbcbc, #9c9c9c);
@@ -358,6 +358,14 @@ div.header-container {
 #tophead div.flex-right {
 	flex-direction: row-reverse;
 	flex: 1;
+}
+#tophead > div.flex-left > div:not(:first-child)::before {
+    border-left: 1px solid var(--top-header-divider);
+    content: '';
+    position: absolute;
+    top: 7px;
+    bottom: 7px;
+    margin-left: -2em;
 }
 #tophead > div.flex-left > div {
 	border-right-color: var(--top-header-divider);
@@ -651,6 +659,12 @@ div.header-container {
 #menu_mainitems > ul > li > ul > li a:hover {
 	background-color: var(--submenu-hover);
 }
+#menu_mainitems ul li.has-sub > ul li a span:not(.menu-badge) {
+	padding-right: 3px;
+}
+#menu_mainitems ul li.has-sub > ul li a .menu-icon {
+	width: 20px;
+}
 #menu_mainitems.drop-right ul li > ul {
 	top: 0;
 	left: 17em;
@@ -872,7 +886,6 @@ h4 {
 	margin-left: -3px;
 }
 .display_results.sortable th:not(.header-nosort):hover,
-#help_buttons img,
 .eye-attention,
 .popout {
 	cursor: pointer;
@@ -1151,6 +1164,7 @@ i.text_icon {
 	float: right;
 	height: 48px;
 	width: 48px;
+	margin-left: 1em;
 	text-align: center;
 	background-image:
 		-moz-linear-gradient(45deg, #ccc 25%, transparent 25%), 
@@ -1638,7 +1652,7 @@ a.button.disabled {
 	background-image: -o-linear-gradient(top, var(--form-input-disabled-primary), var(--form-input-disabled-secondary));
 	background-image: linear-gradient(to bottom, var(--form-input-disabled-primary), var(--form-input-disabled-secondary));
 	background-color: var(--form-input-disabled-primary);
-	border-color: light-dark(#d9d9d9, #515151);
+	border-color: light-dark(#d9d9d9, #404040);
 	color: var(--form-input-disabled);
 	cursor: not-allowed;
 }
@@ -1706,10 +1720,9 @@ i.popout {
 	margin-top: -5px;
 }
 
-#help, #fm_mailing_options, #fm_proxy_options,
+#fm_mailing_options, #fm_proxy_options,
 #mail_smtp_auth_options, #auth_ldap_options, #ldap_group_require_options,
 #auth_fm_options, #software_update_options,
-#help_file_container ul li div,
 .hidden {
 	display: none;
 }
@@ -1819,92 +1832,6 @@ span.not_installed {
 	font-size: 14px;
 	color: var(--icon-delete);
 	margin-top: 0;
-}
-
-#help {
-	position: fixed;
-	top: 3.8em;
-	bottom: 0;
-	right: 0em;
-	width: 25%;
-	height: 100%;
-	z-index: 3;
-	background-color: light-dark(#FEFEFE, #3b3b3b);
-	border-left: 1px light-dark(#DDD, #202020) solid;
-	-webkit-box-shadow: light-dark(rgba(200,200,200,0.7), rgb(57,57,57,0.7)) -2px 0 3px -1px;
-	-khtml-box-shadow: light-dark(rgba(200,200,200,0.7), rgb(57,57,57,0.7)) -2px 0 3px -1px;
-	box-shadow: light-dark(rgba(200,200,200,0.7), rgb(57,57,57,0.7)) -2px 0 3px -1px;
-	overflow: hidden;
-}
-
-#help a {
-	text-decoration: underline;
-}
-
-#help_topbar {
-	height: 2em;
-	background-color: var(--table-header-bg);
-	color: var(--table-header-text);
-	padding: 10px;
-}
-
-#help_topbar div {
-	display: flex;
-    align-items: center;
-}
-
-#help_topbar p.title {
-	font-size: 10pt;
-	font-weight: bold;
-}
-
-#help_file_container {
-	flex: 1;
-	padding: 1em;
-	font-size: 9pt;
-	overflow-y: auto;
-	height: 90%;
-}
-
-#help_file_container > div:last-of-type {
-	margin-bottom: 10em;
-}
-
-#help_file_container ul {
-	list-style: none;
-	margin-bottom: 3em;
-	padding: 0;
-}
-
-#help_file_container li {
-	list-style: none;
-	border-bottom: 1px solid var(--settings-divider);
-	padding: 0 5px;
-}
-
-#help_file_container li:first-child {
-	border-top: 1px solid var(--settings-divider);
-}
-
-#help_file_container li a.list_title {
-	cursor: pointer;
-	line-height: 24pt;
-	color: light-dark(#000, #d5d5d5);
-	font-weight: bold;
-	text-decoration: none;
-}
-
-#help_file_container li p {
-	padding: 0;
-}
-
-#help_file_container h3 {
-	font-size: 14px;
-	color: var(--page-title-text);
-	margin-top: 0;
-}
-#help_file_container ul li ul li {
-	padding: 5px;
 }
 
 #pagination_container,
@@ -2038,12 +1965,18 @@ div.fm-table > div > div.fm-half {
 }
 
 #search_form input[type=text] {
-	width: 90%;
-	border: 1px solid var(--top-header-search-border);
-	line-height: 20px;
+	width: 100%;
+	border: none;
+	line-height: 29px;
+	padding-left: 2.5em;
+	margin-left: -35px;
 	background-color: var(--top-header-search-bg);
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
+}
+#search_form:hover input[type=text],
+#search_form input[type=text]:focus {
+	background-color: var(--top-header-search-hover-bg);
 }
 
 #search_form_container .search_remove {
@@ -2126,23 +2059,6 @@ pre {
 
 .add_more {
 	font-size: 12px;
-}
-
-#issue_tracker {
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	left: 0;
-	padding: 10px;
-	color: #888888;
-	text-align: center;
-	width: 100%;
-}
-#help #issue_tracker {
-	position: absolute;
-	width: auto;
-	padding-top: 5px;
-	margin-bottom: 4em;
 }
 
 .select2-drop {
@@ -2354,4 +2270,3 @@ a.subelement_edit img {
 		width: 16.5em;
 	}
 }
-

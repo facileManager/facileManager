@@ -32,22 +32,12 @@ function upgradefmDNSSchema($running_version) {
 	}
 	
 	/** Checks to support older versions (ie n-3 upgrade scenarios */
-	$success = version_compare($running_version, '7.1.1', '<') ? upgradefmDNS_711($__FM_CONFIG, $running_version) : true;
+	$success = version_compare($running_version, '7.2.0-beta1', '<') ? upgradefmDNS_720b1($__FM_CONFIG, $running_version) : true;
 	if (!$success) return $fmdb->last_error;
 	
 	setOption('client_version', $__FM_CONFIG['fmDNS']['client_version'], 'auto', false, 0, 'fmDNS');
 		
 	return true;
-}
-
-function deleteUnusedFiles($files_to_delete) {
-	$this_dir = dirname(__FILE__);
-	foreach ($files_to_delete as $file) {
-		$filename = $this_dir . '/' . $file;
-		if (is_writable($filename)) {
-			unlink($filename);
-		}
-	}
 }
 
 /** 1.0-b5 */
@@ -2847,7 +2837,9 @@ function upgradefmDNS_700b2($__FM_CONFIG, $running_version) {
 	}
 
 	/** Delete unused files */
-	deleteUnusedFiles(array('pages/config-rpz.php'));
+	deleteDeprecatedFiles(array(
+		dirname(__FILE__) . '/pages/config-rpz.php'
+	));
 
 	setOption('version', '7.0.0-beta2', 'auto', false, 0, 'fmDNS');
 	
@@ -2956,9 +2948,42 @@ function upgradefmDNS_711($__FM_CONFIG, $running_version) {
 	}
 
 	/** Delete unused files */
-	deleteUnusedFiles(array('pages/zone-records-validate.php'));
+	deleteDeprecatedFiles(array(
+		dirname(__FILE__) . '/pages/zone-records-validate.php'
+	));
 
 	setOption('version', '7.1.1', 'auto', false, 0, 'fmDNS');
+	
+	return true;
+}
+
+/** 7.2.0-beta1 */
+function upgradefmDNS_720b1($__FM_CONFIG, $running_version) {
+	global $fmdb;
+	
+	$success = version_compare($running_version, '7.1.1', '<') ? upgradefmDNS_711($__FM_CONFIG, $running_version) : true;
+	if (!$success) return false;
+
+	$queries[] = "UPDATE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_master_server` `soa_master_server` VARCHAR(255) NOT NULL";
+	$queries[] = "UPDATE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_email_address` `soa_email_address` VARCHAR(255) NOT NULL";
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_ttl` `soa_ncache` VARCHAR(50) NULL DEFAULT '1200'";
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` ADD `soa_ttl` VARCHAR(50) NULL DEFAULT '1200' AFTER `soa_name`";
+	$queries[] = "UPDATE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` SET `soa_ttl` = `soa_ncache`";
+	
+	/** Run queries */
+	if (isset($queries) && count($queries) && $queries[0]) {
+		foreach ($queries as $schema) {
+			$fmdb->query($schema);
+		}
+	}
+
+	/** Delete unused files */
+	deleteDeprecatedFiles(array(
+		dirname(__FILE__) . '/pages/config-rpz.php',
+		dirname(__FILE__) . '/pages/zone-records-validate.php'
+	));
+
+	setOption('version', '7.2.0-beta1', 'auto', false, 0, 'fmDNS');
 	
 	return true;
 }

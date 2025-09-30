@@ -204,107 +204,107 @@ HTML;
 				}
 				switch($key) {
 					case 3:
-						list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+						@list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 						break;
 					case 2:
 						if (is_numeric($parts[0])) {
 							$array['record_name'] = isset($current_name) ? $current_name : '@';
-							list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+							@list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 						} else {
-							list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+							@list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 						}
 						break;
 					case 1:
 						$array['record_name'] = isset($current_name) ? $current_name : '@';
-						list($array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+						@list($array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 				}
 			} elseif (in_array('CAA', $parts)) {
 				switch(array_search('CAA', $parts)) {
 					case 3:
-						list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $null, $array['record_params'], $array['record_value']) = $parts;
+						@list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $null, $array['record_params'], $array['record_value']) = $parts;
 						break;
 					case 2:
 						if (is_numeric($parts[0])) {
 							$array['record_name'] = isset($current_name) ? $current_name : '@';
-							list($array['record_ttl'], $array['record_class'], $array['record_type'], $null, $array['record_params'], $array['record_value']) = $parts;
+							@list($array['record_ttl'], $array['record_class'], $array['record_type'], $null, $array['record_params'], $array['record_value']) = $parts;
 						} else {
-							list($array['record_name'], $array['record_class'], $array['record_type'], $null, $array['record_params'], $array['record_value']) = $parts;
+							@list($array['record_name'], $array['record_class'], $array['record_type'], $null, $array['record_params'], $array['record_value']) = $parts;
 						}
 						break;
 					case 1:
 						$array['record_name'] = isset($current_name) ? $current_name : '@';
-						list($array['record_class'], $array['record_type'], $null, $array['record_params'], $array['record_value']) = $parts;
+						@list($array['record_class'], $array['record_type'], $null, $array['record_params'], $array['record_value']) = $parts;
 				}
 				$array['record_value'] = str_replace('"', '', $array['record_value']);
 				unset($null);
 			} elseif (in_array('CERT', $parts)) {
 				switch(array_search('CERT', $parts)) {
 					case 3:
-						list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_cert_type'], $array['record_key_tag'], $array['record_algorithm'], $array['record_value']) = $parts;
+						@list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_cert_type'], $array['record_key_tag'], $array['record_algorithm'], $array['record_value']) = $parts;
 						break;
 					case 2:
 						if (is_numeric($parts[0])) {
 							$array['record_name'] = isset($current_name) ? $current_name : '@';
-							list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_cert_type'], $array['record_key_tag'], $array['record_algorithm'], $array['record_value']) = $parts;
+							@list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_cert_type'], $array['record_key_tag'], $array['record_algorithm'], $array['record_value']) = $parts;
 						} else {
-							list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_cert_type'], $array['record_key_tag'], $array['record_algorithm'], $array['record_value']) = $parts;
+							@list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_cert_type'], $array['record_key_tag'], $array['record_algorithm'], $array['record_value']) = $parts;
 						}
 						break;
 					case 1:
 						$array['record_name'] = isset($current_name) ? $current_name : '@';
-						list($array['record_class'], $array['record_type'], $array['record_cert_type'], $array['record_key_tag'], $array['record_algorithm'], $array['record_value']) = $parts;
+						@list($array['record_class'], $array['record_type'], $array['record_cert_type'], $array['record_key_tag'], $array['record_algorithm'], $array['record_value']) = $parts;
 				}
 			} elseif (in_array('HINFO', $parts)) {
 				switch(array_search('HINFO', $parts)) {
 					case 3:
-						list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value'], $array['record_os']) = $parts;
+						@list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value'], $array['record_os']) = $parts;
 						break;
 					case 2:
 						if (is_numeric($parts[0])) {
 							$array['record_name'] = isset($current_name) ? $current_name : '@';
-							list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value'], $array['record_os']) = $parts;
+							@list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value'], $array['record_os']) = $parts;
 						} else {
-							list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_value'], $array['record_os']) = $parts;
+							@list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_value'], $array['record_os']) = $parts;
 						}
 						break;
 					case 1:
 						$array['record_name'] = isset($current_name) ? $current_name : '@';
-						list($array['record_class'], $array['record_type'], $array['record_value'], $array['record_os']) = $parts;
+						@list($array['record_class'], $array['record_type'], $array['record_value'], $array['record_os']) = $parts;
 				}
 			} elseif (in_array('KX', $parts) || in_array('MX', $parts)) {
 				$key = (array_search('MX', $parts)) ? array_search('MX', $parts) : array_search('KX', $parts);
 				switch($key) {
 					case 3:
-						list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_priority'], $array['record_value']) = $parts;
+						@list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_priority'], $array['record_value']) = $parts;
 						break;
 					case 2:
 						if (is_numeric($parts[0])) {
 							$array['record_name'] = isset($current_name) ? $current_name : '@';
-							list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_priority'], $array['record_value']) = $parts;
+							@list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_priority'], $array['record_value']) = $parts;
 						} else {
-							list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_priority'], $array['record_value']) = $parts;
+							@list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_priority'], $array['record_value']) = $parts;
 						}
 						break;
 					case 1:
 						$array['record_name'] = isset($current_name) ? $current_name : '@';
-						list($array['record_class'], $array['record_type'], $array['record_priority'], $array['record_value']) = $parts;
+						@list($array['record_class'], $array['record_type'], $array['record_priority'], $array['record_value']) = $parts;
 				}
 			} elseif (in_array('NAPTR', $parts)) {
 				switch(array_search('NAPTR', $parts)) {
 					case 3:
-						list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_weight'], $array['record_priority'], $array['record_flags'], $array['record_params'], $array['record_regex'], $array['record_value']) = $parts;
+						@list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_weight'], $array['record_priority'], $array['record_flags'], $array['record_params'], $array['record_regex'], $array['record_value']) = $parts;
 						break;
 					case 2:
 						if (is_numeric($parts[0])) {
 							$array['record_name'] = isset($current_name) ? $current_name : '@';
-							list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_weight'], $array['record_priority'], $array['record_flags'], $array['record_params'], $array['record_regex'], $array['record_value']) = $parts;
+							@list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_weight'], $array['record_priority'], $array['record_flags'], $array['record_params'], $array['record_regex'], $array['record_value']) = $parts;
 						} else {
-							list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_weight'], $array['record_priority'], $array['record_flags'], $array['record_params'], $array['record_regex'], $array['record_value']) = $parts;
+							@list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_weight'], $array['record_priority'], $array['record_flags'], $array['record_params'], $array['record_regex'], $array['record_value']) = $parts;
 						}
 						break;
 					case 1:
 						$array['record_name'] = isset($current_name) ? $current_name : '@';
-						list($array['record_class'], $array['record_type'], $array['record_weight'], $array['record_priority'], $array['record_flags'], $array['record_params'], $array['record_regex'], $array['record_value']) = $parts;
+						@list($array['record_class'], $array['record_type'], $array['record_weight'], $array['record_priority'], $array['record_flags'], $array['record_params'], $array['record_regex'], $array['record_value']) = $parts;
 				}
 				$array['record_regex'] = str_replace('"', '', $array['record_regex']);
 				$array['record_params'] = str_replace('"', '', $array['record_params']);
@@ -312,54 +312,54 @@ HTML;
 			} elseif (in_array('RP', $parts)) {
 				switch(array_search('RP', $parts)) {
 					case 3:
-						list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value'], $array['record_text']) = $parts;
+						@list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value'], $array['record_text']) = $parts;
 						break;
 					case 2:
 						if (is_numeric($parts[0])) {
 							$array['record_name'] = isset($current_name) ? $current_name : '@';
-							list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value'], $array['record_text']) = $parts;
+							@list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value'], $array['record_text']) = $parts;
 						} else {
-							list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_value'], $array['record_text']) = $parts;
+							@list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_value'], $array['record_text']) = $parts;
 						}
 						break;
 					case 1:
 						$array['record_name'] = isset($current_name) ? $current_name : '@';
-						list($array['record_class'], $array['record_type'], $array['record_value'], $array['record_text']) = $parts;
+						@list($array['record_class'], $array['record_type'], $array['record_value'], $array['record_text']) = $parts;
 				}
 			} elseif (in_array('SSHFP', $parts)) {
 				switch(array_search('SSHFP', $parts)) {
 					case 3:
-						list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_algorithm'], $array['record_cert_type'], $array['record_value']) = $parts;
+						@list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_algorithm'], $array['record_cert_type'], $array['record_value']) = $parts;
 						break;
 					case 2:
 						if (is_numeric($parts[0])) {
 							$array['record_name'] = isset($current_name) ? $current_name : '@';
-							list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_algorithm'], $array['record_cert_type'], $array['record_value']) = $parts;
+							@list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_algorithm'], $array['record_cert_type'], $array['record_value']) = $parts;
 						} else {
-							list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_algorithm'], $array['record_cert_type'], $array['record_value']) = $parts;
+							@list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_algorithm'], $array['record_cert_type'], $array['record_value']) = $parts;
 						}
 						break;
 					case 1:
 						$array['record_name'] = isset($current_name) ? $current_name : '@';
-						list($array['record_class'], $array['record_type'], $array['record_algorithm'], $array['record_cert_type'], $array['record_value']) = $parts;
+						@list($array['record_class'], $array['record_type'], $array['record_algorithm'], $array['record_cert_type'], $array['record_value']) = $parts;
 				}
 			} elseif (in_array('SRV', $parts) || in_array('TLSA', $parts)) {
 				$key = (array_search('SRV', $parts)) ? array_search('SRV', $parts) : array_search('TLSA', $parts);
 				switch($key) {
 					case 3:
-						list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_priority'], $array['record_weight'], $array['record_port'], $array['record_value']) = $parts;
+						@list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_priority'], $array['record_weight'], $array['record_port'], $array['record_value']) = $parts;
 						break;
 					case 2:
 						if (is_numeric($parts[0])) {
 							$array['record_name'] = isset($current_name) ? $current_name : '@';
-							list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_priority'], $array['record_weight'], $array['record_port'], $array['record_value']) = $parts;
+							@list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_priority'], $array['record_weight'], $array['record_port'], $array['record_value']) = $parts;
 						} else {
-							list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_priority'], $array['record_weight'], $array['record_port'], $array['record_value']) = $parts;
+							@list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_priority'], $array['record_weight'], $array['record_port'], $array['record_value']) = $parts;
 						}
 						break;
 					case 1:
 						$array['record_name'] = isset($current_name) ? $current_name : '@';
-						list($array['record_class'], $array['record_type'], $array['record_priority'], $array['record_weight'], $array['record_port'], $array['record_value']) = $parts;
+						@list($array['record_class'], $array['record_type'], $array['record_priority'], $array['record_weight'], $array['record_port'], $array['record_value']) = $parts;
 				}
 			} elseif (in_array('TXT', $parts)) {
 				$key = array_search('TXT', $parts);
@@ -370,62 +370,67 @@ HTML;
 				$parts[$key + 1] = rtrim($txt_record);
 				switch($key) {
 					case 3:
-						list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+						@list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 						break;
 					case 2:
 						if (is_numeric($parts[0])) {
 							$array['record_name'] = isset($current_name) ? $current_name : '@';
-							list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+							@list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 						} else {
-							list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+							@list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 						}
 						break;
 					case 1:
 						$array['record_name'] = isset($current_name) ? $current_name : '@';
-						list($array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+						@list($array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 				}
 				$array['record_value'] = str_replace('"', '', $array['record_value']);
 			}
 			if (in_array('PTR', $parts)) {
 				switch(array_search('PTR', $parts)) {
 					case 3:
-						list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+						@list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 						break;
 					case 2:
 						if ($parts[0] > 255) {
 							$array['record_name'] = isset($current_name) ? $current_name : '@';
-							list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+							@list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 						} else {
-							list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+							@list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 						}
 						break;
 					case 1:
 						$array['record_name'] = isset($current_name) ? $current_name : '@';
-						list($array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+						@list($array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 				}
 			}
 			if (in_array('NS', $parts) && in_array('NS', $__FM_CONFIG['records']['require_zone_rights']) && currentUserCan('manage_zones', $_SESSION['module'])) {
 				switch(array_search('NS', $parts)) {
 					case 3:
-						list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+						@list($array['record_name'], $array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 						break;
 					case 2:
 						if (is_numeric($parts[0]) && $parts[0] > 255) {
 							$array['record_name'] = isset($current_name) ? $current_name : '@';
-							list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+							@list($array['record_ttl'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 						} else {
-							list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+							@list($array['record_name'], $array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 						}
 						break;
 					case 1:
 						$array['record_name'] = isset($current_name) ? $current_name : '@';
-						list($array['record_class'], $array['record_type'], $array['record_value']) = $parts;
+						@list($array['record_class'], $array['record_type'], $array['record_value']) = $parts;
 				}
 			}
 			
 			if (empty($array['record_name']) && !empty($array['record_comment'])) continue;
+
+			/** Ensure record_value is present after stripping domain */
+			if (empty($array['record_value'])) {
+				$array['record_value'] = '@';
+			}
 			
-			$array['record_append'] = (substr($array['record_value'], -1) == '.') ? 'no' : 'yes';
+			$array['record_append'] = (substr($array['record_value'], -1) == '.' || $array['record_value'] == '@') ? 'no' : 'yes';
 			
 			/** Set current_name to check for blanks on next run */
 			$current_name = $array['record_name'];
@@ -754,6 +759,9 @@ BODY;
 		$view_name = $ttl = null;
 		$view_id = 0;
 		
+		/* RR types that allow record append */
+		$append_allowed = array('CNAME', 'NS', 'MX', 'SRV', 'DNAME', 'RP', 'NAPTR');
+
 		$file = fopen($_FILES['import-file']['tmp_name'], 'r');
 		while (!feof($file)){
 			/** Change tabs into spaces */
@@ -818,8 +826,15 @@ BODY;
 					$soa = explode('IN SOA', $line);
 					$soa_fields = preg_split('/\s+/', trim($soa[1]));
 
+					$soa_ttl_fields = explode(' ', trim($soa[0]));
+					if (count($soa_ttl_fields) > 1) {
+						$soa_array['soa_ttl'] = $soa_ttl_fields[1];
+					} else {
+						$soa_array['soa_ttl'] = $__FM_CONFIG['soa']['soa_ttl']; // Default TTL if not specified
+					}
+
 					list($soa_array['soa_master_server'], $soa_array['soa_email_address'], $soa_serial_no, $soa_array['soa_refresh'],
-						$soa_array['soa_retry'], $soa_array['soa_expire'], $soa_array['soa_ttl']) = $soa_fields;
+						$soa_array['soa_retry'], $soa_array['soa_expire'], $soa_array['soa_ncache']) = $soa_fields;
 					$ttl = $soa_array['soa_ttl'];
 					$soa_array['soa_append'] = 'no';
 
@@ -963,7 +978,7 @@ BODY;
 						$rr['record_value'] = $rr_fields[7];
 						break;
 					case 'TXT':
-						$txt_record = array();
+						$txt_record = '';
 						for ($i=4; $i<count($rr_fields); $i++) {
 							$txt_record .= $rr_fields[$i] . ' ';
 						}
@@ -976,8 +991,16 @@ BODY;
 						break;
 				}
 				
-				if (substr($rr['record_value'], -1) == '.') {
-					$rr['record_append'] = 'no';
+				/** Ensure record_value is present after stripping domain */
+				if (array_key_exists('record_value', $rr) && empty($rr['record_value'])) {
+					$rr['record_value'] = '@';
+				}
+				
+				if (in_array($rr['record_type'], $append_allowed)) {
+					$rr['record_append'] = 'yes';
+					if (substr($rr['record_value'], -1) == '.' || $rr['record_value'] == '@') {
+						$rr['record_append'] = 'no';
+					}
 				}
 				$rr['record_value'] = str_replace('"', '', $rr['record_value']);
 				

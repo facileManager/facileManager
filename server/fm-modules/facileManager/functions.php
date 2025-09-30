@@ -239,7 +239,7 @@ function sanitize($data, $replace = null) {
  * @since 1.0
  * @package facileManager
  */
-function printHeader($subtitle = 'auto', $css = 'facileManager', $help = 'no-help', $menu = 'menu') {
+function printHeader($subtitle = 'auto', $css = 'facileManager', $menu = 'menu') {
 	global $fm_name, $__FM_CONFIG;
 	
 	include(ABSPATH . 'fm-includes/version.php');
@@ -257,7 +257,7 @@ function printHeader($subtitle = 'auto', $css = 'facileManager', $help = 'no-hel
 	$head = $logo = null;
 	
 	if ($css == 'facileManager') {
-		$head = ($menu == 'menu') ? getTopHeader($help) : null;
+		$head = ($menu == 'menu') ? getTopHeader() : null;
 	} else {
 		$logo = '<h1 class="center"><img alt="' . $fm_name . '" src="' . $GLOBALS['RELPATH'] . 'fm-includes/images/logo.png" /></h1>' . "\n";
 	}
@@ -338,9 +338,8 @@ FOOT;
  * @since 1.0
  * @package facileManager
  */
-function getTopHeader($help) {
-	global $fm_login, $__FM_CONFIG;
-	include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . 'facileManager' . DIRECTORY_SEPARATOR . 'variables.inc.php');
+function getTopHeader() {
+	global $fm_login, $__FM_CONFIG, $fm_name;
 	include(ABSPATH . 'fm-includes' . DIRECTORY_SEPARATOR . 'version.php');
 	
 	$fm_new_version_available = $account_menu = $user_account_menu = $module_menu = $module_version_info = $return_extra = null;
@@ -348,87 +347,68 @@ function getTopHeader($help) {
 
 	$sections = array('left' => array(), 'right' => array());
 	
-	if ($help != 'help-file') {
-		$banner = sprintf('<div class="fm-header-container top-banner" style="display: %s;">%s</div>', isMaintenanceMode() ? 'block' : 'none', sprintf(_('%s is currently in maintenance mode.'), $fm_name)) . "\n";
+	$banner = sprintf('<div class="fm-header-container top-banner" style="display: %s;">%s</div>', isMaintenanceMode() ? 'block' : 'none', sprintf(_('%s is currently in maintenance mode.'), $fm_name)) . "\n";
 
-		$branding_logo = getBrandLogo();
-		
-		if (isset($_SESSION['module']) && $_SESSION['module'] != $fm_name) {
-			$module_version_info = sprintf('<br />%s v%s', $_SESSION['module'], $__FM_CONFIG[$_SESSION['module']]['version']);
-			$fm_version_info = "$fm_name v$fm_version";
-		} else {
-			$fm_version_info = sprintf('<span>%s v%s</span>', $fm_name, $fm_version);
-		}
-		
-		$sections['left'][] = sprintf('<img src="%s" alt="%s" title="%s" />%s%s', 
-				$branding_logo, $fm_name, $fm_name, 
-				$fm_version_info,
-				$module_version_info
-		);
-		
-		/** Build app dropdown menu */
-		$modules = getAvailableModules();
-		$avail_modules_array = getActiveModules(true);
-		$avail_modules = '';
-		
-		if (count($modules)) {
-			foreach ($modules as $module_name) {
-				if ($module_name == $_SESSION['module']) continue;
-				if (in_array($module_name, $avail_modules_array)) {
-					$avail_modules .= sprintf('<li><a href="%1$s?module=%2$s"><span class="menu-icon"><i class="fa fa-cube" aria-hidden="true"></i></span><span>%2$s</span></a></li>' . "\n",
-						$GLOBALS['RELPATH'], $module_name);
-				}
-			}
-			if ($avail_modules) $avail_modules = "<hr />\n" . $avail_modules;
-		}
-			
-		$help = _('Help');
-		$github_issues = _('GitHub Issues');
-		$module_menu = <<<HTML
-			<div id="menu_mainitems" class="module-menu">
-			<ul>
-				<li class="has-sub"><a href="#"><i class="fa fa-bars fa-lg menu-icon" aria-hidden="true"></i></a>
-					<ul class="sub-right">
-						<li><a class="help_link" href="#"><span class="menu-icon"><i class="fa fa-life-ring" aria-hidden="true"></i></span><span>$help</a></span></li>
-						<li><a href="https://github.com/WillyXJ/facileManager/issues" target="_blank"><span class="menu-icon"><i class="fa fa-github" aria-hidden="true"></i></span><span>$github_issues</a></span></li>
-						$avail_modules
-					</ul>
-				</li>
-			</ul>
-			</div>
-HTML;
-		$sections['right'][] = array('module-menu', $module_menu);
-		
-		/** Include module toolbar items */
-		if (function_exists('buildModuleToolbar')) {
-			list($module_toolbar_left, $module_toolbar_right) = @buildModuleToolbar();
-			$sections['left'][] = $module_toolbar_left;
-			$sections['right'][] = $module_toolbar_right;
-		}
+	$branding_logo = getBrandLogo();
 	
-		$help_file = buildHelpFile();
-	
-		if (defined('FM_INCLUDE_SEARCH') && FM_INCLUDE_SEARCH === true) {
-			$sections['right'][] = sprintf('<div class="flex-apart"><a class="search" href="#" title="%s"><i class="fa fa-search fa-lg"></i></a>%s</div>', _('Search this page'), displaySearchForm());
-		}
-
-		$sections['right'][] = sprintf('<a class="process_all_updates tooltip-bottom" href="#" data-tooltip="%s"><i class="fa fa-refresh fa-lg"></i></a><span class="update_count"></span>', _('Process all available updates now'));
-
-		$return_extra .= <<<HTML
-	<div id="help">
-		<div id="help_topbar" class="flex-apart">
-			<div><p class="title">fmHelp</p></div>
-			<div><p>{$__FM_CONFIG['icons']['popout']} {$__FM_CONFIG['icons']['close']}</p></div>
-		</div>
-		<div id="help_file_container">
-		$help_file
-		</div>
-	</div>
-
-HTML;
+	if (isset($_SESSION['module']) && $_SESSION['module'] != $fm_name) {
+		$module_version_info = sprintf('<br />%s v%s', $_SESSION['module'], $__FM_CONFIG[$_SESSION['module']]['version']);
+		$fm_version_info = "$fm_name v$fm_version";
 	} else {
-		$sections['left'][] = sprintf('fmHelp<br />v%s', $fm_version);
+		$fm_version_info = sprintf('<span>%s v%s</span>', $fm_name, $fm_version);
 	}
+	
+	$sections['left'][] = sprintf('<img src="%s" alt="%s" title="%s" />%s%s', 
+			$branding_logo, $fm_name, $fm_name, 
+			$fm_version_info,
+			$module_version_info
+	);
+	
+	/** Build app dropdown menu */
+	$modules = getAvailableModules();
+	$avail_modules_array = getActiveModules(true);
+	$avail_modules = '';
+	
+	if (count($modules)) {
+		foreach ($modules as $module_name) {
+			if ($module_name == $_SESSION['module']) continue;
+			if (in_array($module_name, $avail_modules_array)) {
+				$avail_modules .= sprintf('<li><a href="%1$s?module=%2$s"><span class="menu-icon"><i class="fa fa-cube" aria-hidden="true"></i></span><span>%2$s</span></a></li>' . "\n",
+					$GLOBALS['RELPATH'], $module_name);
+			}
+		}
+		if ($avail_modules) $avail_modules = "<hr />\n" . $avail_modules;
+	}
+		
+	$help = _('Documentation');
+	$github_issues = _('GitHub Issues');
+	$module_menu = <<<HTML
+		<div id="menu_mainitems" class="module-menu">
+		<ul>
+			<li class="has-sub"><a href="#"><i class="fa fa-bars fa-lg menu-icon" aria-hidden="true"></i></a>
+				<ul class="sub-right">
+					<li><a href="https://docs.facileManager.com" target="_blank"><span class="menu-icon"><i class="fa fa-life-ring" aria-hidden="true"></i></span><span>$help</span></span> <span class="menu-icon mini-icon grey"><i class="fa fa-external-link" aria-hidden="true"></i></a></li>
+					<li><a href="https://github.com/facileManager/facileManager/issues" target="_blank"><span class="menu-icon"><i class="fa fa-github" aria-hidden="true"></i></span><span>$github_issues</span> <span class="menu-icon mini-icon grey"><i class="fa fa-external-link" aria-hidden="true"></i></span></a></li>
+					$avail_modules
+				</ul>
+			</li>
+		</ul>
+		</div>
+HTML;
+	$sections['right'][] = array('module-menu', $module_menu);
+	
+	/** Include module toolbar items */
+	if (function_exists('buildModuleToolbar')) {
+		list($module_toolbar_left, $module_toolbar_right) = @buildModuleToolbar();
+		$sections['left'][] = $module_toolbar_left;
+		$sections['right'][] = $module_toolbar_right;
+	}
+
+	if (defined('FM_INCLUDE_SEARCH') && FM_INCLUDE_SEARCH === true) {
+		$sections['right'][] = sprintf('<div class="flex-apart"><a class="search" href="#" title="%s"><i class="fa fa-search fa-lg"></i></a>%s</div>', _('Search this page'), displaySearchForm());
+	}
+
+	$sections['right'][] = sprintf('<a class="process_all_updates tooltip-bottom" href="#" data-tooltip="%s"><i class="fa fa-refresh fa-lg"></i></a><span class="update_count"></span>', _('Process all available updates now'));
 
 	$return_parts = '';
 	foreach ($sections as $class => $section_array) {
@@ -668,7 +648,7 @@ function getCurrentUserMenu() {
 	unset($temp_menu, $element, $submenu_array, $slug, $position, $single_element);
 
 	/** Handle module settings, but no fM settings permissions */
-	if (array_key_exists('admin-settings.php', $filtered_menus[1]) && !array_key_exists('70', $filtered_menus[0])) {
+	if (array_key_exists('settings.php', $filtered_menus[1]) && !array_key_exists('70', $filtered_menus[0])) {
 		$filtered_menus[0][70] = $menu[70];
 	}
 
@@ -1169,195 +1149,6 @@ DASH;
 
 
 /**
- * Builds the help for display
- *
- * @since 1.0
- * @package facileManager
- */
-function buildHelpFile() {
-	global $fm_name, $__FM_CONFIG;
-	
-	/** facileManager help */
-	$body = <<<HTML
-<div id="issue_tracker">
-	<p>Have an idea for a new feature? Found a bug? Submit a report with the <a href="https://github.com/WillyXJ/facileManager/issues" target="_blank">issue tracker</a>.</p>
-</div>
-<div>
-<h3>$fm_name</h3>
-<ul>
-	<li>
-		<a class="list_title">Configure Modules</a>
-		<div>
-			<p>Modules are what gives $fm_name purpose. They can be installed, activated, upgraded, deactivated, and uninstalled.</p>
-			
-			<p><b>Install</b><br />
-			Just extract the module into the 'fm-modules' directory on the server host (if not already present), go to 
-			<a href="__menu{Modules}">Modules</a>, and then click the 'Install' button next to the module 
-			you wish to install.</p>
-			<p><i>The 'Module Management' or 'Super Admin' permission is required for this action.</i></p>
-			<p><b>Activate</b><br />
-			In order for the module to be usable, it needs to be active in the UI.</p>
-			<p>Go to <a href="__menu{Modules}">Modules</a> and click the 'Activate' link next 
-			to the module you wish to activate.</p>
-			<p><i>The 'Module Management' or 'Super Admin' permission is required for this action.</i></p>
-			<p><b>Upgrade</b><br />
-			Anytime module files are individually updated in the 'fm-modules' directory on the server host apart from updating $fm_name 
-			as a whole, they will need to be upgraded to ensure full compatibility and functionality.</p>
-			<p>Go to <a href="__menu{Modules}">Modules</a> and click the 'Upgrade' button next 
-			to the module you wish to upgrade. This will upgrade the database with any required changed.</p>
-			<p><i>The 'Module Management' or 'Super Admin' permission is required for this action.</i></p>
-			<p><b>Deactivate</b><br />
-			If you no longer want a module to be usable, it can be deactived in the UI.</p>
-			<p>Go to <a href="__menu{Modules}">Modules</a> and click the 'Deactivate' link next 
-			to the module you wish to deactivate.</p>
-			<p><i>The 'Module Management' or 'Super Admin' permission is required for this action.</i></p>
-			<p><b>Uninstall</b><br />
-			If you no longer want a module to be installed, it can be uninstalled via the UI.</p>
-			<p>Go to <a href="__menu{Modules}">Modules</a>, ensure the module is already 
-			deactivated, and then click the 'Uninstall' button next to the module you wish to remove. This will remove all associated 
-			entries and tables from the database.</p>
-			<p><i>The 'Module Management' or 'Super Admin' permission is required for this action.</i></p>
-		</div>
-	</li>
-	<li>
-		<a class="list_title">Manage Users</a>
-		<div>
-			<p>$fm_name incorporates the use of multiple user accounts with granular permissions. This way you can limit access to your 
-			environment.</p>
-			
-			<p>You can add, modify, and delete user accounts at Admin &rarr; <a href="__menu{Users & Groups}">Users</a>.</p>
-			
-			<p>For non-LDAP users, there are some options you can select:</p>
-			<ul>
-				<li><b>Force Password Change at Next Login</b><br />
-				Tick this box the user should be forced to change their password next time they try to login.</li>
-				<li><b>Template User</b><br />
-				Tick this box if this user should be a template user only. These users cannot be enabled and cannot login to $fm_name. Any user 
-				account of this type will be depicted with a {$__FM_CONFIG['icons']['template_user']} next to the user name.</li>
-			</ul>
-			
-			<p>Each permission checkbox will grant or deny access to certain functionalities within $fm_name.</p>
-			<ul>
-				<li><b>Super Admin</b><br />
-				This permission will grant the user unrestricted access to the entire facileManager environment. There must be at least one
-				Super Admin. Any user account with this privilege will be depicted with a {$__FM_CONFIG['icons']['star']} next to the user name.</li>
-				<li><b>Module Management</b><br />
-				With this permission, the user will be able to activate, deactivate, install, upgrade, and uninstall modules within $fm_name.</li>
-				<li><b>User Management</b><br />
-				This permission allows the user to add, modify, and delete user accounts.</li>
-				<li><b>Run Tools</b><br />
-				This permission grants the user access to run the various tools in Admin &rarr; <a href="__menu{Tools}">Tools</a>.</li>
-				<li><b>Manage Settings</b><br />
-				This permission grants the user access to change system settings at Settings &rarr; <a href="__menu{Settings}">General</a>.</li>
-			</ul>
-			
-			<p>New user accounts can be created quickly from a template by duplicating the template user. This will prompt you for the new 
-			username and password while giving you the ability to change any other settings prior to user creation.</p>
-
-			<p>User groups can also be created to easily provide the same level of access to multiple user accounts.</p>
-			<p><i>The 'User Management' or 'Super Admin' permission is required for these actions.</i></p>
-
-			<p>When API Support is enabled at Settings &rarr; <a href="__menu{Settings}">General</a>, each user may create an API keypair
-			by editing their user profile. Privileged users will be able change the status of any keypair through Admin &rarr; 
-			<a href="__menu{Users & Groups}">Users</a>. This keypair allows the user to authenticate via the API through the client scripts.</p> 
-		</div>
-	</li>
-	<li>
-		<a class="list_title">Manage Settings</a>
-		<div>
-			<p>There are several settings available to set at Settings &rarr; <a href="__menu{Settings}">General</a>.</p>
-			<p><i>The 'Manage Settings' or 'Super Admin' permission is required to change settings.</i></p>
-			<p><b>Authentication</b><br />
-			There are three types of authentication supported by $fm_name:</p>
-			<ul>
-				<li><b>None</b><br />
-				Every user will be automatically logged in as the default super-admin account that was created during the installation process.</li>
-				<li><b>Built-in Authentication</b><br />
-				Authenticates against the $fm_name database using solely the users defined at Admin &rarr; <a href="__menu{Users & Groups}">Users</a>.</li>
-				<li><b>LDAP Authentication</b><br />
-				Users are authenticated against a defined LDAP server. Upon success, users are created in the $fm_name database using the selected 
-				template account for granular permissions within the environment. If no template is selected then user authentication will fail 
-				(this is another method of controlling access to $fm_name). These users cannot be disabled nor can their passwords be changed 
-				within $fm_name. The PHP LDAP extensions have to be installed before this option is available.</li>
-			</ul>
-			<p><i>You can reset the authentication method by setting the following in config.inc.php:</i></p>
-			<p><i>define('FM_NO_AUTH', true);</i></p>
-			<p><b>Login Message</b><br />
-			Define a message to be displayed at login (such as a terms and conditions) and optionally require users to acknowledge the message
-			for authenication to succeed.</p>
-			<p><b>Client Registration</b><br />
-			You can choose to allow clients to automatically register in the database or not.</p>
-			<p><b>API Support</b><br />
-			By enabling API support, users are able to create keypairs to authenticate with through the client scripts. This opens up the ability
-			to make a limited selection of module changes without using the web interface.</p>
-			<p><b>SSL</b><br />
-			You can choose to have $fm_name enforce the use of SSL when a user tries to access the web app.</p>
-			<p><b>Mailing</b><br />
-			There are a few things $fm_name and its modules may need to send an e-mail about (such as password reset links). These settings allow
-			you to configure the mailing settings to use for your environment and enable/disable mailing altogether.</p>
-			<p><b>Proxy Server</b><br />
-			Set the appropriate configuration if $fm_name is behind a proxy server for Internet access.</p>
-			<p><b>Date and Time</b><br />
-			Set your preferred timezone, date format, and time format for $fm_name to use throughout all aspects of the app. What you select is
-			how all dates and times will be display including any client configuration files.</p>
-			<p><b>Logging Method</b><br />
-			There are three ways logging methods supported by $fm_name:</p>
-			<ul>
-				<li><b>Built-in</b><br />
-				Events will only be logged to $fm_name.</li>
-				<li><b>syslog</b><br />
-				Events will only be looged to syslog.</li>
-				<li><b>Built-in + syslog</b><br />
-				Events will be logged to $fm_name and syslog.</li>
-			</ul>
-			<p><b>Show Errors</b><br />
-			Choose whether you want $fm_name errors to be displayed as they occur or not. This can be useful if you are having trouble
-			adding or editing objects.</p>
-			<p><b>Temporary Directory</b><br />
-			Periodically $fm_name and its modules may need to create temporary files or directories on your webserver. Specify the local path for it to use.</p>
-			<p><b>Software Update</b><br />
-			Choose whether you want $fm_name to automatically check for software updates or not.</p>
-			<p><b>SSH Username</b><br />
-			When servers are configured to receive updates via SSH, this username will be created (if not already present) on your clients
-			and will be used for the client interaction.</p>
-			<p><b>SSH Key Pair</b><br />
-			In order for client configs to be updated via SSH, $fm_name needs a 2048-bit passwordless key pair generated. Without this key pair, 
-			clients cannot use the SSH update method. Click the 'Generate' button to have $fm_name automatically generate the necessary key pair.</p>
-			<p><b>Image Branding</b><br />
-			Add your own image to brand $fm_name. This image will be used on the login screen, navigation header, and automated e-mails.</p>
-			<p><b>Enable Maintenance Mode</b><br />
-			Only users with Super Admin or Module Management privileges are able to authenticate. This is useful during application upgrades.</p>
-		</div>
-	</li>
-	<li>
-		<a class="list_title">Review Logs</a>
-		<div>
-			<p>Every action performed within the $fm_name UI will be logged for auditing purposes.</p>
-			<p>You can view and search the logs at Admin &rarr; <a href="__menu{Logs}">Logs</a></p>
-		</div>
-	</li>
-</ul>
-	
-HTML;
-	
-	/** Get module help file */
-	if (isset($_SESSION['module']) && $_SESSION['module'] != $fm_name) {
-		$functions_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_SESSION['module'] . DIRECTORY_SEPARATOR . 'functions.php';
-		if (is_file($functions_file)) {
-			if (!function_exists('buildModuleHelpFile')) {
-				include($functions_file);
-			}
-			$body .= @buildModuleHelpFile();
-		} else {
-			$body .= sprintf('<p>%s</p>', _('You have no modules installed.'));
-		}
-	}
-
-	return parseMenuLinks($body) . '</div>';
-}
-
-
-/**
  * Adds a UI log entry to the database
  *
  * @since 1.0
@@ -1686,7 +1477,7 @@ function generateSerialNo($module = null) {
 	if ($module) {
 		while(1) {
 			if (array_key_exists('server_name', $_POST) && defined('CLIENT')) {
-				$get_query = "SELECT * FROM `fm_{$__FM_CONFIG[$module]['prefix']}servers` WHERE `server_status`!='deleted' AND account_id='" . getAccountID(sanitize($_POST['AUTHKEY'])) . "' AND `server_name`='" . sanitize($_POST['server_name']) . "'";
+				$get_query = "SELECT * FROM `fm_{$__FM_CONFIG[$module]['prefix']}servers` WHERE `server_status`!='deleted' AND account_id='" . getAccountID(sanitize($_SERVER['HTTP_AUTHKEY'])) . "' AND `server_name`='" . sanitize($_POST['server_name']) . "'";
 				$array = $fmdb->get_results($get_query);
 				if ($fmdb->num_rows) {
 					return $array[0]->server_serial_no;
@@ -1887,7 +1678,7 @@ function buildPaginationCountMenu($server_serial_no = 0, $class = null) {
  * @param string $title Error message title to display
  * @return null
  */
-function bailOut($message, $tryagain = 'try again', $title = null) {
+function bailOut($message, $retry = 'retry', $title = null) {
 	global $fm_name;
 	
 	if (!$title) $title = _('Requirement Error');
@@ -1896,18 +1687,15 @@ function bailOut($message, $tryagain = 'try again', $title = null) {
 		$message = "<p>$message</p>";
 	}
 	
-	if ($tryagain == 'try again') {
-		$tryagain = sprintf('<p class="step"><a href="%s" class="button">%s</a></p>',
-			$_SERVER['PHP_SELF'], _('Try Again'));
+	if ($retry == 'retry') {
+		$retry = sprintf('<div class="button-wrapper"><a href="" class="button">%s</a></div>',
+			_('Try Again'));
 	} else {
-		$tryagain = null;
+		$retry = null;
 	}
 	
-	printHeader($title, 'install');
-	printf('<div id="fm-branding">
-		<img src="%s" /><span>%s</span>
-	</div>
-	<div id="window">%s%s</div>', getBrandLogo(), $title, $message, $tryagain);
+	printHeader($title, 'login');
+	echo displayPreAppForm($title, 'window', $message . $retry);
 	printFooter();
 	exit();
 }
@@ -1923,11 +1711,11 @@ function bailOut($message, $tryagain = 'try again', $title = null) {
  * @param string $result Result of step
  * @param boolean $noisy Whether the result should be echoed
  * @param string $error Message to display as the tooltip
- * @return string
+ * @return string|array
  */
 function displayProgress($step, $result, $process = 'noisy', $error = null) {
 	if ($result === true) {
-		$output = '<i class="fa fa-check fa-lg"></i>';
+		$output = '<i class="fa fa-check fa-lg ok"></i>';
 		$status = 'success';
 	} else {
 		global $fmdb;
@@ -1937,10 +1725,9 @@ function displayProgress($step, $result, $process = 'noisy', $error = null) {
 				$error = $fmdb->last_error;
 			}
 		}
+		$output = '<i class="fa fa-times fa-lg fail"></i>';
 		if ($error) {
-			$output = '<a href="#" class="error-message tooltip-right" data-tooltip="' . $error . '"><i class="fa fa-times fa-lg"></i></a>';
-		} else {
-			$output = '<i class="fa fa-times fa-lg"></i>';
+			$output .= ' <a href="#" class="error-message tooltip-right" data-tooltip="' . $error . '"><i class="fa fa-question-circle fa-lg"></i></a>';
 		}
 		$status = 'failed';
 	}
@@ -1957,7 +1744,7 @@ HTML;
 		echo $message;
 		return $result;
 	} elseif ($process == 'display') {
-		return $message;
+		return [$result, $message];
 	} else return $result;
 }
 
@@ -2608,17 +2395,15 @@ function formatLogKeyData($strip, $key, $data) {
  * @return string
  */
 function fMDie($message = null, $link_display = 'show', $title = null) {
-	global $fm_name;
-	
 	if (!$message) $message = _('An unknown error occurred.');
 	if (!$title) $title = _('Oops!');
 	
-	printHeader('Error', 'install', 'no-help', 'no-menu');
+	printHeader('Error', 'login', 'no-menu');
 	
-	printf('<div id="fm-branding"><img src="%s" /><span>%s</span></div>
-		<div id="window"><p>%s</p>', getBrandLogo(), $title, $message);
-	if ($link_display == 'show') echo '<p><a href="javascript:history.back();">' . _('&larr; Back') . '</a></p>';
-	echo '</div>';
+	$left_content = sprintf('<p>%s</p>', $message);
+	if ($link_display == 'show') $left_content .= '<div class="button-wrapper"><a href="javascript:history.back();" class="button"><i class="fa fa-long-arrow-left" aria-hidden="true"></i> ' . _('Back') . '</a></div>';
+
+	echo displayPreAppForm($title, 'window', $left_content);
 	
 	exit;
 }
@@ -2849,7 +2634,7 @@ function addSubmenuPage($parent_slug, $menu_title, $page_title, $capability, $mo
  * @param integer $badge_count Number of items to display in the badge
  */
 function addSettingsPage($menu_title, $page_title, $capability, $module, $menu_slug, $class = null, $badge_count = 0, $position = null) {
-	addSubmenuPage('admin-settings.php', $menu_title, $page_title, $capability, $module, $menu_slug, $class, $position, $badge_count);
+	addSubmenuPage('settings.php', $menu_title, $page_title, $capability, $module, $menu_slug, $class, $position, $badge_count);
 }
 
 
@@ -3838,11 +3623,7 @@ function createTempDir($subdir, $append = null) {
 	$fm_temp_directory = '/' . ltrim(getOption('fm_temp_directory'), '/');
 	$tmp_dir = rtrim($fm_temp_directory, '/') . "/$subdir/";
 	system('rm -rf ' . $tmp_dir);
-	if (!is_dir($tmp_dir)) {
-		if (!@mkdir($tmp_dir, 0777, true)) {
-			$created = false;
-		}
-	}
+	$created = createDir($tmp_dir);
 
 	return array($tmp_dir, $created);
 }
@@ -4037,7 +3818,7 @@ function availableServers($server_id_type = 'serial', $include = array('all'), $
 	if (in_array('all', $include) || in_array('servers', $include)) {
 		$j = 0;
 		/** Server names */
-		$result = basicGetList('fm_' . $__FM_CONFIG[$module]['prefix'] . 'servers', 'server_name', 'server_', 'active');
+		$result = basicGetList('fm_' . $__FM_CONFIG[$module]['prefix'] . 'servers', 'server_name', 'server_');
 		if ($fmdb->num_rows && !$fmdb->sql_errors) {
 			$server_array[_('Servers')][] = null;
 			foreach ($fmdb->last_result as $results) {
@@ -4210,30 +3991,87 @@ if (!function_exists('array_key_first')) {
  * @package facileManager
  *
  * @param integer $code Error code to throw
+ * @param string $opt_message Optional message to return
+ * @param array $errors Optional errors to return
  * @return mixed
  */
-function throwAPIError($code) {
+function returnAPIStatus($code, $opt_message = null, $errors = null) {
+	global $compress;
+
 	switch ($code) {
+		# General Success
+		case 200:
+		# Successful record create
+		case 201:
+		# Record create was successful, but automatic PTR was not
+		case 202:
+		# Record was successfully deleted
+		case 204:
+		# Record delete was successful, but automatic PTR was not
+		case 205:
+			$message = _('Success');
+			break;
+		# Bad request
+		case 400:
+			$message = _('Bad request');
+			break;
+		# Invalid credentials
+		case 401:
+			$message = _('Invalid credentials');
+			break;
+		# Forbidden access
+		case 403:
+		# User cannot manage records
 		case 1000:
+		# Zone access is not allowed
 		case 1001:
+		# Record management of this type requires elevated privileges
 		case 1002:
-			$message = _('Permission denied.');
+		# Zone reloading is not allowed
+		case 1003:
+			$header_code = 403;
+			$message = _('Permission denied');
 			break;
+		# Record already exists
 		case 1004:
-			$message = _('The record already exists.');
+			$message = _('The record already exists');
 			break;
+		case 404:
+		# Record is not found
 		case 1005:
-			$message = _('The record was not found.');
+			$header_code = 404;
+			$message = _('The record was not found');
 			break;
+		case 405:
+			$message = _('Method not allowed');
+			break;
+		# Dryrun
 		case 3000:
-			$message = _('Dryrun was successful.');
+			$header_code = 202;
+			$message = _('Dryrun was successful');
 			break;
+		# Something is wrong with the request to create/modify the record
 		default:
 			$code = 2000;
-			$message = _('Something was wrong with the request.');
+			$header_code = 400;
+			$message = _('Something was wrong with the request');
 			break;
-		}
-	return array($code, $message);
+	}
+	if (!isset($header_code)) {
+		$header_code = $code;
+	}
+	if ($opt_message) {
+		$message = $opt_message;
+	}
+	if ($errors) {
+		$message = [$message, $errors];
+	}
+	setHeader($header_code);
+	$data = json_encode(['response' => $message, 'status' => $code]);
+
+	if ($compress) echo gzcompress($data);
+	else echo $data;
+	exit;
 }
 
 
@@ -4322,3 +4160,123 @@ function getThemes() {
 function isMaintenanceMode() {
 	return getOption('maintenance_mode');
 }
+
+
+/**
+ * Create a directory
+ *
+ * @since 5.4.0
+ * @package facileManager
+ *
+ * @param string $dir Sub directory name
+ * @param boolean $recursive Create recursively or not
+ * @return boolean
+ */
+function createDir($dir, $recursive = true) {
+	$created = true;
+	
+	if (!is_dir($dir)) {
+		if (!@mkdir($dir, 0777, $recursive)) {
+			$created = false;
+		}
+	}
+
+	return $created;
+}
+
+
+/**
+ * Displays form for login, install, upgrade, etc.
+ *
+ * @since 5.4.0
+ * @package facileManager
+ *
+ * @param string|array $page_title Title to display
+ * @param string $content_id CSS ID of the contents
+ * @param string $left_content Actual content
+ * @param string $form_id CSS ID of the form
+ * @param string $form_action Action of the form
+ * @param string $right_content Content for right box
+ * @param string $addl_class Additional classes for the right content
+ * @param string $addl_style Additional style for the right content
+ * @return string
+ */
+function displayPreAppForm($page_title, $content_id, $left_content, $right_content = null, $addl_class = null, $form_id = null, $form_action = null, $addl_style = null) {
+	global $fm_name;
+
+	$branding_logo = sprintf('<img src="%s" />', getBrandLogo());
+
+	if (is_array($page_title)) {
+		list($branding_logo, $page_title) = $page_title;
+	}
+
+	$copyright = sprintf('© 2013 - %d %s<br /><a href="https://raw.githubusercontent.com/facileManager/facileManager/refs/heads/master/LICENSE" target="_blank">View license</a>', date('Y'), $fm_name);
+
+	$form = sprintf('<div class="flex flex-column container">
+	<form id="%s" class="flex" action="%s" method="post">
+		<div class="flex flex-column">
+			<div class="fm-branding">
+				<div>%s</div>
+				<div><span>%s</span></div>
+			</div>
+			<div id="%s">
+				%s
+			</div>
+		</div>
+		<div class="text-column %s" %s>%s</div>
+	</form>
+	<div class="copyright">
+		<p>%s</p>
+	</div>
+</div>', $form_id, $form_action, $branding_logo, $page_title, $content_id,
+		$left_content, $addl_class, $addl_style, $right_content, $copyright);
+
+	return $form;
+}
+
+
+/**
+ * Sets the HTTP header code
+ * @param integer $code Header code to set
+ */
+function setHeader($code) {
+	switch ($code) {
+		case 200:
+			header('HTTP/1.0 200 OK');
+			break;
+		case 201:
+			header('HTTP/1.0 201 Created');
+			break;
+		case 400:
+			header('HTTP/1.0 400 Bad Request');
+			break;
+		case 401:
+			header('HTTP/1.0 401 Unauthorized');
+			break;
+		case 403:
+			header('HTTP/1.0 403 Forbidden');
+			break;
+		case 404:
+			header('HTTP/1.0 404 Not Found');
+			break;
+	}
+}
+
+
+/**
+ * Checks if a string is valid JSON
+ *
+ * @since 5.4.0
+ * @package facileManager
+ *
+ * @param string $json JSON string to validate
+ * @return boolean
+ */
+if (!function_exists('json_validate')) {
+	function json_validate(string $json) {
+		json_decode($json);
+		return json_last_error() === JSON_ERROR_NONE;
+	}
+}
+
+

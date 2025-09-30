@@ -50,8 +50,8 @@ $menu[50] = array(_('Admin'), null, 'compass', array('run_tools', 'manage_users'
 	}
 	$submenu['admin-tools.php'][15] = array(_('Logs'), _('Logs'), null, 'view_logs', $fm_name, 'admin-logs.php');
 
-$menu[70] = array(_('Settings'), _('General Settings'), 'cog', 'manage_settings', $fm_name, 'admin-settings.php', null, null, true);
-	$submenu['admin-settings.php'][5] = array(_('General'), _('General Settings'), null, 'manage_settings', $fm_name, 'admin-settings.php');
+$menu[70] = array(_('Settings'), _('General Settings'), 'cog', 'manage_settings', $fm_name, 'settings.php', null, null, true);
+	$submenu['settings.php'][5] = array(_('General'), _('General Settings'), null, 'manage_settings', $fm_name, 'settings.php');
 
 $badge_counts = (!defined('AJAX')) ? getBadgeCounts('modules') + getBadgeCounts('core') : null;
-$menu[99] = array(_('Modules'), _('Module Configuration'), 'university', 'manage_modules', $fm_name, 'admin-modules.php', null, $badge_counts, true);
+$menu[99] = array(_('Modules'), _('Module Configuration'), 'university', 'manage_modules', $fm_name, 'modules.php', null, $badge_counts, true);

@@ -1,3 +1,11 @@
+0.8.0 (2025-09-15)
+==================
+* Server - [improvement] Changed "no results" message to be the same for consistency.
+* Server - [bug] Global WLAN options are now included in the configuration.
+* Server - [bug] Fixed issue where some WLAN options were not being applied.
+* Both   - [improvement] Code changes to support fM core API changes.
+* Both   - [improvement] Code cleanup.
+
 0.7.1 (2025-05-27)
 ==================
 * Server - [bug] Fixed inconsistent tooltips for "Configure Additional Options."

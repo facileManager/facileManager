@@ -39,42 +39,39 @@ class fm_login {
 		$auth_method = (getOption('fm_db_version') >= 18) ? getOption('auth_method') : false;
 		$forgot_link = ($mail_enable && $auth_method == 1) ? sprintf('<p id="forgotton_link"><a href="?forgot_password">%s</a></p>', _('Forgot your password?')) : null;
 		
-		$branding_logo = getBrandLogo();
+		$terms_display = '';
 		
 		$login_message = getOption('login_message');
+		$terms_accept = '';
+
 		if ($login_message) {
-			$login_message = '<p class="success">' . $login_message . '</p>';
+			$terms_display = 'style="display: block;"';
+			$login_message = '<p>' . $login_message . '</p>';
 
 			if (getOption('login_message_accept')) {
-				$login_message = '<p class="success"><input name="login_message_accept" id="login_message_accept" type="checkbox" value="1" /><label for="login_message_accept">' . _('I acknowledge and accept the notice below') . '</label></p>' . $login_message;
+				$terms_accept = '<p><input name="login_message_accept" id="login_message_accept" type="checkbox" value="1" /><label for="login_message_accept">' . _('I acknowledge and accept the terms') . '</label></p>';
 			}
 		}
 
-		printf('<form id="loginform" action="%1$s" method="post">
-		<div id="fm-branding">
-			<img src="%2$s" /><span>%3$s</span>
-		</div>
-		<div id="login_form">
-		<table>
-			<tr>
-				<td>
+		echo displayPreAppForm(_('Login'), 'login_form',
+			sprintf('
 					<div class="input-wrapper">
-						<input type="text" size="25" name="username" id="username" placeholder="%4$s" />
+						<i class="fa fa-user" aria-hidden="true"></i>
+						<input type="text" size="25" name="username" id="username" placeholder="%s" />
 					</div>
-				</td>
-				<td>
 					<div class="input-wrapper">
-						<input type="password" size="25" name="password" id="password" placeholder="%5$s" />
+						<i class="fa fa-key" aria-hidden="true"></i>
+						<input type="password" size="25" name="password" id="password" placeholder="%s" />
+						<i id="show_password" class="fa fa-eye eye-attention" title="%s" aria-hidden="true"></i>
 					</div>
-				</td>
-				<td><input name="submit" id="loginbtn" type="submit" value="%3$s" class="button" /></td>
-			</tr>
-		</table>
-		%6$s
-		<div id="message">%7$s</div>
-		</form>
-		</div>', $_SERVER['REQUEST_URI'], $branding_logo, _('Login'), _('Username'),
-				_('Password'), $forgot_link, nl2br($login_message));
+					<div class="button-wrapper"><a name="submit" id="loginbtn" class="button"><i class="fa fa-sign-in" aria-hidden="true"></i> %s</a></div>
+					<div>%s</div>
+				</div>
+				<div id="form_messaging">
+					<div class="terms-accept">%s</div>
+					<div id="message"></div>
+', _('Username'), _('Password'), _('Show'), _('Login'), $forgot_link, $terms_accept),
+			nl2br($login_message), 'terms', 'loginform', $_SERVER['REQUEST_URI'], $terms_display);
 		
 		printFooter();
 		exit();
@@ -97,32 +94,20 @@ class fm_login {
 			exit;
 		}
 
-		global $fm_name;
 		printHeader(_('Password Reset'), 'login');
 		
-		$branding_logo = getBrandLogo();
-		
-		printf('<form id="loginform" action="%s?forgot_password" method="post">
-		<input type="hidden" name="reset_pwd" value="1" />
-		<div id="fm-branding">
-			<img src="%s" /><span>%s</span>
-		</div>
-		<div id="login_form">
-		<table>
-			<tr>
-				<td>
-					<div class="input-wrapper">
-						<input type="text" name="user_login" id="user_login" placeholder="%s" style="width: 400px;" />
-					</div>
-				</td>
-				<td><input name="submit" id="forgotbtn" type="submit" value="%s" class="button" /></td>
-			</tr>
-		</table>
-		<p id="forgotton_link"><a href="%s">&larr; %s</a></p>
-		<div id="message">%s</div>
-		</form>
-		</div>', $_SERVER['PHP_SELF'], $branding_logo, _('Reset Password'), _('Username'),
-				_('Submit'), $GLOBALS['RELPATH'], _('Login form'), $message);
+		echo displayPreAppForm(_('Reset Password'), 'login_form',
+		sprintf('
+				<input type="hidden" name="reset_pwd" value="1" />
+				<div class="input-wrapper">
+					<i class="fa fa-user" aria-hidden="true"></i>
+					<input type="text" name="user_login" id="user_login" placeholder="%s" />
+				</div>
+				<div class="button-wrapper"><a name="submit" id="forgotbtn" class="button"><i class="fa fa-send" aria-hidden="true"></i> %s</a></div>
+				<p id="forgotton_link"><a href="%s">&larr; %s</a></p>
+				<div id="message">%s</div>
+	', _('Username'),
+				_('Submit'), $GLOBALS['RELPATH'], _('Login form'), $message), null, null, 'loginform', $_SERVER['PHP_SELF'] . '?forgot_password', );
 	}
 	
 		
@@ -140,7 +125,7 @@ class fm_login {
 		global $fmdb;
 		
 		$user_login = sanitize(trim($user_login));
-		if (empty($user_login)) return;
+		if (empty($user_login)) return false;
 		
 		$user_info = getUserInfo($user_login, 'user_login');
 		
@@ -670,8 +655,8 @@ This link expires in %s.',
 	 * @since 3.0
 	 * @package facileManager
 	 *
-	 * @param resource $ldap_connect Resource to close
-	 * @return boolean
+	 * @param LDAP\Connection $ldap_connect Resource to close
+	 * @return null
 	 */
 	private function closeLDAPConnect($ldap_connect) {
 		if (is_resource($ldap_connect)) {
@@ -687,10 +672,10 @@ This link expires in %s.',
 	 * @since 3.0
 	 * @package facileManager
 	 *
-	 * @param resource $ldap_connect Resource to use
+	 * @param LDAP\Connection $ldap_connect Resource to use
 	 * @param string $samaccountname SAM Account name to search for
 	 * @param string $basedn Base DN to use
-	 * @return boolean
+	 * @return boolean|string
 	 */
 	private function getDN($ldap_connect, $samaccountname, $basedn) {
 		$attributes = array('dn');
@@ -709,7 +694,7 @@ This link expires in %s.',
 	 * @since 3.0
 	 * @package facileManager
 	 *
-	 * @param resource $ldap_connect Resource to use
+	 * @param LDAP\Connection $ldap_connect Resource to use
 	 * @param string $userdn
 	 * @param string $groupdn
 	 * @param string $ldap_group_attribute
@@ -742,16 +727,17 @@ This link expires in %s.',
 	 *
 	 * @param string $token API key
 	 * @param string $secret API secret key
+	 * @param string $authkey Account authentication key
 	 * @return boolean
 	 */
-	function doAPIAuth($token, $secret) {
+	function doAPIAuth($token, $secret, $authkey = 'default') {
 		global $fmdb;
 
-		$result = $fmdb->get_results("SELECT * FROM `fm_keys` WHERE `key_status`='active' AND `key_token`='$token' AND `account_id`='" . getAccountID($_POST['AUTHKEY']) . "'");
+		$result = $fmdb->get_results("SELECT * FROM `fm_keys` WHERE `key_status`='active' AND `key_token`='$token' AND `account_id`='" . getAccountID($authkey) . "'");
 		if (!$fmdb->num_rows) {
 			return false;
 		}
-		$apikey = $fmdb->last_result[0];
+		$apikey = $result[0];
 		
 		/** Check token secret */
 		/** PHP hashing */
@@ -759,12 +745,12 @@ This link expires in %s.',
 			return false;
 		}
 		
-		$result = $fmdb->get_results("SELECT * FROM `fm_users` WHERE `user_status`='active' AND `user_template_only`='no' AND `user_id`=" . $apikey->user_id . " AND `account_id`='" . getAccountID($_POST['AUTHKEY']) . "'");
+		$result = $fmdb->get_results("SELECT * FROM `fm_users` WHERE `user_status`='active' AND `user_template_only`='no' AND `user_id`=" . $apikey->user_id . " AND `account_id`='" . getAccountID($authkey) . "'");
 		if (!$fmdb->num_rows) {
 			return false;
 		}
 
-		$this->setSession($fmdb->last_result[0]);
+		$this->setSession($result[0]);
 
 		return true;
 	}

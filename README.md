@@ -7,7 +7,7 @@ Please see LICENSE for license.
 
 Official site: https://www.facilemanager.com
 
-Official git repository: https://github.com/WillyXJ/facileManager
+Official git repository: https://github.com/facileManager/facileManager
 
 Official documentation: https://docs.facilemanager.com
 
@@ -48,6 +48,8 @@ fM client requires the following:
 * A running web server if using http(s) update methods
   * The install script supports the following web servers:
     * httpd
+    * lighttpd
+    * nginx
 
 
 Server Installation

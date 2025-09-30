@@ -58,9 +58,11 @@ function buildModuleDashboard() {
 	global $fmdb, $__FM_CONFIG;
 
 	$errors = '';
-	
+	$display_server_count = false;
+
 	/** Name server stats */
 	if (currentUserCan('manage_servers', $_SESSION['module'])) {
+		$display_server_count = true;
 		basicGetList('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'servers', 'server_id', 'server_', 'AND server_type!="remote"');
 		$server_count = $fmdb->num_rows;
 		$server_results = $fmdb->last_result;
@@ -76,24 +78,32 @@ function buildModuleDashboard() {
 	}
 	
 	/** Zone stats */
-	basicGet('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'no', 'domain_', 'domain_template');
-	$domain_count = $fmdb->num_rows;
+	basicGetList('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_id', 'domain_');
+	$domain_count = $fmdb->num_rows; 
 	$domain_results = $fmdb->last_result;
+	$privileged_domain_count = $record_count = 0;
 	for ($i=0; $i<$domain_count; $i++) {
+		$zone_access_allowed = currentUserCan(array('access_specific_zones'), $_SESSION['module'], array(0, $domain_results[$i]->domain_id));
+		if ($zone_access_allowed) {
+			$privileged_domain_count++;
+
+			/** Get record count */
+			basicGet('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'records', $domain_results[$i]->domain_id, 'record_', 'domain_id');
+			if (!$fmdb->sql_errors) $record_count += $fmdb->num_rows;
+		}
+
+		/** Get zones that need attention */
 		if (!getSOACount($domain_results[$i]->domain_id) && !$domain_results[$i]->domain_clone_domain_id && 
-				$domain_results[$i]->domain_type == 'primary' && 
-				currentUserCan(array('access_specific_zones'), $_SESSION['module'], array(0, $domain_results[$i]->domain_id))) {
+				$domain_results[$i]->domain_type == 'primary' && $zone_access_allowed) {
 			$errors .= '<a href="zone-records.php?map=' . $domain_results[$i]->domain_mapping . '&domain_id=' . $domain_results[$i]->domain_id;
 			if (currentUserCan('manage_zones', $_SESSION['module'])) $errors .= '&record_type=SOA';
 			$errors .= '">' . displayFriendlyDomainName($domain_results[$i]->domain_name) . '</a> - ' . __('Zone does not have a SOA defined.') . "\n";
 		} elseif (!getNSCount($domain_results[$i]->domain_id) && !$domain_results[$i]->domain_clone_domain_id && 
-				$domain_results[$i]->domain_type == 'primary' && 
-				currentUserCan(array('access_specific_zones'), $_SESSION['module'], array(0, $domain_results[$i]->domain_id))) {
+				$domain_results[$i]->domain_type == 'primary' && $zone_access_allowed) {
 			$errors .= '<a href="zone-records.php?map=' . $domain_results[$i]->domain_mapping . '&domain_id=' . $domain_results[$i]->domain_id;
 			if (currentUserCan('manage_zones', $_SESSION['module'])) $errors .= '&record_type=NS';
 			$errors .= '">' . displayFriendlyDomainName($domain_results[$i]->domain_name) . '</a> - ' . __('Zone does not have any NS records defined.') . "\n";
-		} elseif ($domain_results[$i]->domain_reload != 'no' && 
-				currentUserCan(array('access_specific_zones'), $_SESSION['module'], array(0, $domain_results[$i]->domain_id)) &&
+		} elseif ($domain_results[$i]->domain_reload != 'no' && $zone_access_allowed &&
 				currentUserCan('reload_zones', $_SESSION['module'])) {
 			$errors .= '<a href="' . getMenuURL(ucfirst($domain_results[$i]->domain_mapping)) . '"><b>' . displayFriendlyDomainName($domain_results[$i]->domain_name) . '</b></a> - ' . __('Zone needs to be reloaded.') . "\n";
 		}
@@ -103,25 +113,18 @@ function buildModuleDashboard() {
 		$error_display = rtrim($error_display, '<li>');
 	} else $error_display = null;
 
-	/** Record stats */
-	$query = 'SELECT COUNT(*) record_count FROM fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'records WHERE record_status!="deleted" AND account_id=' . $_SESSION['user']['account_id'] .
-			' AND domain_id NOT IN (SELECT domain_id FROM fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains WHERE domain_status!="deleted" AND account_id=' . $_SESSION['user']['account_id'] .
-			' AND domain_template="yes")';
-	$fmdb->get_results($query);
-	$record_count = $fmdb->last_result[0]->record_count;
-
 	$dashboard = sprintf('<div>
 	<div id="shadow_box">
 		<div id="shadow_container">
 		<h3>%s</h3>
-		<li>%s</li>
+		%s
 		<li>%s</li>
 		<li>%s</li>
 		</div>
 	</div>
 	</div>', __('Summary'),
-			sprintf(ngettext('You have <b>%s</b> name server configured.', 'You have <b>%s</b> name servers configured.', $server_count), formatNumber($server_count)),
-			sprintf(ngettext('You have <b>%s</b> zone defined.', 'You have <b>%s</b> zones defined.', $domain_count), formatNumber($domain_count)),
+			($display_server_count == true) ? '<li>' . sprintf(ngettext('You have <b>%s</b> name server configured.', 'You have <b>%s</b> name servers configured.', $server_count), formatNumber($server_count)) . '</li>' : '',
+			sprintf(ngettext('You have <b>%s</b> zone defined.', 'You have <b>%s</b> zones defined.', $privileged_domain_count), formatNumber($privileged_domain_count)),
 			sprintf(ngettext('You have <b>%s</b> record.', 'You have <b>%s</b> records.', $record_count), formatNumber($record_count))
 			);
 
@@ -185,191 +188,6 @@ function buildModuleToolbar() {
 	
 	return array($domain_menu, null);
 }
-
-/**
- * Builds the help for display
- *
- * @since 1.0
- * @package facileManager
- * @subpackage fmDNS
- */
-function buildModuleHelpFile() {
-	global $menu, $__FM_CONFIG, $fm_name;
-	
-	$body = <<<HTML
-<h3>{$_SESSION['module']}</h3>
-<ul>
-	<li>
-		<a class="list_title">Configure Zones</a>
-		<div>
-			<p>Zones (aka domains) can be managed from the <a href="__menu{Zones}">Zones</a> menu item. From 
-			there you can add, edit {$__FM_CONFIG['icons']['edit']}, delete 
-			{$__FM_CONFIG['icons']['delete']}, and reload {$__FM_CONFIG['icons']['reload']} zones depending on your user permissions.</p>
-			<p>You can define a zone as a clone <i class="mini-icon fa fa-clone"></i> of another previously defined primary zone.  The cloned zone will contain all of the same records
-			present in the parent zone.  This is useful if you have multiple zones with identical records as you won't have to repeat the record
-			definitions.  You can also skip records and define new ones inside clone zones for those that are slightly different than the parent.</p>
-			<p>Zones can also be saved as a template and applied to an unlimited number of zones. This can speed up your zone additions and
-			management if you have several zones with a similar framework. You can create a zone template when creating a new zone or you can 
-			completely manage them from <a href="__menu{Zone Templates}">Templates</a>. All zones based on a template will be shown with the
-			<i class="mini-icon fa fa-picture-o"></i> icon. Zone templates can only be deleted when there are no zones associated 
-			with them. In addition, clones of a zone based on a template cannot be shortened to a DNAME RR.</p>
-			<p>Zones can support dynamic updates only if the checkbox is ticked while creating or editing individual zones. This will cause 
-			{$_SESSION['module']} to compare the zone file from the DNS server with that in the database and make any necessary changes. This option
-			will increase processing time while reloading zones.</p>
-			<p>Zones can support DNSSEC signing only if the checkbox is ticked while creating or editing individual zones. You must create the KSK and ZSK
-			before zones will be signed (offline and inline signing are supported). During a configuration build or zone reload, the ZSK and KSK files will
-			stored on the name servers in the directory defined by the most specific key-directory option defined (global, view, zone, server-override,
-			etc.). This option will increase processing time while reloading zones.</p>
-			<p><i>The 'Zone Management' or 'Super Admin' permission is required to add, edit, and delete zones and templates.</i></p>
-			<p><i>The 'Reload Zone' or 'Super Admin' permission is required for reloading zones.</i></p>
-			<p>Reverse zones can be entered by either their subnet value (192.168.1) or by their arpa value (1.168.192.in-addr.arpa). You can also
-			delegate reverse zones by specifying the classless IP range in the zone name (1-128.168.192.in-addr.arpa).</p>
-			<p>Zones that are missing SOA and NS records will be highlighted with a red background and will not be built or reloaded until the 
-			records exists.</p>
-			<p>You can also import BIND-compatible zone dump files instead of adding records individually. Go to Admin &rarr; 
-			<a href="__menu{Tools}">Tools</a> and use the Import Zone Files utility. Select your dump file and click 'Import Zones'
-			which will import any views, zones, and records listed in the file.</p>
-			<br />
-		</div>
-	</li>
-	<li>
-		<a class="list_title">Manage Zone Records</a>
-		<div>
-			<p>Records are managed from the <a href="__menu{Zones}">Zones</a> menu item. From 
-			there you can select the zone you want manage records for.  Select from the upper-right the type of record(s) you want to 
-			manage and then you can add, modify, and delete records depending on your user permissions.</p>
-			<p>You can add IPv4 A type and IPv6 AAAA type records under the same page. Select A or AAAA from the upper-right and add your 
-			IPv4 and IPv6 records and {$_SESSION['module']} will auto-detect their type.</p>
-			<p>When adding certain records (such as CNAME, MX, SRV, SOA, NS, etc.), you have the option append the domain to the record. This 
-			means {$_SESSION['module']} will automatically add the domain to the record so you don't have to give the fully qualified domain name 
-			in the record value. {$_SESSION['module']} will attemnpt to auto-detect whether or not the domain should be appended if no choice is
-			made at the time of record creation.</p>
-			<p><i>The 'Record Management' or 'Super Admin' permission is required to add, edit, and delete records.</i></p>
-			<p>When adding or updating a SOA record for a zone, the domain can be appended to the Primary Server and Email Address if selected. This
-			means you could simply enter 'ns1' and 'username' for the Primary Server and Email Address respectively. If you prefer to enter the entire
-			entry, make sure you select 'no' for Append Domain.</p>
-			<p>SOA records can also be saved as a template and applied to an unlimited number of zones. This can speed up your zone additions and
-			management. You can create a SOA template when managing zone records or you can completely manage them from 
-			<a href="__menu{SOA Templates}">Templates</a>. SOA templates can only be deleted when there are no zones associated with them.</p>
-			<p><i>The 'Zone Management' or 'Super Admin' permission is required to add, edit, and delete SOA templates.</i></p>
-			<p>Adding A and AAAA records provides the option of automatically creating the associated PTR record. However, the reverse zone must first
-			exist in order for PTR records to automatically be created. You can enable the automatic reverse zone creation in the 
-			<a href="__menu{{$_SESSION['module']} Settings}">Settings</a>. In this case, the reverse zone will inherit the same SOA as the 
-			forward zone.</p>
-			<p>When viewing the records of a cloned zone, the parent records will not be editable, but you can choose to skip them or add new records
-			that impacts the cloned zone only.</p>
-			<p>You can also import BIND-compatible zone files instead of adding records individually. Go to Admin &rarr; 
-			<a href="__menu{Tools}">Tools</a> and use the Import Zone Files utility. After selecting the file and zone 
-			to import to, you have one final chance to review what gets imported before the records are actually imported.</p>
-			<p>Certain zone records can be managed from the client script on the name servers via an API. Reference the client helpfile for supported uses.</p>
-			<p><b>URL Resource Records</b><br />
-			The custom URL resource record allows domains or records to redirect users to a web page. This is enabled by defining one or more web servers
-			that will handle the web redirects at Admin &rarr; <a href="__menu{{$_SESSION['module']} Settings}">Settings</a>. The supporting web servers
-			will also need the client installed to enable URL redirects (reference client help file). Once defined, the URL RR will be available when 
-			managing zone records.</p>
-			<p><b>Built-in Variables</b><br />
-			There are built-in variables that can be used in any record value that will get translated to the appropriate value. Such variables include:</p>
-			<ul>
-				<li><b>{domain}</b><br />
-				This will be substituted for the current domain name.</li>
-				<li><b>{domain:&lt;id>}</b><br />
-				This will be substituted for the name of domain id &lt;id>.<br/>
-				Example: {domain:42}</li>
-			</ul>
-			<br />
-		</div>
-	</li>
-	<li>
-		<a class="list_title">Configure Servers</a>
-		<div>
-			<p>All aspects of server configuration takes place in the Config menu 
-			item. From there you can add, edit {$__FM_CONFIG['icons']['edit']}, 
-			delete {$__FM_CONFIG['icons']['delete']} servers and options depending on your user permissions.</p>
-			
-			<p><b>Servers</b><br />
-			DNS servers can be defined at Config &rarr; <a href="__menu{Servers}">Servers</a>. In the add/edit server 
-			window, select and define the server hostname, key (if applicable), system account the daemon runs as, update method, configuration file, 
-			server root, chroot directory (if applicable), and directory to keep the zone files in.</p>
-			<p>The server can be updated via the following methods:</p>
-			<ul>
-				<li><i>http(s) -</i> $fm_name will initiate a http(s) connection to the DNS server which updates the configs.</li>
-				<li><i>cron -</i> The DNS servers will initiate a http connection to $fm_name to update the configs.</li>
-				<li><i>ssh -</i> $fm_name will SSH to the DNS server which updates the configs.</li>
-			</ul>
-			<p>In order for the server to be enabled, the client app needs to be installed on the DNS server.</p>
-			<p><i>The 'Server Management' or 'Super Admin' permission is required to add, edit, and delete servers.</i></p>
-			<p>Once a server is added or modified, the configuration files for the server will need to be built before zone reloads will be available. 
-			Before building the configuration {$__FM_CONFIG['icons']['build']} you can preview {$__FM_CONFIG['icons']['preview']} the configs to 
-			ensure they are how you desire them. Both the preview and the build will check the configuration files with named-checkconf and named-checkzone
-			if enabled in the <a href="__menu{{$_SESSION['module']} Settings}">Settings</a>.</p>
-			<p><i>The 'Build Server Configs' or 'Super Admin' permission is required to build the DNS server configurations.</i></p>
-			<br />
-			
-			<p><b>Views</b><br />
-			If you want to use views, they need to be defined at Config &rarr; <a href="__menu{Views}">Views</a>. View names 
-			can be defined globally for all DNS servers or on a per-server basis. This is controlled by the servers drop-down menu in the upper right.</p>
-			<p>Once you define a view, you can select it in the list to manage the options for that view - either globally or server-based. See the section 
-			on 'Options' for further details.</p>
-			<p><i>The 'Server Management' or 'Super Admin' permission is required to manage views.</i></p>
-			<br />
-			
-			<p><b>ACLs</b><br />
-			Access Control Lists are defined at Config &rarr; <a href="__menu{ACLs}">ACLs</a> and can be defined globally 
-			for all DNS servers or on a per-server basis. This is controlled by the servers drop-down menu in the upper right.</p>
-			<p>When defining an ACL, specify the name and the address list. You can use the pre-defined addresses or specify your own delimited by a space,
-			semi-colon, or newline.</p>
-			<p><i>The 'Server Management' or 'Super Admin' permission is required to manage ACLs.</i></p>
-			<br />
-			
-			<p><b>Keys</b><br />
-			Currently, {$_SESSION['module']} does not generate server keys (TSIG), but once you create them on your server, you can define them in the UI 
-			at Config &rarr; <a href="__menu{Keys}">Keys</a>. DNSSEC keys, however, can be automatically generated and managed by {$_SESSION['module']}.
-			DNSSEC keys can only be deleted when they are not used for signing and/or have been revoked.</p>
-			<p><i>The 'Server Management' or 'Super Admin' permission is required to manage keys.</i></p>
-			<br />
-			
-			<p><b>Primaries</b><br />
-			Primaries can be defined globally or server-based which is controlled by the servers drop-down menu in the upper right. To define the primaries, 
-			go to Config &rarr; <a href="__menu{Primaries}">Primaries</a>.</p>
-			<p>Primaries can then be used when defining zones and defining the <i>primaries</i> and <i>also-notify</i> options.</p>
-			<p>Server-level Primaries always supercede global ones.</p>
-			<p><i>The 'Server Management' or 'Super Admin' permission is required to manage the primaries.</i></p>
-			<br />
-			
-			<p><b>Options</b><br />
-			Options can be defined globally or server-based which is controlled by the servers drop-down menu in the upper right. Currently, the options 
-			configuration is rudimentary and can be defined at Config &rarr; <a href="__menu{Options}">Options</a>.</p>
-			<p>Server-level options always supercede global options (including global view options).</p>
-			<p><i>The 'Server Management' or 'Super Admin' permission is required to manage server options.</i></p>
-			<br />
-			
-			<p><b>Logging</b><br />
-			Logging channels and categories can be defined globally or server-based which is controlled by the servers drop-down menu in the upper right. 
-			To manage the logging configuration, go to Config &rarr; <a href="__menu{Logging}">Logging</a>.</p>
-			<p>Server-level channels and categories always supercede global ones.</p>
-			<p><i>The 'Server Management' or 'Super Admin' permission is required to manage server logging.</i></p>
-			<br />
-			
-			<p><b>Operations</b><br />
-			Controls and Statistics Channels can be defined globally or server-based which is controlled by the servers drop-down menu in the upper right. 
-			To manage the controls and statistics configuration, go to Config &rarr; <a href="__menu{Operations}">Operations</a>.</p>
-			<p>Server-level controls always supercede global ones.</p>
-			<p><i>The 'Server Management' or 'Super Admin' permission is required to manage server operations.</i></p>
-			<br />
-		</div>
-	</li>
-	<li>
-		<a class="list_title">Module Settings</a>
-		<div>
-			<p>Settings for {$_SESSION['module']} can be updated from the <a href="__menu{{$_SESSION['module']} Settings}">Settings</a> menu item.</p>
-			<br />
-		</div>
-	</li>
-	
-HTML;
-	return $body;
-}
-
 
 function moduleAddServer($action) {
 	include(ABSPATH . 'fm-modules/' . $_POST['module_name'] . '/classes/class_servers.php');
@@ -805,10 +623,12 @@ function buildModuleMenu() {
  * @return string
  */
 function displayFriendlyDomainName($domain_name) {
-	$new_domain_name = function_exists('idn_to_utf8') ? idn_to_utf8($domain_name, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46) : $domain_name;
-	if ($new_domain_name != $domain_name) $new_domain_name = $domain_name . ' (' . $new_domain_name . ')';
-	
-	return $new_domain_name;
+	if ($domain_name) {
+		$new_domain_name = function_exists('idn_to_utf8') ? idn_to_utf8($domain_name, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46) : $domain_name;
+		if ($new_domain_name != $domain_name) $new_domain_name = $domain_name . ' (' . $new_domain_name . ')';
+	}
+
+	return isset($new_domain_name) ? $new_domain_name : $domain_name;
 }
 
 
@@ -1206,6 +1026,98 @@ function getDNSSECExpiration($data, $type = 'calculated') {
 
 
 /**
+ * Manages the PTR record
+ *
+ * @since 3.0
+ * @package facileManager
+ * @subpackage fmDNS
+ *
+ * @param int $domain_id domain_id
+ * @param string $record_type Type of RR
+ * @param array $data RR data to process
+ * @param string $operation Add or Update
+ * @param object $old_record Old RR information
+ * @return boolean
+ */
+function autoManagePTR($domain_id, $record_type, $data, $operation = 'add', $old_record = null) {
+	global $__FM_CONFIG, $fmdb;
+
+	$forward_record_id = ($old_record) ? $old_record->record_id : $fmdb->insert_id;
+
+	/* We must have the PTR checkbox checked */
+	if (!isset($data['PTR'])) return false;
+
+	/* Get the proper reverse domain_id for the PTR */
+	if (!is_numeric($data['PTR'])) {
+		$retval = checkPTRZone($data['record_value'], $domain_id);
+		list($data['PTR'], $error_msg) = $retval;
+	}
+	
+	if ($record_type == 'A' && zoneAccessIsAllowed(array($data['PTR']))) {
+		$domain = '.' . trimFullStop(getNameFromID($domain_id, 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_name')) . '.';
+		if ($data['record_name'][0] == '@') {
+			$data['record_name'] = null;
+			$domain = substr($domain, 1);
+		}
+
+		/** Get reverse zone */
+		if (!strrpos($data['record_value'], ':')) {
+			$rev_domain = trimFullStop(getNameFromID($data['PTR'], 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_name'));
+			$domain_pieces = array_reverse(explode('.', $rev_domain));
+			$domain_parts = count($domain_pieces);
+
+			$subnet_ips = '';
+			for ($i=2; $i<$domain_parts; $i++) {
+				if (strpos($domain_pieces[$i], '-')) break;
+				$subnet_ips .= $domain_pieces[$i] . '.';
+			}
+			$record_octets = array_reverse(explode('.', substr($data['record_value'], strlen($subnet_ips))));
+			$temp_record_value = '';
+			for ($j=0; $j<count($record_octets); $j++) {
+				$temp_record_value .= $record_octets[$j] . '.';
+			}
+			$data['record_value'] = rtrim($temp_record_value, '.');
+		} else {
+			/** IPv6 not yet supported */
+			return false;
+		}
+
+		if (isset($data['record_status'])) {
+			$array['record_status'] = $data['record_status'];
+		}
+		if (!isset($data['record_status']) || $data['record_status'] != 'deleted') {
+			$array = array(
+					'record_name' => $data['record_value'],
+					'record_ttl' => $data['record_ttl'],
+					'record_value' => $data['record_name'] . $domain,
+					'record_comment' => $data['record_comment']
+					);
+		}
+
+		global $fm_dns_records;
+		if ($operation == 'update') {
+			$fm_dns_records->update($data['PTR'], $old_record->record_ptr_id, 'PTR', $array);
+			
+			if ($fmdb->rows_affected) return true;
+			array_pop($array);
+		}
+		
+		if (!isset($data['record_status']) || $data['record_status'] != 'deleted') {
+			$fm_dns_records->add($data['PTR'], 'PTR', $array, 'replace');
+			if ($fmdb->insert_id != $forward_record_id) {
+				basicUpdate('fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'records', $forward_record_id, 'record_ptr_id', $fmdb->insert_id, 'record_id');
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+	return false;
+}
+
+
+/**
  * Returns the members of the group
  *
  * @since 3.1
@@ -1391,13 +1303,14 @@ function getConfigChildren($config_id, $config_type = 'global', $return = null) 
  * @package facileManager
  * @subpackage fmDNS
  *
- * @param string $type Config parent ID to retrieve children for
- * @param string $default Type of configuration item
- * @param string $addl_sql Array keys to populate and return
+ * @param string $type Type of items to retrieve
+ * @param string $default What the default array item will be
+ * @param string $addl_sql Additional SQL to send to the query
+ * @param string $status Item status to retrieve
  * @param string $prefix
- * @return array|null
+ * @return array
  */
-function availableItems($type, $default = 'blank', $addl_sql = null, $prefix = null) {
+function availableItems($type, $default = 'blank', $addl_sql = null, $status = 'active', $prefix = null) {
 	global $fmdb, $__FM_CONFIG;
 	
 	$return = array();
@@ -1409,10 +1322,13 @@ function availableItems($type, $default = 'blank', $addl_sql = null, $prefix = n
 		$j++;
 	}
 	
-	$query = "SELECT * FROM fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}{$type}s WHERE account_id='{$_SESSION['user']['account_id']}' AND {$type}_status='active' $addl_sql ORDER BY {$type}_name ASC";
+	if ($status) {
+		$addl_sql .= "AND `{$type}_status`='{$status}'";
+	}
+	
+	$query = "SELECT * FROM fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}{$type}s WHERE account_id='{$_SESSION['user']['account_id']}' AND {$type}_status!='deleted' $addl_sql ORDER BY {$type}_name ASC";
 	$result = $fmdb->get_results($query);
 	if ($fmdb->num_rows) {
-		$results = $fmdb->last_result;
 		foreach ($fmdb->last_result as $results) {
 			if (property_exists($results, 'server_menu_display') && $results->server_menu_display == 'exclude') continue;
 			$type_name = $type . '_name';

@@ -49,7 +49,8 @@ if (array_key_exists('item_id', $_GET)) {
 	}
 	
 	$display_option_type = ucfirst($item_info->config_data);
-	$display_option_type_sql = "{$item_info->config_type}', 'global') AND config_parent_id='$item_id' AND config_data!='";
+	// $display_option_type_sql = "{$item_info->config_type}', 'global') AND config_parent_id='$item_id' AND config_data!='";
+	$display_option_type_sql = "{$item_info->config_type}') AND config_parent_id='$item_id' AND config_data!='";
 	
 	$name = 'config_parent_id';
 	$rel = $item_id;

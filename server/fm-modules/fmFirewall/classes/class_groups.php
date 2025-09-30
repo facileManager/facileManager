@@ -71,7 +71,7 @@ class fm_module_groups {
 		
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="groups">%s</p>', _('There are no groups defined.'));
+			printf('<p id="table_edits" class="noresult" name="groups">%s</p>', _('There are no items defined.'));
 		}
 	}
 

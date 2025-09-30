@@ -1,3 +1,35 @@
+7.2.0 (2025-09-15)
+==================
+* Server - [improvement] Moved the 'Create Template' checkbox close to the template selection menu.
+* Server - [improvement] Removed JavaScript:void(0); links.
+* Server - [improvement] Changed "no results" message to be the same for consistency.
+* Server - [improvement] Allow disabled servers to be selected in drop-down menus. (#686)
+* Server - [improvement] Increased the maximum character length for SOA master and email address
+           to 255 characters. (#696)
+* Server - [improvement] SOA negative cache can now be set independently of SOA TTL. (#700)
+* Server - [improvement] Records can now be imported into a zone from the records page.
+* Server - [bug] Fixed URL in error message when attempting to clear cache.
+* Server - [bug] Fixed PHP error during record deletion. (#694)
+* Server - [bug] All records can now be viewed with reverse zones. (#698)
+* Server - [bug] When updating a custom SOA, the log now contains the zone name.
+* Server - [bug] Custom SOA form validation now checks for the maximum character length. (#696)
+* Server - [bug] Fixed zone imports with TXT records. (#697)
+* Server - [bug] Fixed zone imports when the record value is the zone name. (#702)
+* Server - [bug] Fixed zone import logic to automatically set record append for certain RR types.
+* Server - [bug] The 'reload' message appears after changing the SOA for a zone.
+* Server - [bug] Fixed PHP errors when importing zone files.
+* Server - [bug] Fixed unprivileged user dashboard statistics. (#699)
+* Server - [bug] Removed server configuration icon for unprivileged users.
+* Both   - [improvement] Code cleanup.
+* Both   - [improvement] API changes:
+             - Rewritten to support REST and provide JSON output.
+             - Supports automatically managing the PTR for A records. (Issue #579)
+               Example: sudo php /usr/local/facileManager/fmDNS/client.php api setPTR=yes ...
+             - Supports incrementing the zone SOA serial number only.
+               Example: sudo php /usr/local/facileManager/fmDNS/client.php api soa-only=yes ...
+             - Views and associated zones can be retrieved (REST API only). (Issue #526)
+             - ttl= now accepts an empty value.
+
 7.1.4 (2025-06-01)
 ==================
 * Server - [bug] Fixed zone reloads for .info zones when syntax checks are enabled. (Issue #682)

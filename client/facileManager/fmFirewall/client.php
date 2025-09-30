@@ -29,14 +29,14 @@
  */
 
 /** Client version */
-$data['server_client_version'] = '3.2.3';
+$data['server_client_version'] = '3.3.0';
 
 error_reporting(0);
 
 $module_name = basename(dirname(__FILE__));
 
 /** Include shared client functions */
-$fm_client_functions = dirname(dirname(__FILE__)) . '/functions.php';
+$fm_client_functions = dirname(__FILE__, 2) . '/functions.php';
 if (file_exists($fm_client_functions)) {
 	include_once($fm_client_functions);
 } else {

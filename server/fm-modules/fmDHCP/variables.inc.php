@@ -31,17 +31,16 @@ if (!@is_array($__FM_CONFIG)) $__FM_CONFIG = array();
 
 /** Module Version */
 $__FM_CONFIG['fmDHCP'] = array(
-		'version'							=> '0.10.2',
-		'client_version'					=> '0.10.1',
+		'version'							=> '0.11.0',
+		'client_version'					=> '0.11.0',
 		'description'						=> __('Easily manage one or more ISC DHCP servers through a web interface. No longer edit configuration files manually.', 'fmDHCP'),
 		'prefix'							=> 'dhcp_',
 		'required_daemon_version'			=> '4.1',
-		'required_fm_version'				=> '5.0.0',
+		'required_fm_version'				=> '5.4.0',
 		'min_client_auto_upgrade_version'	=> '0.1'
 	);
 if($_SESSION['module'] == 'fmDHCP' && !defined('NO_DASH')) define('NO_DASH', true);
-$__FM_CONFIG['homepage'] = 'object-hosts.php';
-	
+
 /** Module-specific Images */
 if (isset($__FM_CONFIG['module']['path'])) {
 	$__FM_CONFIG['module']['icons']['action']['active']		= '<img src="' . $__FM_CONFIG['module']['path']['images'] . '/__action__.png" border="0" alt="__Action__" title="__Action__" width="12" />';

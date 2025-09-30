@@ -85,35 +85,6 @@ function buildModuleToolbar() {
 
 
 /**
- * Builds the help for display
- *
- * @since 1.0
- * @package facileManager
- * @subpackage fmModule
- *
- * @return none
- */
-function buildModuleHelpFile() {
-	global $__FM_CONFIG;
-	
-	$body = <<<HTML
-<h3>{$_SESSION['module']}</h3>
-<ul>
-	<li>
-		<a class="list_title">Help Menu Title 1</a>
-		<div id="menu_id_1">
-			<p>Text for the menu title.</p>
-			<br />
-		</div>
-	</li>
-	
-HTML;
-	
-	return $body;
-}
-
-
-/**
  * Adds a server
  *
  * @since 1.0

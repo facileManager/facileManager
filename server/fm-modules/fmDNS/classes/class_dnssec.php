@@ -84,7 +84,7 @@ class fm_module_dnssec {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			printf('<p id="table_edits" class="noresult" name="%s">%s</p>', $type, __('There are no items defined.'));
+			printf('<p id="table_edits" class="noresult" name="%s">%s</p>', $type, _('There are no items defined.'));
 		}
 	}
 

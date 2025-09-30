@@ -2,11 +2,61 @@
 if (!defined('FM_NO_CHECKS')) define('FM_NO_CHECKS', true);
 require_once('../../../fm-init.php');
 
-if (isset($__FM_CONFIG)) {
-	header("Content-Type: text/javascript");
+header("Content-Type: text/javascript");
 
-	echo '$(document).ready(function() {
+echo '$(document).ready(function() {
+	$("#show_password").click(function(e) {
+		// Get closest input
+		var input_field = $(this).parent().find("input");
 
+		// Swap between password and text field
+		if (input_field.attr("type") == "password") {
+			input_field.attr("type", "text");
+			$(this).addClass("fa-eye-slash");
+		} else {
+			input_field.attr("type", "password");
+			$(this).removeClass("fa-eye-slash");
+		}
+	});
+';
+
+if (!isset($__FM_CONFIG)) {
+	// Installer jquery
+	echo '
+	$("#install_enable_ssl").click(function() {
+		if ($(this).is(":checked")) {
+			$("#install_ssl_options").show("slow");
+		} else {
+			$("#install_ssl_options").slideUp();
+		}
+	});
+
+	$("#btn_install_config_submit").click(function() {
+		$.ajax({
+			type: "POST",
+			url: "fm-modules/facileManager/ajax/installer.php",
+			data: $("#window").find("input").serialize() + "&" + $.param({task: "install_config_test"}),
+			success: function(response)
+			{
+				if (response.indexOf("ERROR") >=0) {
+					$("#message").prepend(response);
+				} else if (response.indexOf("?step=") == 0) {
+					window.location = response;
+				} else if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				} else {
+					$("div.container").replaceWith(response);
+				}
+			}
+		});
+		
+		return false;
+	});
+});
+';
+} else {
+	echo '
 	// Set theme mode from System
 	$.fn.setThemeMode = function() {
 		if ($("html").hasClass("System") && window.matchMedia) {
@@ -25,7 +75,7 @@ if (isset($__FM_CONFIG)) {
 	
 	$(document).keyup(function(e) {
 		if (e.keyCode == KEYCODE_ESC) { $("#cancel_button").click(); }
-		if (e.keyCode == KEYCODE_ENTER && $(":focus").is("input[type=text], input[type=password]")) { $("#primary_button").click(); }
+		if (e.keyCode == KEYCODE_ENTER && $(":focus").is("input[type=text], input[type=password], input[type=checkbox]")) { $("#primary_button, #loginbtn, #forgotbtn").click(); }
 	});
 
 	$(function() {
@@ -121,7 +171,32 @@ if (isset($__FM_CONFIG)) {
 		return false;
 	} );
 	
-	$("#login_form input").on("change", function() {
+	$("#btn_install_create_account").click(function() {
+		$("#message").html("");
+		var pass_check = $("#passwd_check").html();
+		$.ajax({
+			type: "POST",
+			url: "fm-modules/facileManager/ajax/installer.php",
+			data: $("#window").find("input").serialize() + "&" + $.param({passwd_check: pass_check, task: "install_create_account"}),
+			success: function(response)
+			{
+				if (response.indexOf("ERROR") >=0) {
+					$("#message").prepend(response);
+				} else if (response.indexOf("?step=") == 0) {
+					window.location = response;
+				} else if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				} else {
+					$("div.container").replaceWith(response);
+				}
+			}
+		});
+		
+		return false;
+	});
+
+	$("#login_form input, #form_messaging input").on("change", function() {
 		if ($("#login_message_accept").length) {
 			var button = document.getElementById("loginbtn");
 			if ($("#login_message_accept").is(":checked") && $("#username").length && $("#password").length) {
@@ -133,6 +208,11 @@ if (isset($__FM_CONFIG)) {
 	});
 
 	$("#loginbtn").click(function() {
+		/* Ensure username and terms are entered */
+		if (!$("#username").length || !$("#username").val()) {
+			$("#login_form").effect("shake");
+			return false;
+		}
 		if ($("#login_message_accept").length) {
 			if ($("#login_message_accept").prop("checked") != true) {
 				$("#login_message_accept").parent().addClass("failed");
@@ -161,9 +241,12 @@ if (isset($__FM_CONFIG)) {
 					} else {
 						$("#password").focus();
 					}
-					$("#login_form table").effect("shake");	
+					$("#login_form").effect("shake");	
 				} else if (response.indexOf("failed") >=0) {
 					$("#message").prepend(response);
+				} else if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
 				} else {
 					window.location = response;
 				}
@@ -174,25 +257,35 @@ if (isset($__FM_CONFIG)) {
 	});
 	
 	$("#forgotbtn").click(function() {
-	
-		$("#message").html("<p class=\"success\">' . _('Processing...please wait.') . ' <i class=\"fa fa-spinner fa-spin\"></i></p>");
-		
-		var action = $("#forgotpwd").attr("action");
-		var form_data = {
-			user_login: $("#user_login").val(),
-			is_ajax: 1
-		};
-		
-		$("#user_login").val("");	
-		$.ajax({
-			type: "POST",
-			url: action,
-			data: form_data,
-			success: function(response)
-			{
-				$("#message").html(response);
-			}
-		});
+		/* Ensure user_login is entered */
+		if (!$("#user_login").length || !$("#user_login").val()) {
+			$("#user_login").focus();
+			$("#login_form").effect("shake");	
+		} else {
+			$("#message").html("<p class=\"success\">' . _('Processing...please wait.') . ' <i class=\"fa fa-spinner fa-spin\"></i></p>");
+			
+			var action = $("#forgotpwd").attr("action");
+			var form_data = {
+				user_login: $("#user_login").val(),
+				is_ajax: 1
+			};
+			
+			$("#user_login").val("");	
+			$.ajax({
+				type: "POST",
+				url: action,
+				data: form_data,
+				success: function(response)
+				{
+					if(response === false) {
+						$("#user_login").focus();
+						$("#login_form").effect("shake");	
+					} else {
+						$("#message").html(response);
+					}
+				}
+			});
+		}
 		
 		return false;
 	});
@@ -407,7 +500,7 @@ if (isset($__FM_CONFIG)) {
 		};
 
 		if (confirm("' . _('Are you sure you want to delete this item?') . ' ("+ item_name +")")) {
-			$this.html("<i class=\"fa fa-spinner fa-spin\"></i>");
+			$this.html("<i class=\"fa fa-spinner fa-spin\" aria-hidden=\"true\"></i>");
 			$.ajax({
 				type: "POST",
 				url: "fm-modules/facileManager/ajax/processPost.php",
@@ -421,8 +514,14 @@ if (isset($__FM_CONFIG)) {
 						$row_id.css({"background-color":"#D98085"});
 						$row_id.fadeOut("slow", function() {
 							$row_id.remove();
+							if ($("#table_edits tbody tr").length < 1) {
+								$("#table_edits").after("<p id=\"table_edits\" class=\"noresult\">' . _('There are no items defined.') . '</p>");
+							}
 						});
 					} else {
+						setTimeout(function() {
+					    	$this.html("<i class=\"fa fa-trash delete\" alt=\"Delete\" title=\"Delete\" aria-hidden=\"true\"></i>");
+						}, 2000);
 						var eachLine = response.split("\n");
 						if (eachLine.length <= 2) {
 							$("#response").html("<p class=\"error\">"+response+"</p>");
@@ -650,6 +749,60 @@ if (isset($__FM_CONFIG)) {
 		return false;
 	});
 
+	/* Branding image upload */
+	$("#btn_brand_img_upload").click(function() {
+		var $this = $(this);
+		const file = $("#brand_img_upload")[0].files[0];
+
+		/* Ensure there is a file */
+		if (!file) {
+			$this.html("' . _('Upload') . '");
+			return;
+		}
+		
+		const form_data = new FormData();
+		form_data.append("file", file);
+		form_data.append("item_type", "fm_settings");
+		form_data.append("upload_image", true);
+
+		$.ajax({
+			type: "POST",
+			url: "fm-modules/facileManager/ajax/processPost.php",
+			data: form_data,
+			contentType: false,
+			processData: false,
+			success: function(response)
+			{
+				if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				} else if (response == "Success") {
+					$("#response").slideUp(400);
+					$("#sm_brand_img").val("/fm-modules/' . $fm_name . '/images/upload/" + file.name).keyup();
+				} else {
+					$("#response").removeClass("static").html(response);
+					$("#response")
+						.addClass("static")
+						.css("opacity", 0)
+						.slideDown(400, function() {
+							$("#response").animate(
+								{ opacity: 1 },
+								{ queue: false, duration: 200 }
+							);
+						});
+					if (response.toLowerCase().indexOf("response_close") == -1) {
+						$("#response").delay(3000).fadeTo(200, 0.00, function() {
+							$("#response").slideUp(400);
+						});
+					}
+				}
+				$this.delay(3000).html("' . _('Upload') . '");
+			}
+		});
+		
+		return false;
+	});
+	
 	/* Account settings */
     $(".account_settings").click(function() {
         var $this 		= $(this);
@@ -690,13 +843,22 @@ if (isset($__FM_CONFIG)) {
 		}
 		$form_table = $("div.popup-contents table");
 
-		var uri_params = {"uri_params":getUrlVars()};
-		var form_data = $("div.popup-contents form").serialize() + "&" + $.param(uri_params);
+		var form_data = new FormData($("div.popup-contents form")[0]);
+		form_data.append("uri_params", JSON.stringify(getUrlVars()));
+		var import_file = $("#import-file");
+		if (import_file.length) {
+			var file = import_file[0].files[0];
+			if (file) {
+				form_data.append("import-file", file);
+			}
+		}
 
 		$.ajax({
 			type: "POST",
 			url: "fm-modules/facileManager/ajax/processPost.php",
 			data: form_data,
+			processData: false,      // Prevent jQuery from processing the data
+			contentType: false,      // Prevent jQuery from setting content type header
 			success: function(response)
 			{
 				if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
@@ -720,33 +882,38 @@ if (isset($__FM_CONFIG)) {
 						});
 					}
 				} else if (response != "Success" && !$.isNumeric(response)) {
-					$("#popup_response").html("<p>" + response + "</p>");
+					/* Response contains popup */
+					if (response.indexOf("popup-header") >= 0) {
+						$("#manage_item_contents").html(response);
+					} else {
+						$("#popup_response").html("<p>" + response + "</p>");
 
-					/* Popup response more link */
-					$("#popup_response").delegate("a.more", "click tap", function(e1) {
-						e1.preventDefault();
-						error_div = $("#popup_response div#error")
-						if (error_div.is(":visible")) {
-							error_div.hide();
-							$(this).text("' . _('more') . '");
-						} else {
-							error_div.show();
-							$(this).text("' . _('less') . '");
+						/* Popup response more link */
+						$("#popup_response").delegate("a.more", "click tap", function(e1) {
+							e1.preventDefault();
+							error_div = $("#popup_response div#error")
+							if (error_div.is(":visible")) {
+								error_div.hide();
+								$(this).text("' . _('more') . '");
+							} else {
+								error_div.show();
+								$(this).text("' . _('less') . '");
+							}
+						});
+						$("#popup_response").delegate("#response_close i.close", "click tap", function(e2) {
+							e2.preventDefault();
+							$("#popup_response").fadeOut(200, function() {
+								$("#popup_response").html();
+							});
+						});
+					
+						$("#popup_response").fadeIn(200);
+
+						if (response.indexOf("a class=\"more\"") <= 0) {
+							$("#popup_response").delay(2000).fadeOut(200, function() {
+								$("#popup_response").html();
+							});
 						}
-					});
-					$("#popup_response").delegate("#response_close i.close", "click tap", function(e2) {
-						e2.preventDefault();
-						$("#popup_response").fadeOut(200, function() {
-							$("#popup_response").html();
-						});
-					});
-				
-					$("#popup_response").fadeIn(200);
-
-					if (response.indexOf("a class=\"more\"") <= 0) {
-						$("#popup_response").delay(2000).fadeOut(200, function() {
-							$("#popup_response").html();
-						});
 					}
 				} else {
 					location.reload();
@@ -897,35 +1064,6 @@ if (isset($__FM_CONFIG)) {
 		}
 	});
 
-	$("#tophead .help_link").click(function() {
-		var body_right		= $("#body_container").css("right");
-		var help_right		= $("#help").css("right");
-		
-		if (body_right == "300px") {
-			$("#body_container").animate({right: "0"}, 500);
-			$("#help").hide("slide", { direction: "right" }, 500);
-		} else {
-			$("#body_container").animate({right: "300px"}, 500);
-			$("#help").show("slide", { direction: "right" }, 500);
-		}
-		
-		return false;
-	});
-	
-	$("#help_file_container a.list_title").click(function() {
-		help_block = $(this).next();
-		if ($(help_block).is(":visible")) {
-			$(help_block).slideUp("slow");
-		} else {
-			$(help_block).slideDown("slow");
-		}
-	});
-	
-	$("#help_file_container ul li div a").click(function() {
-		window.opener.location.href = $(this).attr("href");
-		return false;
-	});
-	
 	$("#auth_method").change(function() {
 		if ($(this).val() == 1) {
 			$("#auth_fm_options").show("slow");
@@ -1000,16 +1138,6 @@ if (isset($__FM_CONFIG)) {
 		} else {
 			$("#software_update_options").slideUp();
 		}
-	});
-	
-	$("#help_topbar i.popout").click(function() {
-		$("#tophead .help_link").click();
-		window.open("help.php","1356124444538","' . $__FM_CONFIG['default']['popup']['dimensions'] . ',toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0");
-		return false;
-	});
-	
-	$("#help_topbar .close").click(function() {
-		$("#tophead .help_link").click();
 	});
 	
 	$(function () {
@@ -1283,7 +1411,7 @@ if (isset($__FM_CONFIG)) {
 	$(".disable-auto-complete").attr("autocomplete", "off");
 	
 	/* Handle the eye-attention */
-	$(".eye-attention").click(function() {
+	$("#pagination_container .eye-attention").click(function() {
 		var attention	= getUrlVars()["attention"];
 		
 		var queryParameters = {}, queryString = location.search.substring(1),

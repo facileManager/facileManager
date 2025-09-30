@@ -2,7 +2,7 @@
 if (!defined('FM_NO_CHECKS')) define('FM_NO_CHECKS', true);
 require_once('../../../fm-init.php');
 
-$module_name = basename(dirname(dirname(__FILE__)));
+$module_name = basename(dirname(__FILE__, 2));
 
 header("Content-Type: text/javascript");
 
@@ -281,17 +281,35 @@ $(document).ready(function() {
 
 						setSaveAllStatus();
 					}
-				} else if (response == "Success") {
+				} else if (response == "Success" || response == "Reload") {
 					if (!$(".submit-success").length) {
 						$this.after("<span class=\"submit-success\"><i class=\"fa fa-check\" aria-hidden=\"true\"></i></span>");
 						$(".submit-success").delay(2000).fadeOut(200, function() {
 							$(".submit-success").remove();
 						});
+						if (response == "Reload") {
+							if (!$("#response").is(":visible")) {
+								var text = "<p>' . sprintf(__('You need to %s this zone'), sprintf("<a href='' class='zone_reload' id='_DOMAIN_ID_'>%s</a>", __('reload'))) . '</p>";
+								text = text.replace("_DOMAIN_ID_", getUrlVars()["domain_id"]);
+								$("#response").html(text);
+								$("#response")
+									.css("opacity", 0)
+									.slideDown(400, function() {
+										$("#response").animate(
+											{ opacity: 1 },
+											{ queue: false, duration: 200 }
+										);
+									});
+							}
+						}
 					}
 				} else if (response.indexOf("popup_response") >= 0) {
 					$("body").addClass("fm-noscroll");
 					$("#manage_item").fadeIn(200);
 					$("#manage_item_contents").html(response);
+				} else {
+					$this.after(response);
+					$this.after("<span class=\"submit-success\"><i class=\"fa fa-times fail\" aria-hidden=\"true\"></i></span>");
 				}
 			}
 		});
@@ -389,6 +407,40 @@ $(document).ready(function() {
 		}
 	});
 
+	/* Zone record import form */
+	$(".import-records-form").on("click tap", function(e) {
+		var $this 		= $(this);
+
+		$("body").addClass("fm-noscroll");
+		$("#manage_item").fadeIn(200);
+		$(".popup-wait").show();
+		$("#response").fadeOut();
+
+		var form_data = {
+			add_form: true,
+			zone_records_import_form: true,
+			domain_id: getUrlVars()["domain_id"],
+			is_ajax: 1
+		};
+
+		$.ajax({
+			type: "POST",
+			url: "fm-modules/' . $module_name . '/ajax/getData.php",
+			data: form_data,
+			success: function(response)
+			{
+				if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				}
+				$("#manage_item_contents").html(response);
+				$(".popup-wait").hide();
+			}
+		});
+
+		return false;
+	});
+
 	/* Zone reload button */
 	$("#zones").delegate("form", "click tap", function(e) {
 		var $this 	= $(this);
@@ -429,7 +481,7 @@ $(document).ready(function() {
 	});
 
 	/* Zone reload link */
-	$("a.zone_reload").click(function(e) {
+	$("#response").delegate("a.zone_reload", "click tap", function(e) {
 		var $this 	= $(this);
 		domain_id	= $this.attr("id");
 

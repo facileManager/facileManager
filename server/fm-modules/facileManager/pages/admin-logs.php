@@ -113,7 +113,7 @@ function displayLogData($page, $search_sql = null, $sort_direction = 'DESC') {
 	$date_format = getOption('date_format', $_SESSION['user']['account_id']);
 	$time_format = getOption('time_format', $_SESSION['user']['account_id']);
 	
-	$query = "SELECT * FROM fm_logs WHERE account_id IN (0,{$_SESSION['user']['account_id']}) $search_sql ORDER BY log_timestamp $sort_direction LIMIT " . (($page - 1) * $_SESSION['user']['record_count']) . ", {$_SESSION['user']['record_count']}";
+	$query = "SELECT * FROM fm_logs WHERE account_id IN (0,{$_SESSION['user']['account_id']}) $search_sql ORDER BY log_timestamp $sort_direction, log_id $sort_direction LIMIT " . (($page - 1) * $_SESSION['user']['record_count']) . ", {$_SESSION['user']['record_count']}";
 	$fmdb->query($query);
 	$result = $fmdb->last_result;
 	$log_count = $fmdb->num_rows;

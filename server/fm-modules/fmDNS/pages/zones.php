@@ -37,20 +37,22 @@ if (isset($_GET['map'])) {
 	header('Location: zones-' . sanitize(strtolower($_GET['map'])) . '.php');
 	exit;
 }
-$map = (isset($_POST['createZone'][0]['domain_mapping'])) ? strtolower($_POST['createZone'][0]['domain_mapping']) : $map;
+if (!$invoke_api) {
+	$map = (isset($_POST['createZone'][0]['domain_mapping'])) ? strtolower($_POST['createZone'][0]['domain_mapping']) : $map;
 
-define('FM_INCLUDE_SEARCH', true);
+	define('FM_INCLUDE_SEARCH', true);
 
-printHeader();
-@printMenu();
+	printHeader();
+	@printMenu();
 
-$search_query = createSearchSQL(array('name', 'mapping', 'type'), 'domain_');
+	$search_query = createSearchSQL(array('name', 'mapping', 'type'), 'domain_');
 
-/** Check if any servers need their configs built first */
-$reload_allowed = reloadAllowed();
-if (!$reload_allowed && !$response) $response = '<p>' . sprintf(__('You currently have no name servers hosting zones. <a href="%s">Click here</a> to manage one or more servers.'), getMenuURL(_('Servers'))) . '</p>';
+	/** Check if any servers need their configs built first */
+	$reload_allowed = reloadAllowed();
+	if (!$reload_allowed && !$response) $response = '<p>' . sprintf(__('You currently have no name servers hosting zones. <a href="%s">Click here</a> to manage one or more servers.'), getMenuURL(_('Servers'))) . '</p>';
 
-echo printPageHeader((string) $response, null, currentUserCan('manage_zones', $_SESSION['module']), $map, null, 'noscroll');
+	echo printPageHeader((string) $response, null, currentUserCan('manage_zones', $_SESSION['module']), $map, null, 'noscroll');
+}
 
 $sort_direction = null;
 if ($map == 'groups') {
@@ -72,6 +74,12 @@ if ($map == 'groups') {
 	if (isset($user_capabilities[$_SESSION['module']]) && (array_key_exists('access_specific_zones', $user_capabilities[$_SESSION['module']]) && !array_key_exists('view_all', $user_capabilities[$_SESSION['module']]) && $user_capabilities[$_SESSION['module']]['access_specific_zones'][0])) {
 		$limited_domain_ids = "OR domain_clone_domain_id>0) AND domain_id IN (";
 		$limited_domain_ids .= join(',', $fm_dns_zones->getZoneAccessIDs($user_capabilities[$_SESSION['module']]['access_specific_zones'])) . ')';
+	}
+	if ($invoke_api && isset($domain_id) && $domain_id) {
+		if (!zoneAccessIsAllowed([$domain_id])) {
+			returnAPIStatus(403);
+		}
+		$limited_domain_ids = "AND domain_id=$domain_id)";
 	}
 
 	/** Process domain_view filtering */
@@ -97,31 +105,37 @@ if ($map == 'groups') {
 		$limited_domain_ids = "OR domain_clone_domain_id>0)";
 	}
 
+	$domain_template_sql = '';
+	if (!$invoke_api) {
+		$domain_template_sql = "AND domain_template='no'";
+	}
 	if (getOption('zone_sort_hierarchical', $_SESSION['user']['account_id'], $_SESSION['module']) == 'yes') {
 		if ($map == 'forward') {
 			$query = "SELECT *,
 				SUBSTRING_INDEX(`domain_name`, '.', -2) AS a, 
 				SUBSTRING_INDEX(`domain_name`, '.', -3) AS b, 
 				LPAD(SUBSTRING_INDEX(`domain_name`, '.', -4),255,'.') AS c 
-				FROM `fm_{$__FM_CONFIG['fmDNS']['prefix']}domains` WHERE `domain_status`!='deleted' AND account_id='1' AND domain_template='no' AND domain_mapping='{$map}' AND (domain_clone_domain_id='0' " . $limited_domain_ids . (string) $domain_view_sql . (string) $domain_group_sql . (string) $search_query . " 
+				FROM `fm_{$__FM_CONFIG['fmDNS']['prefix']}domains` WHERE `domain_status`!='deleted' AND account_id='1' $domain_template_sql AND domain_mapping='{$map}' AND (domain_clone_domain_id='0' " . $limited_domain_ids . (string) $domain_view_sql . (string) $domain_group_sql . (string) $search_query . " 
 				ORDER BY a $sort_direction, b $sort_direction, c $sort_direction, `domain_name` $sort_direction";
 		} else {
 			$query = "SELECT *,
 				LPAD(REGEXP_SUBSTR(SUBSTRING_INDEX(domain_name, '.',1), '[0-9]+'),3,0) AS a,
 				LPAD(REGEXP_SUBSTR(SUBSTRING_INDEX(SUBSTRING_INDEX(domain_name, '.',2),'.',-1), '[0-9]+'),3,0) AS b,
 				LPAD(REGEXP_SUBSTR(SUBSTRING_INDEX(SUBSTRING_INDEX(domain_name, '.',3),'.',-1), '[0-9]+'),3,0) AS c
-				FROM `fm_{$__FM_CONFIG['fmDNS']['prefix']}domains` WHERE `domain_status`!='deleted' AND account_id='1' AND domain_template='no' AND domain_mapping='{$map}' AND (domain_clone_domain_id='0' " . $limited_domain_ids . (string) $domain_view_sql . (string) $domain_group_sql . (string) $search_query . " 
+				FROM `fm_{$__FM_CONFIG['fmDNS']['prefix']}domains` WHERE `domain_status`!='deleted' AND account_id='1' $domain_template_sql AND domain_mapping='{$map}' AND (domain_clone_domain_id='0' " . $limited_domain_ids . (string) $domain_view_sql . (string) $domain_group_sql . (string) $search_query . " 
 				ORDER BY c $sort_direction, b $sort_direction, a $sort_direction, `domain_name` $sort_direction";
 		}
 		$result = $fmdb->query($query);
 	} else {
-		$result = basicGetList('fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', array($sort_field, 'domain_name'), 'domain_', "AND domain_template='no' AND domain_mapping='$map' AND (domain_clone_domain_id='0' $limited_domain_ids " . (string) $domain_view_sql . (string) $domain_group_sql . (string) $search_query, null, false, $sort_direction, false, "SUBSTRING_INDEX(`domain_name`, '.', -2),SUBSTRING_INDEX(`domain_name`, '.', 2),`domain_name`");
+		$result = basicGetList('fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', array($sort_field, 'domain_name'), 'domain_', "$domain_template_sql AND domain_mapping='$map' AND (domain_clone_domain_id='0' $limited_domain_ids " . (string) $domain_view_sql . (string) $domain_group_sql . (string) $search_query, null, false, $sort_direction, false, "SUBSTRING_INDEX(`domain_name`, '.', -2),SUBSTRING_INDEX(`domain_name`, '.', 2),`domain_name`");
 	}
 }
 
-$total_pages = ceil($fmdb->num_rows / $_SESSION['user']['record_count']);
-if ($page > $total_pages) $page = $total_pages;
+if (!$invoke_api) {
+	$total_pages = ceil($fmdb->num_rows / $_SESSION['user']['record_count']);
+	if ($page > $total_pages) $page = $total_pages;
 
-$fm_dns_zones->rows($result, $map, $reload_allowed, $page, $total_pages);
+	$fm_dns_zones->rows($result, $map, $reload_allowed, $page, $total_pages);
 
-printFooter();
+	printFooter();
+}

@@ -31,16 +31,15 @@ if (!@is_array($__FM_CONFIG)) $__FM_CONFIG = array();
 
 /** Module Version */
 $__FM_CONFIG['fmFirewall'] = array(
-		'version'							=> '3.2.5',
-		'client_version'					=> '3.2.3',
+		'version'							=> '3.3.0',
+		'client_version'					=> '3.3.0',
 		'description'						=> __('Managing software firewalls should not be difficult. Manage one or more software firewall servers (iptables, ipfw, ipf, pf) through a web interface rather than configuration files individually.', 'fmFirewall'),
 		'prefix'							=> 'fw_',
-		'required_fm_version'				=> '5.0.0',
+		'required_fm_version'				=> '5.4.0',
 		'min_client_auto_upgrade_version'	=> '1.3'
 	);
 
 if($_SESSION['module'] == 'fmFirewall' && !defined('NO_DASH')) define('NO_DASH', true);
-$__FM_CONFIG['homepage'] = 'config-servers.php';
 
 /** Images */
 if (isset($__FM_CONFIG['module']['path'])) {

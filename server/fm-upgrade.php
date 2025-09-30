@@ -54,7 +54,7 @@ if ($app_compat = checkAppVersions(false)) {
 	bailOut($app_compat);
 }
 
-$step = isset($_GET['step']) ? $_GET['step'] : 0;
+$step = (isset($_GET['step']) && $_GET['step'] <= 2 && $_GET['step'] >= 0) ? $_GET['step'] : 0;
 
 if (array_key_exists('backup', $_GET)) {
 	if (!class_exists('fm_tools')) {
@@ -65,13 +65,11 @@ if (array_key_exists('backup', $_GET)) {
 		header('Location: ' . $GLOBALS['basename']);
 		exit;
 	} else {
-		$response = sprintf(_('Error: %s'), $response);
+		$response = sprintf('<div class="button-wrapper failed" id="response">%s</div>', sprintf(_('Error: %s'), $response));
 	}
 }
 
-$branding_logo = getBrandLogo();
-
-printHeader(_('Upgrade'), 'install');
+printHeader(_('Upgrade'), 'login');
 
 switch ($step) {
 	case 0:
@@ -80,13 +78,13 @@ switch ($step) {
 			header('Location: /fm-install.php');
 			exit;
 		}
-		printf('<div id="fm-branding">
-		<img src="%s" /><span>%s</span>
-	</div>
-	<div id="window"><p>', $branding_logo, _('Upgrade'));
-		$backup_button = findProgram('mysqldump') ? sprintf('<a id="pre_upgrade_backup" class="button">%s</a></p><p id="response">%s', _('Backup Database'), $response) : null;
-		printf(_("I have detected you recently upgraded %s and its modules, but have not upgraded the database. Click 'Upgrade' to start the upgrade process."), $fm_name);
-		printf('</p><p class="step"><a href="?step=2" class="button click_once">%s</a> %s</p></div>', _('Upgrade'), $backup_button);
+		$backup_button = findProgram('mysqldump') ? sprintf('<div class="button-wrapper"><a id="pre_upgrade_backup" class="button">%s</a></div>', _('Backup Database'), $response) : null;
+
+		$left_content = sprintf('<p>%s</p><div class="button-wrapper"><a href="?step=2" class="button click_once">%s</a></div> %s%s',
+			sprintf(_("It's been detected that you recently upgraded %s and its modules, but have not upgraded the database. Click 'Upgrade' to start the upgrade process."), $fm_name),
+			_('Upgrade'), $backup_button, $response);
+
+		echo displayPreAppForm(_('Upgrade'), 'window', $left_content);
 		break;
 	case 2:
 		if (!file_exists(ABSPATH . 'config.inc.php') || !file_get_contents(ABSPATH . 'config.inc.php')) {

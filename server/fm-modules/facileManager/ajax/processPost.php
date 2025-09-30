@@ -38,6 +38,9 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 	if (isset($_POST['gen_ssh']) && $_POST['gen_ssh'] == true) {
 		$save_result = $fm_settings->generateSSHKeyPair();
 		echo ($save_result !== true) ? displayResponseClose($save_result) : 'Success';
+	} elseif (isset($_POST['upload_image']) && $_POST['upload_image'] == true) {
+		$save_result = $fm_settings->uploadBrandingImage();
+		echo ($save_result !== true) ? displayResponseClose($save_result) : 'Success';
 	} else {
 		$save_result = $fm_settings->save();
 		echo ($save_result !== true) ? displayResponseClose($save_result) : sprintf("<p>%s</p>\n", _('These settings have been saved.'));
@@ -72,7 +75,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 	}
 
 	if (!empty($fm_new_version_available) || $module_new_version_available) {
-		echo 'admin-modules.php';
+		echo 'modules.php';
 	}
 
 /** Handle test mail */

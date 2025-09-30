@@ -100,8 +100,7 @@ class fm_module_servers extends fm_shared_module_servers {
 			
 		echo "</tbody>\n</table>\n";
 		if (!$result) {
-			$message = $type == 'servers' ? __('There are no servers.') : __('There are no groups.');
-			printf('<p id="table_edits" class="noresult" name="servers">%s</p>', $message);
+			printf('<p id="table_edits" class="noresult" name="servers">%s</p>', _('There are no items defined.'));
 		}
 	}
 
@@ -489,8 +488,7 @@ class fm_module_servers extends fm_shared_module_servers {
 			$os_image = ($row->server_type == 'remote') ? '<i class="fa fa-globe fa-2x grey" style="font-size: 1.5em" title="' . __('Remote server') . '" aria-hidden="true"></i>' : setOSIcon($row->server_os_distro);
 
 			$edit_actions = $preview = ($row->server_type != 'remote') ? '<a href="preview.php" onclick="javascript:void window.open(\'preview.php?server_serial_no=' . $row->server_serial_no . '\',\'1356124444538\',\'' . $__FM_CONFIG['default']['popup']['dimensions'] . ',toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0\');return false;">' . $__FM_CONFIG['icons']['preview'] . '</a>' : null;
-			if ($row->server_type != 'url-only') $icons[] = sprintf('<a href="config-options.php?server_id=%d" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-sliders" aria-hidden="true"></i></a>', $row->server_id, __('Configure Additional Options'));
-			if ($row->server_url_server_type) $icons[] = sprintf('<a href="JavaScript:void(0);" class="tooltip-top mini-icon" data-tooltip="%s"><i class="fa fa-globe" aria-hidden="true"></i></a>', sprintf(__('This server hosts URL redirects with %s for the URL RR'), $row->server_url_server_type));
+			if ($row->server_url_server_type) $icons[] = sprintf('<a href="#" class="tooltip-top mini-icon" data-tooltip="%s"><i class="fa fa-globe" aria-hidden="true"></i></a>', sprintf(__('This server hosts URL redirects with %s for the URL RR'), $row->server_url_server_type));
 			$checkbox = null;
 
 			if (currentUserCan('build_server_configs', $_SESSION['module']) && $row->server_installed == 'yes') {
@@ -500,6 +498,7 @@ class fm_module_servers extends fm_shared_module_servers {
 				}
 			}
 			if (currentUserCan('manage_servers', $_SESSION['module'])) {
+				if ($row->server_type != 'url-only') $icons[] = sprintf('<a href="config-options.php?server_id=%d" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-sliders" aria-hidden="true"></i></a>', $row->server_id, __('Configure Additional Options'));
 				$edit_status = '<a class="edit_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 				if ($row->server_installed == 'yes' || $row->server_type == 'remote') {
 					$edit_status .= '<a class="status_form_link" href="#" rel="';
@@ -697,7 +696,7 @@ FORM;
 			/** Advanced tab */
 			$keys = $this->getConfig($server_id, 'keys');
 			$keys = ($keys) ? array($keys) : null;
-			$keys = buildSelect('keys', 'keys', availableItems('key', 'blank', 'AND `key_type`="tsig"', 'key_'), $keys, 1, '', false);
+			$keys = buildSelect('keys', 'keys', availableItems('key', 'blank', 'AND `key_type`="tsig"', 'active', 'key_'), $keys, 1, '', false);
 			$transfers = str_replace(array('"', "'"), '', $this->getConfig($server_id, 'transfers'));
 			$bogus = $this->buildConfigOptions('bogus', $this->getConfig($server_id, 'bogus'));
 			$edns = $this->buildConfigOptions('edns', $this->getConfig($server_id, 'edns'));
@@ -835,8 +834,8 @@ FORM;
 			$group_slaves  = (isset($group_slaves)) ? explode(';', $group_slaves) : null;
 			
 			$group_name_length = getColumnLength('fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'server_groups', 'group_name');
-			$group_masters = buildSelect('group_masters', 'group_masters', availableItems('server'), $group_masters, 1, null, true, null, null, __('Select primary servers'));
-			$group_slaves = buildSelect('group_slaves', 'group_slaves', availableItems('server'), $group_slaves, 1, null, true, null, null, __('Select secondary servers'));
+			$group_masters = buildSelect('group_masters', 'group_masters', availableItems('server', 'blank', null, null), $group_masters, 1, null, true, null, null, __('Select primary servers'));
+			$group_slaves = buildSelect('group_slaves', 'group_slaves', availableItems('server', 'blank', null, null), $group_slaves, 1, null, true, null, null, __('Select secondary servers'));
 			$group_auto_also_notify_checked = ($group_auto_also_notify == 'yes') ? 'checked' : null;
 
 			$return_form .= sprintf('
