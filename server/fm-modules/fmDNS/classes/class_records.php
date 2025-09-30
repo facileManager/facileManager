@@ -794,7 +794,7 @@ HTML;
 	<table class="form-table">
 		<tr>
 			<th><label>{$labels[0]}</label></th>
-			<td><input type="text" name="{$action}[$soa_id][soa_ttl]" size="25" value="$soa_ttl" class="required" onkeydown="return validateTimeFormat(event, this)" $disabled /></td>
+			<td><input type="text" name="{$action}[$soa_id][soa_ttl]" size="25" value="$soa_ttl" onkeydown="return validateTimeFormat(event, this)" $disabled /></td>
 		</tr>
 		<tr>
 			<th><label>{$labels[1]}</label></th>
