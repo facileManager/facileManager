@@ -166,7 +166,7 @@ RewriteRule . index.php [L]
 			$test_output = getPostData($GLOBALS['FM_URL'] . 'admin-accounts.php?verify', array('module_type' => 'CLIENT'));
 			$test_output = isSerialized($test_output) ? unserialize($test_output) : $test_output;
 			if (strpos($test_output, 'Account is not found.') === false) {
-				$message = sprintf(_('The required .htaccess file appears to not work with your Apache configuration which is required by %1s. '
+				$message = sprintf(_('The required logic found in the .htaccess file appears to not work with your web server configuration which is required by %1s. '
 						. 'AllowOverride None in your configuration may be blocking the use of .htaccess or %s is not resolvable.'),
 						$fm_name, $_SERVER['SERVER_NAME']);
 				if ($single_check) {
