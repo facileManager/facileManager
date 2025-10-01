@@ -27,11 +27,11 @@ if (array_key_exists('verify', $_GET)) {
 	include(ABSPATH . 'fm-modules/facileManager/classes/class_accounts.php');
 	
 	if (array_key_exists('HTTP_AUTHKEY', $_SERVER)) {
-		$auth['AUTHKEY'] = $_SERVER['HTTP_AUTHKEY'];
+		$_POST['AUTHKEY'] = $_SERVER['HTTP_AUTHKEY'];
 	}
 
-	if (array_key_exists('compress', $_POST) && $_POST['compress']) echo gzcompress(serialize($fm_accounts->verify($auth)));
-	else echo serialize($fm_accounts->verify($auth));
+	if (array_key_exists('compress', $_POST) && $_POST['compress']) echo gzcompress(serialize($fm_accounts->verify($_POST)));
+	else echo serialize($fm_accounts->verify($_POST));
 	exit;
 }
 

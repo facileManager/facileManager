@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-02 15:59-0600\n"
+"POT-Creation-Date: 2025-09-30 17:26-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgid ""
 msgstr ""
 
 #: server/fm-modules/fmSQLPass/functions.php:39
-#: server/fm-modules/fmSQLPass/functions.php:316
+#: server/fm-modules/fmSQLPass/functions.php:250
 msgid "Server Groups"
 msgstr ""
 
@@ -55,100 +55,100 @@ msgid_plural "You have <b>%s</b> groups defined."
 msgstr[0] ""
 msgstr[1] ""
 
-#: server/fm-modules/fmSQLPass/functions.php:195
+#: server/fm-modules/fmSQLPass/functions.php:129
 msgid "Connecting to MySQL "
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:197
-#: server/fm-modules/fmSQLPass/functions.php:203
-#: server/fm-modules/fmSQLPass/functions.php:224
+#: server/fm-modules/fmSQLPass/functions.php:131
+#: server/fm-modules/fmSQLPass/functions.php:137
+#: server/fm-modules/fmSQLPass/functions.php:158
+#: server/fm-modules/fmSQLPass/functions.php:163
+#: server/fm-modules/fmSQLPass/functions.php:167
+#: server/fm-modules/fmSQLPass/functions.php:170
+#: server/fm-modules/fmSQLPass/functions.php:200
+#: server/fm-modules/fmSQLPass/functions.php:206
+#: server/fm-modules/fmSQLPass/functions.php:225
 #: server/fm-modules/fmSQLPass/functions.php:229
-#: server/fm-modules/fmSQLPass/functions.php:233
-#: server/fm-modules/fmSQLPass/functions.php:236
-#: server/fm-modules/fmSQLPass/functions.php:266
-#: server/fm-modules/fmSQLPass/functions.php:272
-#: server/fm-modules/fmSQLPass/functions.php:291
-#: server/fm-modules/fmSQLPass/functions.php:295
-#: server/fm-modules/fmSQLPass/functions.php:298
+#: server/fm-modules/fmSQLPass/functions.php:232
 msgid "failed"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:197
-#: server/fm-modules/fmSQLPass/functions.php:266
+#: server/fm-modules/fmSQLPass/functions.php:131
+#: server/fm-modules/fmSQLPass/functions.php:200
 #, php-format
 msgid "Could not connect to %s on tcp/%s"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:201
-#: server/fm-modules/fmSQLPass/functions.php:212
-#: server/fm-modules/fmSQLPass/functions.php:216
-#: server/fm-modules/fmSQLPass/functions.php:224
-#: server/fm-modules/fmSQLPass/functions.php:270
-#: server/fm-modules/fmSQLPass/functions.php:279
-#: server/fm-modules/fmSQLPass/functions.php:283
+#: server/fm-modules/fmSQLPass/functions.php:135
+#: server/fm-modules/fmSQLPass/functions.php:146
+#: server/fm-modules/fmSQLPass/functions.php:150
+#: server/fm-modules/fmSQLPass/functions.php:158
+#: server/fm-modules/fmSQLPass/functions.php:204
+#: server/fm-modules/fmSQLPass/functions.php:213
+#: server/fm-modules/fmSQLPass/functions.php:217
 msgid "ok"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:207
-#: server/fm-modules/fmSQLPass/functions.php:276
+#: server/fm-modules/fmSQLPass/functions.php:141
+#: server/fm-modules/fmSQLPass/functions.php:210
 #, php-format
 msgid "Verifying user account (%s) exists"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:213
-#: server/fm-modules/fmSQLPass/functions.php:280
+#: server/fm-modules/fmSQLPass/functions.php:147
+#: server/fm-modules/fmSQLPass/functions.php:214
 #, php-format
 msgid "Updating the password for user account (%s)"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:222
+#: server/fm-modules/fmSQLPass/functions.php:156
 msgid "Flushing privileges "
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:227
+#: server/fm-modules/fmSQLPass/functions.php:161
 msgid "Updated MySQL Account"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:230
-#: server/fm-modules/fmSQLPass/functions.php:292
+#: server/fm-modules/fmSQLPass/functions.php:164
+#: server/fm-modules/fmSQLPass/functions.php:226
 #, php-format
 msgid "Password for user account (%s) was not different."
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:233
-#: server/fm-modules/fmSQLPass/functions.php:295
+#: server/fm-modules/fmSQLPass/functions.php:167
+#: server/fm-modules/fmSQLPass/functions.php:229
 #, php-format
 msgid "User account (%s) does not exist."
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:264
+#: server/fm-modules/fmSQLPass/functions.php:198
 msgid "Connecting to PostgreSQL "
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:289
+#: server/fm-modules/fmSQLPass/functions.php:223
 msgid "Updated PostgreSQL Account"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:314
+#: server/fm-modules/fmSQLPass/functions.php:248
 msgid "Config"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:314
-#: server/fm-modules/fmSQLPass/functions.php:315
+#: server/fm-modules/fmSQLPass/functions.php:248
+#: server/fm-modules/fmSQLPass/functions.php:249
 msgid "Database Servers"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:316
+#: server/fm-modules/fmSQLPass/functions.php:250
 #: server/fm-modules/fmSQLPass/classes/class_servers.php:49
 #: server/fm-modules/fmSQLPass/classes/class_servers.php:407
 msgid "Groups"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:318
+#: server/fm-modules/fmSQLPass/functions.php:252
 msgid "Passwords"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/functions.php:320
+#: server/fm-modules/fmSQLPass/functions.php:254
 #, php-format
 msgid "%s Settings"
 msgstr ""
@@ -161,32 +161,28 @@ msgid ""
 "and PostgreSQL."
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/variables.inc.php:57
+#: server/fm-modules/fmSQLPass/variables.inc.php:56
 msgid "Minimum Password Strength"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/variables.inc.php:62
+#: server/fm-modules/fmSQLPass/variables.inc.php:61
 msgid "Default Username"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/variables.inc.php:62
+#: server/fm-modules/fmSQLPass/variables.inc.php:61
 msgid ""
 "Default MySQL user to login as. This will be overridden if the user is "
 "defined at the server level."
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/variables.inc.php:66
+#: server/fm-modules/fmSQLPass/variables.inc.php:65
 msgid "Default Password"
 msgstr ""
 
-#: server/fm-modules/fmSQLPass/variables.inc.php:66
+#: server/fm-modules/fmSQLPass/variables.inc.php:65
 msgid ""
 "Default MySQL user password to login with. This will be overridden if the "
 "password is defined at the server level."
-msgstr ""
-
-#: server/fm-modules/fmSQLPass/classes/class_groups.php:38
-msgid "There are no server groups."
 msgstr ""
 
 #: server/fm-modules/fmSQLPass/classes/class_groups.php:46
@@ -230,10 +226,6 @@ msgstr ""
 
 #: server/fm-modules/fmSQLPass/classes/class_groups.php:242
 msgid "This group name already exists."
-msgstr ""
-
-#: server/fm-modules/fmSQLPass/classes/class_passwords.php:38
-msgid "There are no active database server groups."
 msgstr ""
 
 #: server/fm-modules/fmSQLPass/classes/class_passwords.php:48
@@ -297,11 +289,6 @@ msgstr ""
 
 #: server/fm-modules/fmSQLPass/classes/class_passwords.php:146
 msgid "Password has been changed."
-msgstr ""
-
-#: server/fm-modules/fmSQLPass/classes/class_servers.php:40
-#: server/fm-modules/fmSQLPass/classes/class_tools.php:36
-msgid "There are no servers defined."
 msgstr ""
 
 #: server/fm-modules/fmSQLPass/classes/class_servers.php:49
@@ -373,6 +360,10 @@ msgstr ""
 
 #: server/fm-modules/fmSQLPass/classes/class_servers.php:409
 msgid "Password"
+msgstr ""
+
+#: server/fm-modules/fmSQLPass/classes/class_tools.php:36
+msgid "There are no servers defined."
 msgstr ""
 
 #: server/fm-modules/fmSQLPass/classes/class_tools.php:42

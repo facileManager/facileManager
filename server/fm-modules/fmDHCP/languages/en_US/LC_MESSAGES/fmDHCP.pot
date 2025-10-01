@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-02 15:59-0600\n"
+"POT-Creation-Date: 2025-09-30 17:26-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,67 +18,67 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: server/fm-modules/fmDHCP/functions.php:72
+#: server/fm-modules/fmDHCP/functions.php:71
 #, php-format
 msgid "%s has no dashboard content yet."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/functions.php:183
+#: server/fm-modules/fmDHCP/functions.php:153
 msgid "Objects"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/functions.php:184
+#: server/fm-modules/fmDHCP/functions.php:154
 #: server/fm-modules/fmDHCP/classes/class_objects.php:868
 #: server/fm-modules/fmDHCP/classes/class_objects.php:871
 #: server/fm-modules/fmDHCP/classes/class_objects.php:872
 msgid "Hosts"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/functions.php:185
+#: server/fm-modules/fmDHCP/functions.php:155
 #: server/fm-modules/fmDHCP/classes/class_objects.php:882
 #: server/fm-modules/fmDHCP/classes/class_objects.php:885
 #: server/fm-modules/fmDHCP/classes/class_objects.php:886
 msgid "Groups"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/functions.php:186
+#: server/fm-modules/fmDHCP/functions.php:156
 msgid "Pools"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/functions.php:187
+#: server/fm-modules/fmDHCP/functions.php:157
 msgid "Networks"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/functions.php:188
+#: server/fm-modules/fmDHCP/functions.php:158
 msgid "Peers"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/functions.php:188
+#: server/fm-modules/fmDHCP/functions.php:158
 #: server/fm-modules/fmDHCP/classes/class_objects.php:854
 #: server/fm-modules/fmDHCP/classes/class_objects.php:857
 #: server/fm-modules/fmDHCP/classes/class_objects.php:858
 msgid "Failover Peers"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/functions.php:190
+#: server/fm-modules/fmDHCP/functions.php:160
 msgid "Config"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/functions.php:192
+#: server/fm-modules/fmDHCP/functions.php:162
 #: server/fm-modules/fmDHCP/classes/class_objects.php:735
 msgid "Options"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/functions.php:194
+#: server/fm-modules/fmDHCP/functions.php:164
 msgid "Leases"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/functions.php:196
+#: server/fm-modules/fmDHCP/functions.php:166
 #, php-format
 msgid "%s Settings"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/functions.php:218
+#: server/fm-modules/fmDHCP/functions.php:188
 msgid "Global Options"
 msgstr ""
 
@@ -88,27 +88,27 @@ msgid ""
 "longer edit configuration files manually."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/variables.inc.php:48
+#: server/fm-modules/fmDHCP/variables.inc.php:47
 msgid "disabled"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/variables.inc.php:53
+#: server/fm-modules/fmDHCP/variables.inc.php:52
 msgid "Subnets"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/variables.inc.php:53
+#: server/fm-modules/fmDHCP/variables.inc.php:52
 msgid "Shared Networks"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/variables.inc.php:64
+#: server/fm-modules/fmDHCP/variables.inc.php:63
 msgid "Enable dhcpd Checks"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/variables.inc.php:64
+#: server/fm-modules/fmDHCP/variables.inc.php:63
 msgid "Enable or disable dhcpd syntax checks."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/variables.inc.php:65
+#: server/fm-modules/fmDHCP/variables.inc.php:64
 #, php-format
 msgid "sudo must be installed on %s with the following in sudoers:"
 msgstr ""
@@ -364,10 +364,6 @@ msgstr ""
 msgid "This network already exists."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_objects.php:85
-msgid "There are no items."
-msgstr ""
-
 #: server/fm-modules/fmDHCP/classes/class_objects.php:122
 #, php-format
 msgid "Add a %s with the following details:"
@@ -618,10 +614,6 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_options.php:74
-msgid "There are no options."
-msgstr ""
-
 #: server/fm-modules/fmDHCP/classes/class_options.php:97
 #: server/fm-modules/fmDHCP/classes/class_options.php:168
 msgid "This record already exists."
@@ -782,10 +774,6 @@ msgstr ""
 #: server/fm-modules/fmDHCP/classes/class_servers.php:76
 #: server/fm-modules/fmDHCP/classes/class_servers.php:410
 msgid "Config File"
-msgstr ""
-
-#: server/fm-modules/fmDHCP/classes/class_servers.php:97
-msgid "There are no servers."
 msgstr ""
 
 #: server/fm-modules/fmDHCP/classes/class_servers.php:131

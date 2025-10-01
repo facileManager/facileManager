@@ -503,7 +503,7 @@ class fm_dns_zones {
 		$rows_affected = $fmdb->rows_affected;
 
 		/** Update the child zones */
-		if ($post['domain_template'] == 'yes') {
+		if (isset($post['domain_template']) && $post['domain_template'] == 'yes') {
 			$query_arr[] = "UPDATE `fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}domains` SET domain_view='{$post['domain_view']}', domain_check_config='yes' WHERE `domain_template_id`='$domain_id' AND `account_id`='{$_SESSION['user']['account_id']}'";
 			$query_arr[] = "UPDATE `fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}domains` SET domain_name_servers='{$post['domain_name_servers']}', domain_check_config='yes' WHERE `domain_template_id`='$domain_id' AND `account_id`='{$_SESSION['user']['account_id']}'";
 			foreach ($query_arr as $query) {
@@ -1111,7 +1111,11 @@ HTML;
 					<th>' . __('Template') . '</th>
 					<td>' . $template_options . $create_template;
 			if ($action == 'edit') {
-				$select_template .= sprintf('<p>%s</p>', __('Changing the template will delete all config options for this zone.'));
+				if (count($available_templates) > 1) {
+					$select_template .= sprintf('<p>%s</p>', __('Changing the template will delete all config options for this zone.'));
+				} else {
+					$select_template = '<tr><td>' . $template_options;
+				}
 			}
 			$select_template .= '</td></tr>';
 		} else {
@@ -1256,7 +1260,7 @@ HTML;
 				$action, $domain_id, $classes,
 				__('Zone Name'), $domain_name, $domain_name_length,
 				$select_template, $template_name,
-				__('Views'), __('Leave blank to use the views defined in the template.'), $views,
+				__('Views'), __('Leave blank to use the views defined in the selected template.'), $views,
 				__('Zone Map'), $zone_maps,
 				__('Zone Type'), $domain_types,
 				$forwarders_show, $forward_dropdown, __('Define forwarders'), $domain_forward_servers,
@@ -1266,7 +1270,7 @@ HTML;
 				__('Override DNAME Resource Record Setting'), $clone_dname_options_show,
 				__('Use DNAME Resource Records for Clones'), $clone_dname_dropdown,
 				__('DNS Servers'), $name_servers,
-				__('Zone TTL'), __('Leave blank to use the $TTL from the SOA.'), $domain_ttl, $domain_ttl_length,
+				__('Zone TTL'), __('Defines a default TTL for every RR without a specific TTL set'), $domain_ttl, $domain_ttl_length,
 				__('Zone Transfer Key'), __('Optionally specify a key for transferring this zone (overrides this setting in views).'), $keys,
 				$soa_templates,
 				_('Comment'), $domain_comment,
@@ -1891,7 +1895,7 @@ HTML;
 			}
 		}
 
-		if (!$post['domain_default']) $post['domain_default'] = 'no';
+		if (!isset($post['domain_default'])) $post['domain_default'] = 'no';
 		
 		/** Empty domain names are not allowed */
 		if (empty($post['domain_name'])) return __('No zone name defined.');

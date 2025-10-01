@@ -1271,10 +1271,11 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 			$domain_id = isset($domain->parent_domain_id) ? $domain->parent_domain_id : $domain->domain_id;
 			$serial = getNameFromID($domain_id, 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'soa_serial_no');
 			
-			$ttl = (isset($domain->domain_ttl)) ? $domain->domain_ttl : $soa_ttl;
+			if ($domain->domain_ttl) {
+				$zone_file .= '$TTL ' . $domain->domain_ttl . "\n";
+			}
 
-			$zone_file .= '$TTL ' . $ttl . "\n";
-			$zone_file .= "$domain_name IN SOA $master_server $admin_email (\n";
+			$zone_file .= "$domain_name {$soa_ttl} IN SOA $master_server $admin_email (\n";
 			$zone_file .= "\t\t$serial\t; Serial\n";
 			$zone_file .= "\t\t$soa_refresh\t\t; Refresh\n";
 			$zone_file .= "\t\t$soa_retry\t\t; Retry\n";
