@@ -69,29 +69,33 @@ class fm_module_tools extends fm_shared_module_tools {
 		if (((!getSOACount($domain_id) || $get_dynamic_zone_data) && strpos($clean_contents, ' SOA ') !== false) &&
 			(in_array('SOA', $__FM_CONFIG['records']['require_zone_rights']) && currentUserCan('manage_zones', $_SESSION['module']))) {
 			
-			$raw_soa = preg_replace_callback("/SOA(.+?)\)/sim", 
-					function ($matches) {
-						return str_replace(PHP_EOL, ' ', $matches);
-					}, $clean_contents);
-			preg_match("/SOA(.+?)(\)|\n)/esim", $clean_contents, $raw_soa);
-			preg_match("/TTL(.+?)$/esim", $clean_contents, $raw_ttl);
+			$soa_parts['soa_ttl'] = null;
+			preg_match('/^.*SOA.*$/m', $clean_contents, $raw_soa);
+			preg_match("/TTL(.+?)$/sim", $clean_contents, $raw_ttl);
 			if (is_array($raw_soa)) {
-				$raw_soa = preg_replace('/;(.+?)+/', '', $raw_soa[1]);
-				$soa = str_replace(array("\n", "\t", '(', ')', '  '), ' ', preg_replace('/\s\s+/', ' ', $raw_soa));
-				$soa = str_replace(' ', '|', trim($soa));
-				$soa_fields = explode('|', str_replace('||', '|', $soa));
+				$raw_soa = preg_replace('/;(.+?)+/', '', $raw_soa[0]);
+				$soa = explode('IN SOA', str_replace(array("\n", '(', ')'), ' ', preg_replace('/\s\s+/', ' ', $raw_soa)));
+
+				// Split the SOA record into its parts
+				$soa_fields = preg_split('/\s+/', trim($soa[1]));
+
+				// Get the TTL if it exists
+				$soa_ttl_fields = preg_split('/\s+/', trim($soa[0]));
+				if (count($soa_ttl_fields) > 1) {
+					$soa_parts['soa_ttl'] = $soa_ttl_fields[1];
+				} else {
+					$soa_parts['soa_ttl'] = null;
+				}
+
+				list($soa_parts['soa_master_server'], $soa_parts['soa_email_address'], $tmp_serial, $soa_parts['soa_refresh'],
+					$soa_parts['soa_retry'], $soa_parts['soa_expire'], $soa_parts['soa_ncache']) = $soa_fields;
 				
-				list($soa_array['soa_master_server'], $soa_array['soa_email_address'], $tmp_serial, $soa_array['soa_refresh'],
-					$soa_array['soa_retry'], $soa_array['soa_expire'], $tmp_neg_cache) = $soa_fields;
-				
-				if (strpos($soa_array['soa_master_server'], $domain_name) !== false) {
-					$soa_array['soa_master_server'] = str_replace('.' . trimFullStop($domain_name) . '.', '', $soa_array['soa_master_server']);
-					$soa_array['soa_email_address'] = str_replace('.' . trimFullStop($domain_name) . '.', '', $soa_array['soa_email_address']);
-					$soa_array['soa_append'] = 'yes';
-				} else $soa_array['soa_append'] = 'no';
+				if (strpos($soa_parts['soa_master_server'], $domain_name) !== false) {
+					$soa_parts['soa_master_server'] = str_replace('.' . trimFullStop($domain_name) . '.', '', $soa_parts['soa_master_server']);
+					$soa_parts['soa_email_address'] = str_replace('.' . trimFullStop($domain_name) . '.', '', $soa_parts['soa_email_address']);
+					$soa_parts['soa_append'] = 'yes';
+				} else $soa_parts['soa_append'] = 'no';
 			}
-			$soa_array['soa_ttl'] = (is_array($raw_ttl) && count($raw_ttl)) ? trim(preg_replace('/;(.+?)+/', '', $raw_ttl[1])) : $tmp_neg_cache;
-			
 			$soa_row = '<h4>SOA:</h4><p class="soa_import">';
 			
 			if ($get_dynamic_zone_data) {
@@ -102,22 +106,23 @@ class fm_module_tools extends fm_shared_module_tools {
 					$soa_row .= "<input type=\"hidden\" name=\"update[$count][soa_serial_no]\" value=\"$tmp_serial\" />" . sprintf('%s: %d', __('Updated serial number'), $tmp_serial);
 				}
 			} else {
-				$soa_row .= trimFullStop($domain_name) . '. IN SOA ' . $soa_array['soa_master_server'];
-				if ($soa_array['soa_append'] == 'yes') $soa_row .= '.' . trimFullStop($domain_name) . '.';
-				$soa_row .= ' ' . $soa_array['soa_email_address'];
-				if ($soa_array['soa_append'] == 'yes') $soa_row .= '.' . trimFullStop($domain_name) . '.';
-				$soa_row .= ' ( &lt;autogen_serial&gt; ' . $soa_array['soa_refresh'] . ' ' . $soa_array['soa_retry'] . ' ' . 
-						$soa_array['soa_expire'] . ' ' . $soa_array['soa_ttl'] . ' )';
+				$soa_row .= trimFullStop($domain_name) . '. ' . $soa_parts['soa_ttl'] . ' IN SOA ' . $soa_parts['soa_master_server'];
+				if ($soa_parts['soa_append'] == 'yes') $soa_row .= '.' . trimFullStop($domain_name) . '.';
+				$soa_row .= ' ' . $soa_parts['soa_email_address'];
+				if ($soa_parts['soa_append'] == 'yes') $soa_row .= '.' . trimFullStop($domain_name) . '.';
+				$soa_row .= ' ( &lt;autogen_serial&gt; ' . $soa_parts['soa_refresh'] . ' ' . $soa_parts['soa_retry'] . ' ' . 
+						$soa_parts['soa_expire'] . ' ' . $soa_parts['soa_ncache'] . ' )';
 
 				$soa_row = <<<HTML
-						<input type="hidden" name="create[$count][soa_master_server]" value="{$soa_array['soa_master_server']}" />
-						<input type="hidden" name="create[$count][soa_email_address]" value="{$soa_array['soa_email_address']}" />
-						<input type="hidden" name="create[$count][soa_refresh]" value="{$soa_array['soa_refresh']}" />
-						<input type="hidden" name="create[$count][soa_retry]" value="{$soa_array['soa_retry']}" />
-						<input type="hidden" name="create[$count][soa_expire]" value="{$soa_array['soa_expire']}" />
-						<input type="hidden" name="create[$count][soa_ttl]" value="{$soa_array['soa_ttl']}" />
+						<input type="hidden" name="create[$count][soa_master_server]" value="{$soa_parts['soa_master_server']}" />
+						<input type="hidden" name="create[$count][soa_email_address]" value="{$soa_parts['soa_email_address']}" />
+						<input type="hidden" name="create[$count][soa_ttl]" value="{$soa_parts['soa_ttl']}" />
+						<input type="hidden" name="create[$count][soa_refresh]" value="{$soa_parts['soa_refresh']}" />
+						<input type="hidden" name="create[$count][soa_retry]" value="{$soa_parts['soa_retry']}" />
+						<input type="hidden" name="create[$count][soa_expire]" value="{$soa_parts['soa_expire']}" />
+						<input type="hidden" name="create[$count][soa_ncache]" value="{$soa_parts['soa_ncache']}" />
 						<input type="hidden" name="create[$count][record_type]" value="SOA" />
-						<input type="hidden" name="create[$count][soa_append]" value="{$soa_array['soa_append']}" />
+						<input type="hidden" name="create[$count][soa_append]" value="{$soa_parts['soa_append']}" />
 						$soa_row
 						<span><label><input type="checkbox" name="create[$count][record_skip]" />Skip Import</label></span>
 HTML;
@@ -756,7 +761,7 @@ BODY;
 		$popup_footer = buildPopup('footer', _('OK'), array('cancel_button' => 'cancel'));
 		
 		$message = sprintf('<p>%s</p>', __('Bulk zone import complete.'));
-		$view_name = $ttl = null;
+		$view_name = null;
 		$view_id = 0;
 		
 		/* RR types that allow record append */
@@ -811,8 +816,6 @@ BODY;
 				} else {
 					$domain_id = $fmdb->last_result[0]->domain_id;
 				}
-				
-				$ttl = null;
 			}
 			
 			
@@ -826,19 +829,18 @@ BODY;
 					$soa = explode('IN SOA', $line);
 					$soa_fields = preg_split('/\s+/', trim($soa[1]));
 
-					$soa_ttl_fields = explode(' ', trim($soa[0]));
+					$soa_ttl_fields = preg_split('/\s+/', trim($soa[0]));
 					if (count($soa_ttl_fields) > 1) {
-						$soa_array['soa_ttl'] = $soa_ttl_fields[1];
+						$soa_parts['soa_ttl'] = $soa_ttl_fields[1];
 					} else {
-						$soa_array['soa_ttl'] = $__FM_CONFIG['soa']['soa_ttl']; // Default TTL if not specified
+						$soa_parts['soa_ttl'] = null;
 					}
 
-					list($soa_array['soa_master_server'], $soa_array['soa_email_address'], $soa_serial_no, $soa_array['soa_refresh'],
-						$soa_array['soa_retry'], $soa_array['soa_expire'], $soa_array['soa_ncache']) = $soa_fields;
-					$ttl = $soa_array['soa_ttl'];
-					$soa_array['soa_append'] = 'no';
+					list($soa_parts['soa_master_server'], $soa_parts['soa_email_address'], $soa_serial_no, $soa_parts['soa_refresh'],
+						$soa_parts['soa_retry'], $soa_parts['soa_expire'], $soa_parts['soa_ncache']) = $soa_fields;
+					$soa_parts['soa_append'] = 'no';
 
-					$fm_dns_records->add($domain_id, 'SOA', $soa_array);
+					$fm_dns_records->add($domain_id, 'SOA', $soa_parts);
 
 					/** Set SOA serial number from import */
 					if (!class_exists('fm_dns_zones')) {
@@ -846,17 +848,7 @@ BODY;
 					}
 					$fm_dns_zones->updateSOASerialNo($domain_id, $soa_serial_no, 'static');
 
-					unset($soa);
-					unset($soa_fields);
-					unset($soa_array);
-				} else {
-					$query = "SELECT * FROM fm_{$__FM_CONFIG['fmDNS']['prefix']}domains d, fm_{$__FM_CONFIG['fmDNS']['prefix']}soa s WHERE 
-						domain_status='active' AND d.account_id='{$_SESSION['user']['account_id']}' AND s.account_id='{$_SESSION['user']['account_id']}'
-						AND s.soa_id=d.soa_id AND d.domain_id='$domain_id'";
-					$fmdb->get_results($query);
-					if ($fmdb->num_rows) {
-						$ttl = $fmdb->last_result[0]->soa_ttl;
-					}
+					unset($soa, $soa_fields, $soa_parts);
 				}
 			} elseif (strpos($line, ' IN ') !== false) {
 				$clean_domain_name = trimFullStop($domain_name);
@@ -871,9 +863,7 @@ BODY;
 				if (!strlen($rr['record_name'])) {
 					unset($rr['record_name']);
 				}
-				if ($rr_fields[1] != $ttl) {
-					$rr['record_ttl'] = $rr_fields[1];
-				}
+				$rr['record_ttl'] = $rr_fields[1];
 				$rr['record_class'] = $rr_fields[2];
 				$rr['record_type'] = $rr_fields[3];
 				$rr['record_value'] = $rr_fields[4];
