@@ -104,6 +104,22 @@ if (!function_exists('sys_get_temp_dir')) {
 	}
 }
 
+/**
+ * Checks if a string is valid JSON
+ *
+ * @since 5.4.0
+ * @package facileManager
+ *
+ * @param string $json JSON string to validate
+ * @return boolean
+ */
+if (!function_exists('json_validate')) {
+	function json_validate(string $json) {
+		json_decode($json);
+		return json_last_error() === JSON_ERROR_NONE;
+	}
+}
+
 /** Check running user */
 if (exec(findProgram('whoami')) != $privileged_user && !$dryrun && count($argv)) {
 	echo fM("This script must run as $privileged_user.\n");
@@ -2048,22 +2064,5 @@ function isSerialized($data) {
 			return (bool) preg_match("/^{$token}:[0-9.E-]+;\$/", $data);
 	}
 	return false;
-}
-
-
-/**
- * Checks if a string is valid JSON
- *
- * @since 5.4.0
- * @package facileManager
- *
- * @param string $json JSON string to validate
- * @return boolean
- */
-if (!function_exists('json_validate')) {
-	function json_validate(string $json) {
-		json_decode($json);
-		return json_last_error() === JSON_ERROR_NONE;
-	}
 }
 
