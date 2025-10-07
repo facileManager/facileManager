@@ -328,6 +328,7 @@ switch ($method) {
             $fm_dns_records->processSOAUpdates($domain_id, 'NONE', 'update');
             $zone_reload_allowed = true;
             $code = 200;
+			addLogEntry(sprintf(__("Incremented SOA serial number for zone '%s'."), displayFriendlyDomainName(getNameFromID($domain_id, 'fm_'. $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_name'))));
         } elseif (!$record_data && $zone_reload_requested == true) {
             $zone_reload_allowed = true;
             $code = 200;

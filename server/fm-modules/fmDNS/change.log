@@ -2,6 +2,7 @@
 ==================
 * Server - [bug] Fixed SOA records during zone imports. (#712 #713)
 * Server - [bug] Fixed SOA serial number increment when updating via API. (#716)
+* Server - [bug] Added missing log entry when incrementing SOA serial via API. (#716)
 
 7.2.1 (2025-09-30)
 ==================
