@@ -1,4 +1,4 @@
-7.2.2 (2025-10-??)
+7.2.2 (2025-10-10)
 ==================
 * Server - [bug] Fixed SOA records during zone imports. (#712 #713)
 * Server - [bug] Fixed SOA serial number increment when updating via API. (#716)

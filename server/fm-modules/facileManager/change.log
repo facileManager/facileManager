@@ -1,4 +1,4 @@
-5.4.3 (2025-10-??)
+5.4.3 (2025-10-10)
 ==================
 * Server - [bug] Fixed PHP error when adding new users. (#714)
 * Client - [bug] Fixed PHP fatal error when using the apitest parameter. (#715 #717)
