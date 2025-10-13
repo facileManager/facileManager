@@ -182,7 +182,7 @@ class fm_users {
 		if ($user_force_pwd_change == 'yes') $fm_login->processUserPwdResetForm($user_login, 'no mail');
 		
 		$log_message = sprintf("Added user:\n", $user_login);
-		$exclude = array('submit', 'action', 'user_id', 'cpassword', 'user_password', 'user_caps', 'is_ajax', 'process_user_caps', 'type');
+		$exclude = array('submit', 'action', 'user_id', 'cpassword', 'user_password', 'user_caps', 'is_ajax', 'process_user_caps', 'type', 'uri_params');
 
 		foreach ($data as $key => $data) {
 			if (!in_array($key, $exclude)) {
