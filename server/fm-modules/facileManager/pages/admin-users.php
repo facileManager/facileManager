@@ -93,7 +93,9 @@ $sort_direction = null;
 $addl_title_blocks[] = buildSubMenu($type, $__FM_CONFIG['users']['avail_types']);
 echo printPageHeader($response, $display_type, $can_add, $type, null, 'noscroll', $addl_title_blocks);
 
-if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']])) {
+if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$type])) {
+	extract($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$type], EXTR_OVERWRITE);
+} elseif (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']])) {
 	extract($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']], EXTR_OVERWRITE);
 }
 

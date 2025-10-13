@@ -2293,6 +2293,11 @@ function makePlainText($text, $make_array = false) {
  */
 function displayTableHeader($table_info, $head_values, $tbody_id = null) {
 	if ($tbody_id) $tbody_id = ' id="' . $tbody_id . '"';
+
+	if (isset($_GET['type']) && isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$_GET['type']]['sort_direction'])) {
+		$_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_field'] = $_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$_GET['type']]['sort_field'];
+		$_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_direction'] = $_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$_GET['type']]['sort_direction'];
+	}
 	
 	$sort_direction = isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_direction']) ? strtolower($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_direction']) : 'asc';
 	
@@ -2333,32 +2338,41 @@ function displayTableHeader($table_info, $head_values, $tbody_id = null) {
 
 
 /**
- * Displays a table header
+ * Handles the sort order of table columns
  *
  * @since 1.2
  * @package facileManager
  *
- * @param array $table_info Values to build the <table> tag
- * @param array $head_values Values to build the <th> tags
- * @param string $tbody_id id for <tbody>
- * @return string
+ * @return void
  */
 function handleSortOrder() {
 	if (array_key_exists('sort_by', $_GET)) {
 		$swap_direction = array('ASC' => 'DESC', 'DESC' => 'ASC');
+		$sort_direction = 'ASC';
 
-		if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_field']) &&
-			$_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_field'] != $_GET['sort_by']) {
-			$sort_direction = $swap_direction[$_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_direction']];
-		} elseif (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_direction'])) {
-			$sort_direction = $_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_direction'];
-		} else {
-			$sort_direction = 'ASC';
-		}
 		@session_start();
-		$_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']] = array(
-				'sort_field' => $_GET['sort_by'], 'sort_direction' => $swap_direction[$sort_direction]
-			);
+		/** Determine sort direction */
+		if (isset($_GET['type'])) {
+			if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$_GET['type']]['sort_field']) &&
+				$_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$_GET['type']]['sort_field'] != $_GET['sort_by']) {
+				$sort_direction = $swap_direction[$_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$_GET['type']]['sort_direction']];
+			} elseif (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$_GET['type']]['sort_direction'])) {
+				$sort_direction = $_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$_GET['type']]['sort_direction'];
+			}
+			$_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$_GET['type']] = array(
+					'sort_field' => $_GET['sort_by'], 'sort_direction' => $swap_direction[$sort_direction]
+				);
+		} else {
+			if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_field']) &&
+				$_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_field'] != $_GET['sort_by']) {
+				$sort_direction = $swap_direction[$_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_direction']];
+			} elseif (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_direction'])) {
+				$sort_direction = $_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']]['sort_direction'];
+			}
+			$_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']] = array(
+					'sort_field' => $_GET['sort_by'], 'sort_direction' => $swap_direction[$sort_direction]
+				);
+		}
 		session_write_close();
 	}
 	
