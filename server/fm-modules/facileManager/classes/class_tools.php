@@ -236,13 +236,14 @@ class fm_tools {
 		if (!$password_reset_expiry) $password_reset_expiry = $__FM_CONFIG['default']['password_reset_expiry'];
 
 		/** Remove old password reset requests */
-		$time = date("Y-m-d H:i:s", strtotime($password_reset_expiry . ' ago'));
+		$time = strtotime($password_reset_expiry . ' ago');
 		$query = 'DELETE FROM `fm_pwd_resets` WHERE `pwd_timestamp`<"' . $time . '"';
 		$fmdb->query($query);
 		$record_count += $fmdb->rows_affected;
 		
-		addLogEntry(_('Cleaned up the database.'), $fm_name);
-		return sprintf(_('Total number of records purged from the database: <b>%d</b>'), $record_count);
+		$record_count_message = sprintf(_('Total number of records purged from the database: <b>%d</b>'), $record_count);
+		addLogEntry(sprintf('%s %s', _('Cleaned up the database.'), $record_count_message), $fm_name);
+		return $record_count_message;
 	}
 
 	/**
