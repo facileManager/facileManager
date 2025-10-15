@@ -231,8 +231,12 @@ class fm_tools {
 			}
 		}
 		
+		/** Get password reset expirey */
+		$password_reset_expiry = getOption('password_reset_expiry');
+		if (!$password_reset_expiry) $password_reset_expiry = $__FM_CONFIG['default']['password_reset_expiry'];
+
 		/** Remove old password reset requests */
-		$time = date("Y-m-d H:i:s", strtotime($__FM_CONFIG['clean']['time'] . ' ago'));
+		$time = date("Y-m-d H:i:s", strtotime($password_reset_expiry . ' ago'));
 		$query = 'DELETE FROM `fm_pwd_resets` WHERE `pwd_timestamp`<"' . $time . '"';
 		$fmdb->query($query);
 		$record_count += $fmdb->rows_affected;

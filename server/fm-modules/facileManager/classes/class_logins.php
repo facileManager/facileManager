@@ -405,6 +405,10 @@ class fm_login {
 	function buildPwdResetEmail($user_info, $uniq_hash, $build_html = true, $title = null, $from_address = null) {
 		global $fm_name, $__FM_CONFIG;
 		
+		/** Get password reset expirey */
+		$password_reset_expiry = getOption('password_reset_expiry');
+		if (!$password_reset_expiry) $password_reset_expiry = $__FM_CONFIG['default']['password_reset_expiry'];
+
 		if ($build_html) {
 			$branding_logo = getBrandLogo();
 			if ($GLOBALS['RELPATH'] != '/') {
@@ -432,7 +436,7 @@ class fm_login {
 <p>If you don't want to reset your password, then you can ignore this message.</p>
 <p>To reset your password, click the following link:<br />
 <a href="{$GLOBALS['FM_URL']}password_reset.php?key=$uniq_hash&login={$user_info['user_login']}">{$GLOBALS['FM_URL']}password_reset.php?key=$uniq_hash&login={$user_info['user_login']}</a></p>
-<p>This link expires in {$__FM_CONFIG['clean']['time']}.</p>
+<p>This link expires in {$password_reset_expiry}.</p>
 </div>
 </div>
 <p style="font-size: 10px; color: #888; text-align: center;">$fm_name | $from_address</p>
@@ -453,7 +457,7 @@ To reset your password, click the following link:
 This link expires in %s.',
 		$user_info['user_login'], $fm_name,
 		"{$GLOBALS['FM_URL']}password_reset.php?key=$uniq_hash&login={$user_info['user_login']}",
-		$__FM_CONFIG['clean']['time']);
+		$password_reset_expiry);
 		}
 		
 		return $body;
