@@ -1,3 +1,7 @@
+5.4.4 (2025-10-??)
+==================
+* Server - [bug] Fixed module upgrade process when upgrading from the view changes dialog.
+
 5.4.3 (2025-10-10)
 ==================
 * Server - [bug] Fixed PHP error when adding new users. (#714)

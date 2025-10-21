@@ -1575,10 +1575,12 @@ if (!isset($__FM_CONFIG)) {
 	/* Software changelog */
 	$(".upgrade_notice a").click(function() {
 		var changelog_href = $(this).attr("href");
+		// Get module name from URL
+		let moduleName = changelog_href.replace(/[?#].*$/,"").replace(/\/+$/,"").split("/").pop();
 
 		$("body").addClass("fm-noscroll");
 		$("#manage_item").fadeIn(200);
-		$("#manage_item_contents").html(\'' . str_replace(array(PHP_EOL, "\t"), '', preg_replace('~\R~u', '', buildPopup('header', _('Changelog')))) . '<input type="hidden" name="module" value="\'+changelog_href.split("/").pop()+\'" /><iframe src=\'+changelog_href+\' ></iframe>'. str_replace(array(PHP_EOL, "\t"), '', preg_replace('~\R~u', '', buildPopup('footer', _('Update'), array('update_module' => 'submit', 'cancel_button' => 'cancel')))) .'\');
+		$("#manage_item_contents").html(\'' . str_replace(array(PHP_EOL, "\t"), '', preg_replace('~\R~u', '', buildPopup('header', _('Changelog')))) . '<input type="hidden" name="module" value="\'+moduleName+\'" /><iframe src=\'+changelog_href+\' ></iframe>'. str_replace(array(PHP_EOL, "\t"), '', preg_replace('~\R~u', '', buildPopup('footer', _('Update'), array('update_module' => 'submit', 'cancel_button' => 'cancel')))) .'\');
 
 		return false;
 	});
