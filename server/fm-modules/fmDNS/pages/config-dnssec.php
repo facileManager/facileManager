@@ -40,7 +40,9 @@ echo printPageHeader(array('message' => (string) $response, 'comment' => getMini
 
 $sort_direction = null;
 $sort_field = 'cfg_data';
-if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']])) {
+if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$type])) {
+	extract($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$type], EXTR_OVERWRITE);
+} elseif (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']])) {
 	extract($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']], EXTR_OVERWRITE);
 }
 

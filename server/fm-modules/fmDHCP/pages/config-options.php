@@ -60,7 +60,9 @@ $addl_title_blocks[] = buildObjectsSubMenu($item_id);
 
 $sort_direction = null;
 $sort_field = 'config_name';
-if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']])) {
+if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$option_type])) {
+	extract($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$option_type], EXTR_OVERWRITE);
+} elseif (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']])) {
 	extract($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']], EXTR_OVERWRITE);
 }
 
