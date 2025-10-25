@@ -254,6 +254,9 @@ class fm_settings {
 		/** Client Autoregistration Section */
 		$client_auto_register_checked = (getOption('client_auto_register')) ? 'checked' : null;
 
+		/** Require 2FA Section */
+		$require_2fa_checked = (getOption('require_2fa')) ? 'checked' : null;
+
 		/** SSL Section */
 		$enforce_ssl_checked = (getOption('enforce_ssl')) ? 'checked' : null;
 		$fm_port_ssl = getOption('fm_port_ssl');
@@ -542,10 +545,19 @@ class fm_settings {
 					<div id="setting-row">
 						<div class="description">
 							<label for="api_token_support">' . _('Enable API Token Support') . '</label>
-							<p>' . _('Allow users to authenticate via API tokens. (https must be enforced)') . '</p>
+							<p>' . _('Allow users to authenticate via API tokens (https must be enforced).') . '</p>
 						</div>
 						<div class="choices">
 							<input name="api_token_support" id="api_token_support" type="checkbox" value="1" ' . $api_token_support_checked . ' /><label for="api_token_support">' . _('Enable API') . '</label>
+						</div>
+					</div>
+					<div id="setting-row">
+						<div class="description">
+							<label for="require_2fa">' . _('Require Two-factor Authenticate') . '</label>
+							<p>' . _('All users will be e-mailed a One Time Passcode that must be used during authentication (mailing must be enabled). Users may opt for alternative 2FA methods if available.') . '</p>
+						</div>
+						<div class="choices">
+							<input name="require_2fa" id="require_2fa" type="checkbox" value="1" ' . $require_2fa_checked . ' /><label for="require_2fa">' . _('Require 2FA') . '</label>
 						</div>
 					</div>
 				</div>
@@ -573,7 +585,7 @@ class fm_settings {
 					<div id="setting-row">
 						<div class="description">
 							<label for="mail_enable">' . _('Enable Mailing') . '</label>
-							<p>' . sprintf(_('If this is unchecked, %s will never send an e-mail (including password reset links).'), $fm_name) . '</p>
+							<p>' . sprintf(_('If this is unchecked, %s will never send an e-mail (including password reset links and 2FA codes).'), $fm_name) . '</p>
 						</div>
 						<div class="choices">
 							<input name="mail_enable" id="mail_enable" type="checkbox" value="1" ' . $mail_enable_checked . ' /><label for="mail_enable">' . _('Enable Mailing') . '</label>

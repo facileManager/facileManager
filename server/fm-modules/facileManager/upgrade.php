@@ -1112,3 +1112,31 @@ function fmUpgrade_540b1($database) {
 	
 	return $success;
 }
+
+
+/** fM v6.0.0 **/
+function fmUpgrade_600($database) {
+	global $fmdb;
+	
+	/** Prereq */
+	$success = ($GLOBALS['running_db_version'] < 60) ? fmUpgrade_540b1($database) : true;
+	
+	$queries = [];
+	if ($success) {
+		$queries[] = "ALTER TABLE `fm_users` ADD `user_2fa_method` ENUM('0', 'app', 'email') NOT NULL DEFAULT '0' AFTER `user_group`, 
+		ADD `user_2fa_secret` VARCHAR(255) NULL AFTER `user_2fa_method`";
+		$queries[] = "RENAME TABLE `fm_pwd_resets` TO `fm_temp_auth_keys`";
+
+		/** Create table schema */
+		if (count($queries) && $queries[0]) {
+			foreach ($queries as $schema) {
+				$fmdb->query($schema);
+				if (!$fmdb->result || $fmdb->sql_errors) return false;
+			}
+		}
+	}
+
+	upgradeConfig('fm_db_version', 61, false);
+	
+	return $success;
+}

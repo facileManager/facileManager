@@ -1,4 +1,10 @@
+6.0.0 (2025-??-??)
+==================
+* Server - [feature] Added support for 2FA via e-mail.
+* Server - [bug] CSS fixes for the login form.
+* Server - [bug] Standardized some text across the application.
 * Server - [bug] Fixed user creation when using LDAP authentication.
+
 5.4.3 (2025-10-10)
 ==================
 * Server - [bug] Fixed PHP error when adding new users. (#714)
@@ -183,7 +189,7 @@
 ==================
 * Server - [security] Password reset mailing errors now only show when "Show Errors" is
            enabled. (Issue #592)
-* Server - [security] Users with invalid email addresses will error silently during
+* Server - [security] Users with invalid e-mail addresses will error silently during
            password resets. (Issue #592)
 * Server - [improvement] Added support to hide unused module dashboards.
 * Server - [improvement] Added support for server list placeholder.
@@ -333,7 +339,7 @@
 3.5.2 (2019-12-06)
 ==================
 * Server - [bug] Fixed support for passwords with quotation marks. (Issue #469)
-* Server - [bug] Fixed branding image display in password reset emails.
+* Server - [bug] Fixed branding image display in password reset e-mails.
 * Server - [improvement] Changed color of placeholder text. (Issue #371)
 
 3.5.1 (2019-10-16)
@@ -869,7 +875,7 @@
 
 1.0-b14 (2013-09-03)
 ====================
-* Server - [feature] Minor change to forgotton password email.
+* Server - [feature] Minor change to forgotton password e-mail.
 * Server - [bug] Fixed an issue with module upgrades.
 * Server - [feature] Added more error checking.
 
@@ -880,7 +886,7 @@
 * Server - [feature] Can now disable authentication thus using only the default
            super-admin user account.
 * Server - [feature] Set several tables to INNODB.
-* Server - [feature] Added support to email password reset links. (Issue #12)
+* Server - [feature] Added support to e-mail password reset links. (Issue #12)
 * Server - [feature] Added support for modules to have more granular user
            permissions. (Issue #7)
 

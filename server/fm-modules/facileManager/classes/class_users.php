@@ -273,6 +273,8 @@ class fm_users {
 	function editUser($post) {
 		global $__FM_CONFIG, $fmdb, $global_form_field_excludes, $fm_name, $fm_login;
 
+		unset($post['tab-group-1']);
+
 		if (isset($post['group_id'])) {
 			return $this->editGroup($post);
 		}
@@ -314,6 +316,18 @@ class fm_users {
 			$log_message .= formatLogKeyData('user_', 'Password', 'Changed');
 		} else $sql_pwd = null;
 		
+		// Process 2FA method
+		if (isset($post['user_2fa_method']) && !isset($post['enable_2fa'])) {
+			$post['user_2fa_method'] = '0';
+			$log_message .= formatLogKeyData('user_', '2FA Method', 'Disabled');
+		} elseif (isset($post['user_2fa_method'])) {
+			unset($post['enable_2fa']);
+			$map = array_column($__FM_CONFIG['options']['2fa_methods'], 0, 1);
+			if (isset($map[$post['user_2fa_method']])) {
+				$log_message .= formatLogKeyData('user_', '2FA Method', $map[$post['user_2fa_method']]);
+			}
+		}
+
 		$sql_edit = '';
 		
 		$exclude = array_merge($global_form_field_excludes, array('user_id', 'cpassword', 'user_password', 'user_caps', 'process_user_caps', 'type'));
@@ -321,8 +335,10 @@ class fm_users {
 		foreach ($post as $key => $data) {
 			if (!in_array($key, $exclude)) {
 				$sql_edit .= $key . "='" . $data . "', ";
+				// Convert certain fields for friendly logging
 				if ($key == 'user_auth_type') $data = $__FM_CONFIG['options']['auth_method'][$data][0];
 				if ($key == 'user_group') $data = $this->getName('group', $data);
+				if ($key == 'user_2fa_method') continue;
 				$log_message .= formatLogKeyData('user_', $key, $data);
 			}
 		}
@@ -541,7 +557,12 @@ class fm_users {
 			$template_user = ($row->user_template_only == 'yes') ? $__FM_CONFIG['icons']['template_user'] : null;
 			/** API key */
 			if (array_key_exists('keys', $__FM_CONFIG['users']['avail_types']) && $key_status = getNameFromID($row->user_id, 'fm_keys', 'key_', 'user_id', 'key_status')) {
-				$icons[] = sprintf('<a href="?type=keys" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-key %s" aria-hidden="true"></i></a>', __('API key exists'), ($key_status == 'active') ? 'secure' : '');
+				$icons[] = sprintf('<a href="?type=keys" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-key %s" aria-hidden="true"></i></a>', _('API key exists'), ($key_status == 'active') ? 'secure' : '');
+			}
+
+			/** 2FA enabled */
+			if ($row->user_2fa_method) {
+				$icons[] = sprintf('<a class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-lock secure" aria-hidden="true"></i></a>', _('2FA enabled'));
 			}
 
 			$last_login = ($row->user_last_login == 0) ? sprintf('<i>%s</i>', _('Never')) : date("F d, Y \a\\t H:i T", $row->user_last_login);
@@ -641,8 +662,8 @@ HTML;
 		$ucaction = ucfirst($action);
 		$disabled = (isset($_GET['id']) && $_SESSION['user']['id'] == $_GET['id']) ? 'disabled' : null;
 		$button_disabled = null;
-		$user_email = $user_default_module = $user_theme = $user_theme_mode = null;
-		$hidden = $user_perm_form = $return_form_rows = null;
+		$user_email = $user_default_module = $user_theme = $user_theme_mode = $user_2fa_method = null;
+		$hidden = $user_perm_form = $user_2fa_form = $return_form_rows = null;
 		$user_force_pwd_change = $user_template_only = null;
 		$group_name = $group_comment = $user_group = null;
 		
@@ -656,9 +677,9 @@ HTML;
 			$user_password = null;
 		}
 		if ($action == 'add') {
-			$popup_title = $type == 'users' ? __('Add User') : __('Add Group');
+			$popup_title = $type == 'users' ? _('Add User') : _('Add Group');
 		} else {
-			$popup_title = $type == 'users' ? __('Edit User') : __('Edit Group');
+			$popup_title = $type == 'users' ? _('Edit User') : _('Edit Group');
 		}
 		$popup_header = buildPopup('header', $popup_title);
 		$popup_footer = buildPopup('footer');
@@ -681,7 +702,7 @@ HTML;
 			$field_length = getColumnLength('fm_users', 'user_comment');
 			
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row"><label for="user_comment">' . _('User Comment') . '</label></th>
+					<th width="33%" scope="row"><label for="user_comment">' . _('Comment') . '</label></th>
 					<td width="67%"><input name="user_comment" id="user_comment" type="text" value="' . $user_comment . '" size="32" maxlength="' . $field_length . '" ' . $disabled . ' /></td>
 				</tr>';
 		}
@@ -690,7 +711,7 @@ HTML;
 			$field_length = getColumnLength('fm_users', 'user_login');
 			
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row"><label for="user_email">' . _('User Email') . '</label></th>
+					<th width="33%" scope="row"><label for="user_email">' . _('E-mail Address') . '</label> <a href="#" class="tooltip-top" data-tooltip="' . _('The e-mail address is used for sending password reset links and 2FA codes.') . '"><i class="fa fa-question-circle"></i></a></th>
 					<td width="67%"><input name="user_email" id="user_email" type="email" value="' . $user_email . '" size="32" maxlength="' . $field_length . '" ' . $disabled . ' class="required" /></td>
 				</tr>';
 		}
@@ -720,7 +741,7 @@ HTML;
 			$strength = $GLOBALS['PWD_STRENGTH'];
 			if (array_key_exists('user_password', $form_bits)) $strength = $form_bits['user_password'];
 			$return_form_rows .= '<tr class="user_password">
-					<th width="33%" scope="row"><label for="user_password">' . _('User Password') . '</label></th>
+					<th width="33%" scope="row"><label for="user_password">' . _('Password') . '</label></th>
 					<td width="67%"><input name="user_password" id="user_password" type="password" value="" size="40" onkeyup="javascript:checkPasswd(\'user_password\', \'' . $button_id . '\', \'' . $strength . '\');" ' . $field_required . '/></td>
 				</tr>
 				<tr class="user_password">
@@ -745,6 +766,37 @@ HTML;
 				</tr>';
 		}
 		
+		if (in_array('user_2fa_method', $form_bits) && getOption('auth_method') && count($__FM_CONFIG['options']['2fa_methods'])) {
+			$user_2fa_method_options = buildSelect('user_2fa_method', 'user_2fa_method', $__FM_CONFIG['options']['2fa_methods'], $user_2fa_method);
+			$require_2fa_note = (getOption('require_2fa')) ? '<div class="popup-note"><p>' . _('Two-Factor Authentication defaults to E-Mail and is required by the system policy.') . '</p></div>' : null;
+			$enable_2fa_checked = ($user_2fa_method) ? 'checked' : null;
+			$user_2fa_methods_display = (!$user_2fa_method) ? 'style="display: none;"' : null;
+			$user_2fa_form = '<tr>
+					<th width="33%" scope="row">' . _('Enable 2FA') . '</th>
+					<td width="67%">
+						<input type="hidden" name="user_2fa_method" value="0" />
+						<input name="enable_2fa" id="enable_2fa" type="checkbox" ' . $enable_2fa_checked . ' />
+					</td>
+				</tr>
+				<tr class="user_2fa_method_row" ' . $user_2fa_methods_display . '>
+					<th width="33%" scope="row">' . _('2FA Method') . '</th>
+					<td width="67%">' . $user_2fa_method_options . '</td>
+				</tr>';
+
+			$user_2fa_form = sprintf('
+		<div id="tab" class="user_2fa">
+			<input type="radio" name="tab-group-1" id="tab-3" />
+			<label for="tab-3">%s</label>
+			<div id="tab-content">
+			%s
+			<table class="form-table">
+				%s
+			</table>
+			</div>
+		</div>
+', _('Two-factor Authentication'), $require_2fa_note, $user_2fa_form);
+		}
+
 		if (in_array('user_module', $form_bits)) {
 			$active_modules = ($user_id == $_SESSION['user']['id']) ? getActiveModules(true) : getActiveModules();
 			if (count($active_modules) > 1) {
@@ -788,7 +840,7 @@ HTML;
 			$return_form_rows .= '<tr>
 					<th width="33%" scope="row"></th>
 					<td width="67%">
-						<span><a href="admin-users.php?type=keys">' . __('Configure API Keys') . ' &raquo;</a></span>
+						<span><a href="admin-users.php?type=keys">' . _('Configure API Keys') . ' &raquo;</a></span>
 					</td>
 				</tr>';
 		}
@@ -918,23 +970,48 @@ PERM;
 			}
 			
 			if (!empty($perm_boxes)) {
-				$user_perm_form = sprintf('<tr class="user_permissions"><td colspan="2" class="form-break"><i>%s</i></td></tr>', _('Permissions')) . $perm_boxes;
+				$user_perm_form = sprintf('
+		<div id="tab" class="user_permissions">
+			<input type="radio" name="tab-group-1" id="tab-2" />
+			<label for="tab-2">%s</label>
+			<div id="tab-content">
+			<table class="form-table">
+			%s
+			</table>
+			</div>
+		</div>
+', _('Permissions'), $perm_boxes);
 			}
 		} while (false);
 		
-		$return_form = ($print_form_head) ? '<form name="manage" id="manage" method="post" action="' . $action_page . '">' . "\n" : null;
 		$return_form = '';
-		if ($display_type == 'popup') $return_form .= $popup_header;
-		$return_form .= '
-			<div>
+		if ($display_type == 'popup') {
+			$return_form .= $popup_header;
+			$return_form .= sprintf('
 			<form id="fm_user_profile">
 			<input type="hidden" name="action" value="' . $action . '" />' . $hidden . '
-			<table class="form-table" width="495px">
-				<tr><td colspan="2"><i>' . _('Details') . '</i></td></tr>' . $return_form_rows . $user_perm_form;
+	<div id="tabs" class="big-tabs">
+		<div id="tab">
+			<input type="radio" name="tab-group-1" id="tab-1" checked />
+			<label for="tab-1">%s</label>
+			<div id="tab-content">
+', _('Details'));
+		}
+		$return_form .= '
+			<div>
+			<table class="form-table">
+			' . $return_form_rows;
 		
 		$return_form .= '</table></div>';
 
-		if ($display_type == 'popup') $return_form .= $popup_footer . '
+		if ($display_type == 'popup') {
+			$return_form .= '
+			</div>
+		</div>
+		' . $user_perm_form
+		. $user_2fa_form . '
+	</div>
+		' . $popup_footer . '
 		</form>
 		<script>
 			$(document).ready(function() {
@@ -949,6 +1026,7 @@ PERM;
 				$("#user_group").trigger("change");
 			});
 		</script>';
+		}
 
 		return $return_form;
 	}

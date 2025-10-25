@@ -89,7 +89,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 
 	$sendto = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_email');
 	if (!$sendto) {
-		printf('<p>%s</p>', _('Unable to send email -- this user account does not have an email address defined.'));
+		printf('<p>%s</p>', _('Unable to send e-mail -- this user account does not have an e-mail address defined.'));
 	} else {
 		include(ABSPATH . 'fm-includes' . DIRECTORY_SEPARATOR . 'version.php');
 

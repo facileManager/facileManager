@@ -75,7 +75,7 @@ if (!isset($__FM_CONFIG)) {
 	
 	$(document).keyup(function(e) {
 		if (e.keyCode == KEYCODE_ESC) { $("#cancel_button").click(); }
-		if (e.keyCode == KEYCODE_ENTER && $(":focus").is("input[type=text], input[type=password], input[type=checkbox]")) { $("#primary_button, #loginbtn, #forgotbtn").click(); }
+		if (e.keyCode == KEYCODE_ENTER && $(":focus").is("input[type=text], input[type=password], input[type=checkbox]")) { $("#primary_button, #loginbtn, #forgotbtn, #verify_otpbtn").click(); }
 	});
 
 	$(function() {
@@ -952,12 +952,21 @@ if (!isset($__FM_CONFIG)) {
 		$(this).setThemeMode();
 	});
 
+	/* Account 2FA changes */
+	$("#manage_item_contents").delegate("#enable_2fa", "click", function(e) {
+		if ($(this).is(":checked")) {
+			$("tr.user_2fa_method_row").show();
+		} else {
+			$("tr.user_2fa_method_row").hide();
+		}
+	});
+
 	/* Account group association changes */
 	$("#manage_item_contents").delegate("#user_group", "change", function(e) {
 		if ($(this).val() == 0) {
-			$("tr.user_permissions").show();
+			$("#tab.user_permissions").show();
 		} else {
-			$("tr.user_permissions").hide();
+			$("#tab.user_permissions").hide();
 		}
 	});
 
@@ -1019,6 +1028,126 @@ if (!isset($__FM_CONFIG)) {
 		
 		return false;
     });
+
+	/* Prevent 2fa_form submission on enter keypress and only accept numbers and ctrl-v or cmd-v */
+	$("#2fa_form").on("keypress", function(e) {
+		if (e.which == KEYCODE_ENTER) {
+			return false;
+		}
+		var charCode = (e.which) ? e.which : e.keyCode;
+		if (charCode < 48 || charCode > 57) {
+			return false;
+		}
+		/* Allow ctrl-v or cmd-v */
+		if (e.ctrlKey && charCode == 118) {
+			return true;
+		}
+	});
+
+	/* Generate 2FA code when two-factor is in request uri */
+	function generateOtpIfOnTwoFactor() {
+		if (window.location.pathname.replace(/[?#].*$/,"").replace(/\/+$/,"").split("/").pop() == "two-factor") {
+			var form_data = {
+				otp_2fa: "generate",
+				is_ajax: 1
+			};
+
+			$.ajax({
+				type: "POST",
+				url: "' . $GLOBALS['RELPATH'] . '../ajax/getData.php",
+				data: form_data,
+				success: function(response)
+				{
+					// optional: handle response
+				}
+			});
+		}
+	}
+
+	// Run on initial load
+	generateOtpIfOnTwoFactor();
+
+	// Run when user navigates via history API (back/forward)
+	window.addEventListener("popstate", generateOtpIfOnTwoFactor);
+
+	/* Submit 2FA when six numbers are entered */
+	$("#app_otp").on("input", function() {
+		var $this 		= $(this);
+		var $code		= $this.val();
+
+		if ($code.length == 6) {
+			$("#verify_otpbtn").click();
+		}
+	});
+
+	/* 2FA verification */
+	$("#verify_otpbtn").click(function() {
+		var $this 		= $(this);
+		var $code		= $("#app_otp").val();
+
+		$this.html("<i class=\"fa fa-spinner fa-spin\" aria-hidden=\"true\"></i> ' . _('Verifying...') . '");
+		$this.addClass("disabled").attr("disabled", "disabled");
+
+		var form_data = {
+			code: $code,
+			otp_2fa: "verify",
+			is_ajax: 1
+		};
+
+		$.ajax({
+			type: "POST",
+			url: "' . $GLOBALS['RELPATH'] . '../ajax/getData.php",
+			data: form_data,
+			success: function(response)
+			{
+				if (response == "failed") {
+					$("#login_form").effect("shake");
+					$this.removeClass("disabled").removeAttr("disabled");
+					$this.html("<i class=\"fa fa-check\" aria-hidden=\"true\"></i> ' . _('Verify') . '");
+					$("#app_otp").val("").focus();
+				} else if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				} else {
+					window.location = response;
+				}
+			}
+		});
+		
+		return false;
+	});
+
+	/* Resend 2FA OTP */
+	$("#resend_otp").click(function() {
+		var $this 		= $(this);
+
+		$this.html("<i class=\"fa fa-spinner fa-spin\" aria-hidden=\"true\"></i> ' . _('Resending code...') . '");
+		$this.addClass("disabled").attr("disabled", "disabled");
+
+		var form_data = {
+			otp_2fa: "resend",
+			is_ajax: 1
+		};
+
+		$.ajax({
+			type: "POST",
+			url: "' . $GLOBALS['RELPATH'] . '../ajax/getData.php",
+			data: form_data,
+			success: function(response)
+			{
+				$this.removeClass("disabled").removeAttr("disabled");
+				$this.find(".fa").removeClass("fa-spinner fa-spin").addClass("fa-check ok");
+				$("#app_otp").val("").focus();
+				setTimeout(function() {
+					$this.stop(true,true).fadeOut(200, function() {
+						$(this).html("' . _('Resend code') . '").fadeIn(200);
+					});
+				}, 3000);
+			}
+		});
+		
+		return false;
+	});
 
 	/* Admin Tools */
     $("#admin-tools").delegate("form input.button:not(\"#import-records, #import, #db-backup, #bulk_apply, .double-click\"), #module_install, #module_upgrade, #update_core",

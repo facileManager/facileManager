@@ -1237,7 +1237,8 @@ i.text_icon {
 }
 
 #response,
-#popup_response {
+#popup_response,
+.popup-note {
 	text-align: center;
 	color: #000;
 	font-size: 10pt;
@@ -1254,24 +1255,29 @@ i.text_icon {
 	box-shadow: 0 4px 10px -1px light-dark(#ccc, #1b1b1b);
 	z-index: 2;
 }
-#response {
+#response,
+.popup-note {
 	margin-top: -14px;
 	width: 75%;
 	margin-left: 12.5%;
 }
-#response p {
+#response p,
+.popup-note p {
 	margin: 0;
 	padding: 3px 10px;
 }
-#response p:first-child {
+#response p:first-child,
+.popup-note p:first-child {
 	padding-top: 6px;
 	padding-bottom: 3px;
 }
-#response p:last-child {
+#response p:last-child,
+.popup-note p:last-child {
 	padding-top: 3px;
 	padding-bottom: 6px;
 }
-#response p:only-child {
+#response p:only-child,
+.popup-note p:only-child {
 	padding-top: 6px;
 	padding-bottom: 6px;
 }
@@ -1301,18 +1307,18 @@ i.text_icon {
 #response_close i {
 	background-color: #FFFBCC;
 }
-#tabs #response {
+#tabs #response,
+#tabs .popup-note {
 	width: 90%;
-	margin-top: unset;
-	margin-left: auto;
-	margin-right: auto;
+	margin: auto;
 }
 
-#popup_response {
+#popup_response,
+.popup-note {
 	position: absolute;
 	top: 44px;
 	width: 70%;
-	margin-left: 11%;
+	margin-left: 12%;
 	min-height: 2.3em;
 	padding: 0 1em;
 }
@@ -1322,6 +1328,9 @@ i.text_icon {
 #popup_response div#error {
 	display: none;
 	overflow: auto;
+}
+.popup-note {
+	position: unset;
 }
 
 .replace {
@@ -1410,7 +1419,6 @@ a.delete:hover i {
 .manage_form_contents {
 	z-index: 1003;
 	position: relative;
-	top: -5%;
 	margin: auto;
 	opacity: 1.0;
 	min-width: 500px;
@@ -2159,13 +2167,14 @@ a.subelement_edit img {
 
 #tabs {
 	position: relative;
-	min-height: 300px;
+	height: 300px;
+	max-height: calc(100vh - 15em);
 	clear: both;
-	margin: 25px 0;
 }
 #tab {
 	float: left;
 	padding: 0 3px;
+	margin: 25px 0;
 }
 #tab [type=radio] {
 	display: none;
@@ -2192,7 +2201,7 @@ a.subelement_edit img {
 	margin-top: 0px;
 }
 
-#tab-content {
+#tab-content, .tab-content {
 	position: absolute;
 	left: 0;
 	width: 100%;
@@ -2200,6 +2209,21 @@ a.subelement_edit img {
 	background: var(--form-popup-bg);
 	border-top: 1px solid var(--page-title-line);
 	margin-top: 9px;
+}
+
+#tabs.big-tabs {
+	height: 35em;
+	min-width: 45em;
+}
+
+#tabs > #tab:only-child [type=radio] ~ label {
+	display: none;
+}
+
+#tabs > #tab:only-child,
+#tabs > #tab:only-child > #tab-content {
+	border: none;
+	margin-top: unset;
 }
 
 .overflow {

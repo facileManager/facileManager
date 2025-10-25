@@ -26,13 +26,59 @@ require_once('../../../fm-init.php');
 
 include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'functions.php');
 
+/** Generate TOTP */
+if (array_key_exists('otp_2fa', $_POST)) {
+	switch ($_POST['otp_2fa']) {
+		case 'generate':
+		case 'resend':
+			// Get user 2FA method
+			$user_2fa_method = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_method');
+
+			// Set user_2fa_method to e-mail if not set
+			if (!$user_2fa_method && getOption('require_2fa')) {
+				$user_2fa_method = 'email';
+			}
+
+			// Generate & E-mail TOTP 2FA
+			if ($user_2fa_method == 'email') {
+				$otp = $fm_login->generateOTP($_POST['otp_2fa']);
+				if ($otp !== false) {
+					$query = "INSERT INTO `fm_temp_auth_keys` VALUES ('" . password_hash($otp, PASSWORD_DEFAULT) . "', '{$_SESSION['user']['id']}', " . time() . ")";
+					$fmdb->get_results($query);
+					if ($fmdb->rows_affected) {
+						$fm_login->mail2FAOTP($_SESSION['user']['id'], $otp);
+					}
+				}
+			}
+			break;
+		case 'verify':
+			// Verify TOTP 2FA
+			$result = $fm_login->process2FAForm($_POST['code']);
+			if ($result === true) {
+				if (isset($_SESSION['user']['uri'])) {
+					echo $_SESSION['user']['uri'];
+					@session_start();
+					unset($_SESSION['user']['uri']);
+				} else {
+					echo $GLOBALS['RELPATH'];
+				}
+			} else {
+				echo 'failed';
+			}
+			break;
+		default:
+			return;
+	}
+	exit;
+}
+
 /** Process account settings */
 if (is_array($_POST) && array_key_exists('user_id', $_POST)) {
 	/** Password reset */
 	if (array_key_exists('reset_pwd', $_POST)) {
 		$result = $fm_login->processUserPwdResetForm($_POST['user_id']);
 		if ($result === true) {
-			printf(_('<p>Password reset email has been sent to %s.</p>'), $_POST['user_id']);
+			printf(_('<p>Password reset e-mail has been sent to %s.</p>'), $_POST['user_id']);
 		} else {
 			echo displayResponseClose($result);
 		}

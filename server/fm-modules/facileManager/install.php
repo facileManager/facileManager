@@ -387,7 +387,7 @@ CREATE TABLE IF NOT EXISTS `$database`.`fm_options` (
 TABLESQL;
 
 	$table[] = <<<TABLESQL
-CREATE TABLE IF NOT EXISTS `$database`.`fm_pwd_resets` (
+CREATE TABLE IF NOT EXISTS `$database`.`fm_temp_auth_keys` (
   `pwd_id` varchar(255) NOT NULL,
   `pwd_login` int(11) NOT NULL,
   `pwd_timestamp` int(10) NOT NULL DEFAULT '0',
@@ -403,9 +403,11 @@ CREATE TABLE IF NOT EXISTS `$database`.`fm_users` (
   `user_password` varchar(255) NOT NULL,
   `user_email` varchar(255) NOT NULL,
   `user_comment` varchar(255) DEFAULT NULL,
-  `user_group` INT(11) DEFAULT NULL,
+  `user_group` int(11) DEFAULT NULL,
+  `user_2fa_method` enum('0','app','email') NOT NULL DEFAULT '0',
+  `user_2fa_secret` varchar(255) NULL,
   `user_default_module` varchar(255) DEFAULT NULL,
-  `user_theme` VARCHAR(255) NULL DEFAULT NULL,
+  `user_theme` varchar(255) NULL DEFAULT NULL,
   `user_theme_mode` enum('Light','Dark','System') NULL DEFAULT 'System',
   `user_auth_type` int(1) NOT NULL DEFAULT '1',
   `user_caps` text,

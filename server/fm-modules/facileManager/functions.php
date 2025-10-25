@@ -1750,12 +1750,12 @@ HTML;
 
 
 /**
- * Checks if an email address is valid
+ * Checks if an e-mail address is valid
  *
  * @since 1.0
  * @package facileManager
  *
- * @param string $address Email address to validate
+ * @param string $address E-mail address to validate
  * @return boolean
  */
 function isEmailAddressValid($address){
@@ -2183,8 +2183,8 @@ function resetPassword($fm_login, $user_password) {
 		$fmdb->query($query);
 
 		if ($fmdb->rows_affected) {
-			/** Remove entry from fm_pwd_resets table */
-			$query = "DELETE FROM `fm_pwd_resets` WHERE `pwd_login`='$fm_login_id'";
+			/** Remove entry from fm_temp_auth_keys table */
+			$query = "DELETE FROM `fm_temp_auth_keys` WHERE `pwd_login`='$fm_login_id'";
 			$fmdb->query($query);
 
 			return true;
@@ -3530,12 +3530,12 @@ function clearUpdateDir() {
  * @since 3.0
  * @package facileManager
  *
- * @param string $sendto Email address to send to
- * @param string $subject Email subject
- * @param string $body Email body
- * @param string $altbody Email alternate body (plaintext)
+ * @param string $sendto E-mail address to send to
+ * @param string $subject E-mail subject
+ * @param string $body E-mail body
+ * @param string $altbody E-mail alternate body (plaintext)
  * @param string|array $from From name and address
- * @param array $images Images to embed in the email
+ * @param array $images Images to embed in the e-mail
  * @return boolean|string
  */
 function sendEmail($sendto, $subject, $body, $altbody = null, $from = null, $images = null, $options = array(), $output_format = 'hidden') {
@@ -3543,7 +3543,7 @@ function sendEmail($sendto, $subject, $body, $altbody = null, $from = null, $ima
 
 	$phpmailer_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'PHPMailer' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'PHPMailer.php';
 	if (!file_exists($phpmailer_file)) {
-		return _('Unable to send email - PHPMailer class is missing.');
+		return _('Unable to send e-mail - PHPMailer class is missing.');
 	}
 
 	extract($options);
