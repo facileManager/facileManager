@@ -492,6 +492,7 @@ This link expires in %s.',
 		session_regenerate_id(true);
 		$_SESSION['user']['id'] = $user->user_id;
 		$_SESSION['user']['name'] = $user->user_login;
+		$_SESSION['user']['display_name'] = $user->user_display_name;
 		$_SESSION['user']['last_login'] = $user->user_last_login;
 		$_SESSION['user']['account_id'] = $user->account_id;
 		$_SESSION['user']['theme'] = $user->user_theme;

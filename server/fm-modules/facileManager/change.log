@@ -1,6 +1,7 @@
 6.0.0 (2025-??-??)
 ==================
 * Server - [feature] Added support for 2FA via e-mail.
+* Server - [improvement] Added display name field to user accounts.
 * Server - [bug] CSS fixes for the login form.
 * Server - [bug] Standardized some text across the application.
 * Server - [bug] Fixed user creation when using LDAP authentication.

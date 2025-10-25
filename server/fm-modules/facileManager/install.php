@@ -401,6 +401,7 @@ CREATE TABLE IF NOT EXISTS `$database`.`fm_users` (
   `account_id` int(11) NOT NULL DEFAULT '1',
   `user_login` varchar(128) NOT NULL,
   `user_password` varchar(255) NOT NULL,
+  `user_display_name` varchar(255) NULL,
   `user_email` varchar(255) NOT NULL,
   `user_comment` varchar(255) DEFAULT NULL,
   `user_group` int(11) DEFAULT NULL,

@@ -373,6 +373,13 @@ class fm_users {
 			session_write_close();
 		}
 
+		/** Full name in the session */
+		if ($_SESSION['user']['id'] == $post['user_id']) {
+			@session_start();
+			$_SESSION['user']['display_name'] = $post['user_display_name'];
+			session_write_close();
+		}
+
 		/** Process forced password change */
 		if (isset($post['user_force_pwd_change']) && $post['user_force_pwd_change'] == 'yes') $fm_login->processUserPwdResetForm($user_login, 'no mail');
 		
@@ -658,7 +665,7 @@ HTML;
 		global $__FM_CONFIG, $fm_name, $fm_login;
 
 		$user_id = $group_id = 0;
-		$user_login = $user_password = $cpassword = $user_comment = null;
+		$user_login = $user_password = $cpassword = $user_display_name = $user_comment = null;
 		$ucaction = ucfirst($action);
 		$disabled = (isset($_GET['id']) && $_SESSION['user']['id'] == $_GET['id']) ? 'disabled' : null;
 		$button_disabled = null;
@@ -695,6 +702,15 @@ HTML;
 			$return_form_rows .= '<tr>
 					<th width="33%" scope="row"><label for="user_login">' . _('User Login') . '</label></th>
 					<td width="67%">' . $username_form . '</td>
+				</tr>';
+		}
+		if (in_array('user_display_name', $form_bits)) {
+			/** Get field length */
+			$field_length = getColumnLength('fm_users', 'user_display_name');
+			
+			$return_form_rows .= '<tr>
+					<th width="33%" scope="row"><label for="user_display_name">' . _('Display Name') . '</label></th>
+					<td width="67%"><input name="user_display_name" id="user_display_name" type="text" value="' . $user_display_name . '" size="32" maxlength="' . $field_length . '" ' . $disabled . ' /></td>
 				</tr>';
 		}
 		if (in_array('user_comment', $form_bits)) {

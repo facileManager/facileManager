@@ -555,8 +555,9 @@ HTML;
 		$star = currentUserCan('do_everything') ? $__FM_CONFIG['icons']['star'] . ' ' : null;
 		$profile_link = ($auth_method) ? sprintf('<div><a class="account_settings" id="%s" href="#"><i class="fa fa-user-circle-o" aria-hidden="true"></i>%s</a></div>' . "\n", $_SESSION['user']['id'], _('Edit Profile')) : null;
 		$logout = _('Logout');
+		$name = (!empty($_SESSION['user']['display_name'])) ? $_SESSION['user']['display_name'] : $_SESSION['user']['name'];
 		$account_info = <<<HTML
-			<div><span>{$star}{$_SESSION['user']['name']}</span></div>
+			<div><span>{$star}{$name}</span></div>
 			<div id="account_info_actions" class="flex-apart">
 				$profile_link
 				<div><a href="{$GLOBALS['RELPATH']}?logout"><i class="fa fa-sign-out" aria-hidden="true"></i>$logout</a></div>

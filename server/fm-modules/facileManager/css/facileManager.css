@@ -403,8 +403,9 @@ div.header-container {
 	flex: 0 17em;
 	font-size: 10pt;
 	z-index: 3;
-    flex-direction: column;
+	flex-direction: column;
 	color: var(--menu-text);
+	width: 17em;
 }
 #menuback li:hover > a {
 	color: var(--menu-text);
@@ -455,6 +456,8 @@ div.header-container {
 #account_info > div:first-child span {
 	width: 100%;
 	padding: 0 10px;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 #account_info i {
 	padding-right: 5px;

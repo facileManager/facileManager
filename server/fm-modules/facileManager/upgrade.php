@@ -1124,7 +1124,8 @@ function fmUpgrade_600($database) {
 	$queries = [];
 	if ($success) {
 		$queries[] = "ALTER TABLE `fm_users` ADD `user_2fa_method` ENUM('0', 'app', 'email') NOT NULL DEFAULT '0' AFTER `user_group`, 
-		ADD `user_2fa_secret` VARCHAR(255) NULL AFTER `user_2fa_method`";
+		ADD `user_2fa_secret` VARCHAR(255) NULL AFTER `user_2fa_method`, 
+		ADD `user_display_name` VARCHAR(255) NULL AFTER `user_password`";
 		$queries[] = "RENAME TABLE `fm_pwd_resets` TO `fm_temp_auth_keys`";
 
 		/** Create table schema */
