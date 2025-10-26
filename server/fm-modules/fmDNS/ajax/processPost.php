@@ -238,6 +238,15 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 				exit('Success');
 			}
 			exit(__('The sort order could not be updated due to an invalid request.'));
+		case 'toggle-zone-favorite':
+			if (!empty($_POST)) {
+				$result = $post_class->toggleZoneFavorite($_POST['item_id']);
+				if ($result !== true) {
+					exit($result);
+				}
+				exit('Success');
+			}
+			exit(__('Could not toggle the zone favorite due to an invalid request.'));
 	}
 
 	exit;

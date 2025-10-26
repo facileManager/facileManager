@@ -76,6 +76,37 @@ function buildModuleDashboard() {
 			}
 		}
 	}
+
+	/** Zone favorites */
+	$zone_favorites = '';
+	$user_prefs = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_module_prefs');
+	$user_prefs = @unserialize($user_prefs);
+	if (is_array($user_prefs) && array_key_exists($_SESSION['module'], $user_prefs) && 
+			array_key_exists('favorite_zones', $user_prefs[$_SESSION['module']]) && 
+			is_array($user_prefs[$_SESSION['module']]['favorite_zones']) && 
+			count($user_prefs[$_SESSION['module']]['favorite_zones'])) {
+		foreach ($user_prefs[$_SESSION['module']]['favorite_zones'] as $favorite_zone_id) {
+			basicGet('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', $favorite_zone_id, 'domain_', 'domain_id');
+			if ($fmdb->num_rows) {
+				$domain_result = $fmdb->last_result;
+				$zone_access_allowed = currentUserCan(array('access_specific_zones'), $_SESSION['module'], array(0, $domain_result[0]->domain_id));
+				if ($zone_access_allowed) {
+					$zone_favorites .= sprintf('<li><a href="zone-records.php?domain_id=%d">%s</a></li>', $favorite_zone_id, displayFriendlyDomainName($domain_result[0]->domain_name));
+				}
+			}
+		}
+	}
+	if ($zone_favorites) {
+		$zone_favorites = sprintf('
+	<div id="shadow_box">
+		<div id="shadow_container">
+		<h3>%s</h3>
+		%s
+		</div>
+	</div>',
+	__('Favorite Zones'),
+			$zone_favorites);
+	}
 	
 	/** Zone stats */
 	basicGetList('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_id', 'domain_');
@@ -122,10 +153,12 @@ function buildModuleDashboard() {
 		<li>%s</li>
 		</div>
 	</div>
+	%s
 	</div>', __('Summary'),
 			($display_server_count == true) ? '<li>' . sprintf(ngettext('You have <b>%s</b> name server configured.', 'You have <b>%s</b> name servers configured.', $server_count), formatNumber($server_count)) . '</li>' : '',
 			sprintf(ngettext('You have <b>%s</b> zone defined.', 'You have <b>%s</b> zones defined.', $privileged_domain_count), formatNumber($privileged_domain_count)),
-			sprintf(ngettext('You have <b>%s</b> record.', 'You have <b>%s</b> records.', $record_count), formatNumber($record_count))
+			sprintf(ngettext('You have <b>%s</b> record.', 'You have <b>%s</b> records.', $record_count), formatNumber($record_count)),
+			$zone_favorites
 			);
 
 	if ($error_display) {

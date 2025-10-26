@@ -74,7 +74,9 @@ class fm_dns_zones {
 				array('title' => _('Comment'), 'class' => 'header-nosort')
 			));
 		} else {
-			$title_array = array(array('title' => __('ID'), 'class' => 'header-small header-nosort'), 
+			$title_array = array(
+				array('title' => __('ID'), 'class' => 'header-tiny header-nosort'), 
+				array('title' => '', 'class' => 'header-tiny header-nosort'), 
 				array('title' => __('Domain'), 'rel' => 'domain_name'), 
 				array('title' => __('Type'), 'rel' => 'domain_type'),
 				array('title' => __('Views'), 'class' => 'header-nosort'),
@@ -804,7 +806,14 @@ class fm_dns_zones {
 			$clones = $this->cloneDomainsList($row->domain_id);
 			$clone_names = $clone_types = $clone_views = $clone_counts = $clone_servers = $clone_comment = '';
 			foreach ($clones as $clone_id => $clone_array) {
-				$clone_names .= '<p class="subelement' . $clone_id . '"><span><a href="' . $clone_array['clone_link'] . '" title="' . __('Edit zone records') . '">' . $clone_array['clone_name'] . 
+				if ($this->isZoneFavorite($clone_id)) {
+					$favorite_class = 'fa-star star';
+					$favorite_tooltip = __('Unmark as Favorite Zone');
+				} else {
+					$favorite_class = 'fa-star-o grey';
+					$favorite_tooltip = __('Mark as Favorite Zone');
+				}
+				$clone_names .= '<p class="subelement' . $clone_id . '"><span><a href="#" class="tooltip-bottom mini-icon" data-tooltip="' . $favorite_tooltip . '"><i class="fa ' . $favorite_class . ' zone-favorite" aria-hidden="true" rel="' . $clone_id . '"></i></a> <a href="' . $clone_array['clone_link'] . '" title="' . __('Edit zone records') . '">' . $clone_array['clone_name'] . 
 						'</a></span>' . $clone_array['clone_options'] . $clone_array['dnssec'] . $clone_array['dynamic'] . $clone_array['clone_edit'] . $clone_array['clone_delete'] . "</p>\n";
 				$clone_types .= '<p class="subelement' . $clone_id . '">' . __('clone') . '</p>' . "\n";
 				$clone_views .= '<p class="subelement' . $clone_id . '">' . $this->IDs2Name($clone_array['clone_views'], 'view') . "</p>\n";
@@ -902,10 +911,19 @@ class fm_dns_zones {
 			$comments = ($row->domain_comment) ? nl2br($row->domain_comment) : '&nbsp;';
 			$domain_servers = $this->IDs2Name($row->domain_name_servers, 'server');
 
+			if ($this->isZoneFavorite($row->domain_id)) {
+				$favorite_class = 'fa-star star';
+				$favorite_tooltip = __('Unmark as Favorite Zone');
+			 } else {
+				$favorite_class = 'fa-star-o grey';
+				$favorite_tooltip = __('Mark as Favorite Zone');
+			 }
+
 			echo <<<HTML
 		<tr id="$row->domain_id" name="$row->domain_name" $class>
 			$checkbox
 			<td>$row->domain_id</td>
+			<td><a href="#" class="tooltip-bottom mini-icon" data-tooltip="{$favorite_tooltip}"><i class="fa {$favorite_class} zone-favorite" aria-hidden="true" rel="{$row->domain_id}"></i></a></td>
 			<td><b>$edit_name</b> $icons $add_new $response $clone_names</td>
 			<td>$row->domain_type
 				$clone_types</td>
@@ -2652,6 +2670,81 @@ HTML;
 		}
 
 		return $response;
+	}
+
+
+	/**
+	 * Determines if a zone is marked as a favorite
+	 *
+	 * @since 7.3.0
+	 * @package facileManager
+	 * @subpackage fmDNS
+	 *
+	 * @param integer $domain_id Domain ID to get the zone data for
+	 * @return boolean
+	 */
+	function isZoneFavorite($domain_id) {
+		// Get the user module preferences
+		$user_prefs = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_module_prefs');
+		$user_prefs = @unserialize($user_prefs);
+
+		// Check if the zone is marked as a favorite
+		if (is_array($user_prefs) && array_key_exists($_SESSION['module'], $user_prefs) && array_key_exists('favorite_zones', $user_prefs[$_SESSION['module']])) {
+			if (in_array($domain_id, $user_prefs[$_SESSION['module']]['favorite_zones'])) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * Toggles a zone as a favorite
+	 *
+	 * @since 7.3.0
+	 * @package facileManager
+	 * @subpackage fmDNS
+	 *
+	 * @param integer $domain_id Domain ID to get the zone data for
+	 * @return boolean
+	 */
+	function toggleZoneFavorite($domain_id) {
+		global $__FM_CONFIG, $fmdb;
+
+		// Get the user module preferences
+		$user_prefs = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_module_prefs');
+		$user_prefs = @unserialize($user_prefs);
+
+		if (!is_array($user_prefs)) {
+			$user_prefs = [];
+		}
+
+		// Toggle the favorite status
+		if (!array_key_exists($_SESSION['module'], $user_prefs)) {
+			$user_prefs[$_SESSION['module']] = ['favorite_zones' => array($domain_id)];
+		} elseif (is_array($user_prefs) && array_key_exists($_SESSION['module'], $user_prefs) && array_key_exists('favorite_zones', $user_prefs[$_SESSION['module']])) {
+			if (in_array($domain_id, $user_prefs[$_SESSION['module']]['favorite_zones'])) {
+				// Remove from favorites
+				$key = array_search($domain_id, $user_prefs[$_SESSION['module']]['favorite_zones']);
+				unset($user_prefs[$_SESSION['module']]['favorite_zones'][$key]);
+			} else {
+				// Add to favorites
+				$user_prefs[$_SESSION['module']]['favorite_zones'][] = $domain_id;
+			}
+		} else {
+			$user_prefs[$_SESSION['module']]['favorite_zones'][] = $domain_id;
+		}
+
+		// Update the user preferences
+		$serialized_prefs = serialize($user_prefs);
+		$query = "UPDATE fm_users SET user_module_prefs='$serialized_prefs' WHERE user_id='{$_SESSION['user']['id']}' AND account_id='{$_SESSION['user']['account_id']}'";
+		$fmdb->query($query);
+		if (!$fmdb->sql_errors) {
+			return true;
+		}
+
+		return false;
 	}
 
 }
