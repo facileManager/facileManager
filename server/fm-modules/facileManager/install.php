@@ -200,7 +200,7 @@ function processAccountSetup($database) {
 	
 	addLogEntry(sprintf(_("Installer created user '%s'"), $user), $fm_name);
 
-	$left_content = sprintf(_("Installation is complete! Click 'Next' to login and start using %s."), $fm_name);
+	$left_content = sprintf('<p>%s</p>', sprintf(_("Installation is complete! Click 'Next' to login and start using %s."), $fm_name));
 	$left_content .= sprintf('<div class="button-wrapper"><a href="%s" class="button"><i class="fa fa-sign-in" aria-hidden="true"></i> %s</a></div>', $GLOBALS['RELPATH'], _('Next'));
 	echo displayPreAppForm(_('Installation Complete'), 'window', $left_content, displayProgressBar(4), 'flex');
 }

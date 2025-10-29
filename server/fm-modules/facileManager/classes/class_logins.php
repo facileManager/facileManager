@@ -62,8 +62,8 @@ class fm_login {
 					</div>
 					<div class="input-wrapper">
 						<i class="fa fa-key" aria-hidden="true"></i>
-						<input type="password" name="password" id="password" placeholder="%s" />
 						<i id="show_password" class="fa fa-eye eye-attention" title="%s" aria-hidden="true"></i>
+						<input type="password" name="password" id="password" placeholder="%s" />
 					</div>
 					<div class="button-wrapper"><a name="submit" id="loginbtn" class="button"><i class="fa fa-sign-in" aria-hidden="true"></i> %s</a></div>
 					<div>%s</div>
@@ -814,8 +814,10 @@ This link expires in %s.',
 		}
 
 		$message = '';
+		$instructions = _('Enter the code from your two-factor authentication app below.');
 		if ($user_2fa_method == 'email') {
 			$message = '<a id="resend_otp" href="">' . _('Resend code') . '</a>';
+			$instructions = _('Enter the code sent to your e-mail address below.');
 		}
 
 		printHeader(_('Two-factor Authentication'), 'login');
@@ -831,7 +833,7 @@ This link expires in %s.',
 				<p id="forgotton_link"><a href="%s">&larr; %s</a></p>
 				<div id="message" class="message">%s</div>
 				',
-				_('Enter the code from your two-factor authentication app or e-mail below.'), 'XXXXXX', _('Verify'), $GLOBALS['RELPATH'], _('Login form'), $message), null, null, '2fa_form');
+				$instructions, 'XXXXXX', _('Verify'), $GLOBALS['RELPATH'], _('Login form'), $message), null, null, '2fa_form');
 
 	}
 

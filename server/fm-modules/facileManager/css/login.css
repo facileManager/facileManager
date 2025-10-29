@@ -92,7 +92,7 @@ form div {
 }
 
 #window {
-	max-width: 450px;
+	width: 450px;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
@@ -113,13 +113,15 @@ form div {
 	text-align: left;
 }
 
-#window table td,
-#window div table td {
+#window table td:not(.status),
+#window div table td:not(.status) {
 	padding: 2px 1em !important;
+    width: 275px;
 }
 
 #window p {
 	width: 100%;
+    text-align: center;
 }
 
 .button-wrapper {
@@ -323,7 +325,7 @@ i.fail {
 }
 
 #show_password {
-    margin-left: -2.8em;
+    margin-left: 18.5em;
     cursor: pointer;
 }
 
