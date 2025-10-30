@@ -8,6 +8,7 @@
 * Server - [bug] Fixed module upgrade process when upgrading from the view changes dialog.
 * Server - [bug] Fixed missing display of items when a submenu is selected and a column is sorted. (#718 #719)
 * Server - [bug] Fixed submenu display on small screens. (#720 #722)
+* Server - [bug] Fixed dashboard shadow box CSS.
 
 5.4.3 (2025-10-10)
 ==================
