@@ -302,6 +302,7 @@ $(document).ready(function() {
 									});
 							}
 						}
+						$(".validate-error-message").remove();
 					}
 				} else if (response.indexOf("popup_response") >= 0) {
 					$("body").addClass("fm-noscroll");
