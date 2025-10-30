@@ -1799,9 +1799,9 @@ span.not_installed {
 	-moz-border-radius: 0% 0% 100% 100% / 0% 0% 8px 8px;
 	-webkit-border-radius: 0% 0% 100% 100% / 0% 0% 8px 8px;
 	border-radius: 0% 0% 100% 100% / 0% 0% 8px 8px;
-	box-shadow: rgba(0,0,0,.30), rgba(147,147,147,.30)) 0 2px 3px !important;
-	-moz-box-shadow: rgba(0,0,0,.30), rgba(147,147,147,.30)) 0 2px 3px !important;
-	-webkit-box-shadow: rgba(0,0,0,.30), rgba(147,147,147,.30)) 0 2px 5px !important;
+	box-shadow: light-dark(rgba(0,0,0,.30), rgba(147,147,147,.30)) 0 2px 3px !important;
+	-moz-box-shadow: light-dark(rgba(0,0,0,.30), rgba(147,147,147,.30)) 0 2px 3px !important;
+	-webkit-box-shadow: light-dark(rgba(0,0,0,.30), rgba(147,147,147,.30)) 0 2px 5px !important;
 	margin-top: .6em;
 }
 
