@@ -38,7 +38,6 @@ form {
     margin-left: 1em;
     border-left: 1px solid light-dark(#eeeeee, #626262);
     font-size: 12px;
-    width: 250px;
     color: light-dark(#7c7c7c, #c4c4c4);
 	align-items: center;
 	display: none;
@@ -46,7 +45,8 @@ form {
 
 .terms {
 	display: none;
-    width: 300px;
+    max-width: 35em;
+    min-width: 250px;
 }
 
 .flex {
@@ -62,6 +62,7 @@ form div {
 
 #login_form {
     margin-top: 1em;
+    max-width: 24em;
 }
 
 #login_form .input-wrapper input {
@@ -78,6 +79,12 @@ form div {
     border-top: 0px;
 }
 
+#login_form #app_otp {
+    text-align: center;
+    font-size: 14pt;
+    letter-spacing: 5px;
+}
+
 .input-wrapper i.fa {
     position: absolute;
     padding: 11px;
@@ -85,7 +92,7 @@ form div {
 }
 
 #window {
-	max-width: 450px;
+	width: 450px;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
@@ -106,13 +113,15 @@ form div {
 	text-align: left;
 }
 
-#window table td,
-#window div table td {
+#window table td:not(.status),
+#window div table td:not(.status) {
 	padding: 2px 1em !important;
+    width: 275px;
 }
 
 #window p {
 	width: 100%;
+    text-align: center;
 }
 
 .button-wrapper {
@@ -125,7 +134,7 @@ div input[type=text], div input[type=password], div input[type=email] {
     margin: 0;
     height: 32px;
     resize: none;
-    width: 180px;
+    width: calc(100% - 5.2em);
     background-color: light-dark(#fff, #404040);
     border: 1px solid light-dark(#E0E0E0, #313131);
     padding-left: 2.5em;
@@ -229,9 +238,17 @@ strong {
     line-height: 33px;
 }
 
+.button.disabled {
+    background: light-dark(#3b8dbc, #375160);
+    border: 1px solid light-dark(#E0E0E0, #313131);
+    color: light-dark(#fff, #a0a0a0);
+	cursor: not-allowed;
+}
+
 .fm-branding {
     color: light-dark(#3b4b58, #d2d2d2);
     display: flex;
+    flex-direction: column;
     align-items: center;
 	margin: .5em 0em;
 }
@@ -240,7 +257,6 @@ strong {
     height: 48px;
 }
 
-.fm-branding img,
 .fm-branding i.fa {
 	margin-right: .5em;
 }
@@ -264,11 +280,17 @@ strong {
 
 #message {
     max-height: 310px;
-    max-width: 242px;
     overflow-y: scroll;
     margin: 1em 0 0;
     color: light-dark(#7c7c7c, #c1c1c1);
     text-align: center;
+}
+
+.message {
+    text-align: center;
+}
+.message:first-of-type {
+    margin-bottom: 1em;
 }
 
 .success {
@@ -303,7 +325,7 @@ i.fail {
 }
 
 #show_password {
-    margin-left: -2.8em;
+    margin-left: 18.5em;
     cursor: pointer;
 }
 
