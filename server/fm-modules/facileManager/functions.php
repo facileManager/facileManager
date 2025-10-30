@@ -511,7 +511,7 @@ HTML;
 				}
 			
 			$sub_menu_html = <<<HTML
-				<ul>
+				<ul class="submenu">
 				$sub_menu_html
 				</ul>
 </li>

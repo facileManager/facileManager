@@ -70,6 +70,9 @@ if (!isset($__FM_CONFIG)) {
 		}
 	}
 
+	// Call on load and resize using jQuery
+	$(window).on("load resize", setSubmenuHeight);
+
 	var KEYCODE_ENTER = 13;
 	var KEYCODE_ESC = 27;
 	
@@ -1575,10 +1578,12 @@ if (!isset($__FM_CONFIG)) {
 	/* Software changelog */
 	$(".upgrade_notice a").click(function() {
 		var changelog_href = $(this).attr("href");
+		// Get module name from URL
+		let moduleName = changelog_href.replace(/[?#].*$/,"").replace(/\/+$/,"").split("/").pop();
 
 		$("body").addClass("fm-noscroll");
 		$("#manage_item").fadeIn(200);
-		$("#manage_item_contents").html(\'' . str_replace(array(PHP_EOL, "\t"), '', preg_replace('~\R~u', '', buildPopup('header', _('Changelog')))) . '<input type="hidden" name="module" value="\'+changelog_href.split("/").pop()+\'" /><iframe src=\'+changelog_href+\' ></iframe>'. str_replace(array(PHP_EOL, "\t"), '', preg_replace('~\R~u', '', buildPopup('footer', _('Update'), array('update_module' => 'submit', 'cancel_button' => 'cancel')))) .'\');
+		$("#manage_item_contents").html(\'' . str_replace(array(PHP_EOL, "\t"), '', preg_replace('~\R~u', '', buildPopup('header', _('Changelog')))) . '<input type="hidden" name="module" value="\'+moduleName+\'" /><iframe src=\'+changelog_href+\' ></iframe>'. str_replace(array(PHP_EOL, "\t"), '', preg_replace('~\R~u', '', buildPopup('footer', _('Update'), array('update_module' => 'submit', 'cancel_button' => 'cancel')))) .'\');
 
 		return false;
 	});
@@ -1762,6 +1767,33 @@ function onPage(name) {
 
 function doLogout() {
 	window.location = "?logout";
+}
+
+function setSubmenuHeight() {
+	var $submenus = $(".submenu");
+	if (!$submenus.length) return;
+
+	// Use the full page/document height in case the page scrolls
+	var pageHeight = $(document).height();
+
+	// Iterate per submenu and compute a unique remaining height
+	$submenus.each(function() {
+		var $thisSub = $(this);
+
+		// Anchor: the parent of the submenu
+		var $anchor = $thisSub.parent();
+
+		// Compute submenu top as distance from top of document and round down
+		var submenuTop = Math.floor($anchor.offset().top + 10);
+
+		// remainingHeight is distance from anchor to bottom of the document
+		var remainingHeight = Math.floor(pageHeight - submenuTop);
+		if (remainingHeight < 0) remainingHeight = 0;
+
+		$thisSub.css({
+			"max-height": remainingHeight + "px"
+		});
+	});
 }
 ';
 }
