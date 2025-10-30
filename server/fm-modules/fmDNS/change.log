@@ -2,6 +2,7 @@
 ==================
 * Server - [improvement] Added ability to mark zones as favorites for quick access on the dashboard.
 * Server - [bug] Fixed missing display of items when a submenu is selected and a column is sorted. (#718)
+* Server - [bug] Fixed SOA negative cache TTL validation to match maximum allowed of 3 hours.
 
 7.2.2 (2025-10-10)
 ==================
