@@ -449,7 +449,7 @@ HTML;
 				$excluded_domain_ids[] = $row->domain_id;
 			}
 		}
-		$available_zones = $fm_dns_zones->buildZoneJSON('all', $excluded_domain_ids);
+		$available_zones = $fm_dns_zones->buildZoneJSON('all', ['primary', 'secondary'], $excluded_domain_ids);
 
 		$available_zones_array = json_decode($available_zones);
 		$first_available_domain_id = $available_zones_array[array_key_first($available_zones_array)]->children[0]->id;
