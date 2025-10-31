@@ -2172,12 +2172,15 @@ HTML;
 	 * @subpackage fmDNS
 	 *
 	 * @param string $zones Include all zones in the list
+	 * @param array|string $zone_types Zone types to include
 	 * @param array $exclude Domain IDs to exclude
+	 * @param array $additional_zones Additional zones to include
 	 * @return string|array
 	 */
-	function buildZoneJSON($zones = 'all', $exclude = null, $additional_zones = null) {
+	function buildZoneJSON($zones = 'all', $zone_types = 'all', $exclude = null, $additional_zones = null) {
 		$get_zones = ($zones == 'all') ? array('no-templates', 'groups') : 'no-templates';
-		$temp_zones = $this->availableZones($get_zones, array('primary', 'secondary', 'forward'), 'all', $zones, $exclude);
+		$zone_types = (is_array($zone_types)) ? $zone_types : ($zone_types == 'all' ? ['primary', 'secondary', 'forward'] : array($zone_types));
+		$temp_zones = $this->availableZones($get_zones, $zone_types, 'all', $zones, $exclude);
 
 		if ($additional_zones) {
 			if (array_key_exists(__('Groups'), $temp_zones)) {
