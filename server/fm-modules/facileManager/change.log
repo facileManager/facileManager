@@ -1,4 +1,4 @@
-6.0.0 (2025-??-??)
+6.0.0 (2025-11-02)
 ==================
 * Server - [feature] Added support for 2FA via e-mail.
 * Server - [improvement] Added display name field to user accounts.
