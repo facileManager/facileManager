@@ -73,9 +73,6 @@ if (!empty($fm_new_version_available)) {
 	$update_core = sprintf('<div class="upgrade_notice"><p>%s</p></div><p>%s</p><br />', $text, $buttons);
 }
 
-printHeader();
-@printMenu();
-
 $table_info = array(
 				'class' => 'display_results modules',
 				'id' => 'table_edits',
@@ -114,6 +111,11 @@ if (count($modules)) {
 		if ($module_version !== false) {
 			$active_modules = getActiveModules();
 			if (in_array($module_name, $active_modules)) {
+				// Deactivate module if fM version less than required
+				if (version_compare($fm_version, $__FM_CONFIG[$module_name]['required_fm_version'], '<')) {
+					header('Location: ' . getMenuURL(_('Modules')) . '?action=deactivate&module=' . $module_name);
+				}
+				
 				$activate_link = sprintf('<a href="?action=deactivate&module=%s">%s</a>' . "\n", $module_name, _('Deactivate'));
 				$class[] = 'active';
 			}
@@ -181,6 +183,9 @@ $maintenance_mode_toggle .= ($maintenance_mode) ? 'disabled' : 'active';
 $maintenance_mode_toggle .= '">';
 $maintenance_mode_toggle .= ($maintenance_mode) ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 $maintenance_mode_toggle .= '</a>';
+
+printHeader();
+@printMenu();
 
 printf('
 	<div id="admin-tools">
