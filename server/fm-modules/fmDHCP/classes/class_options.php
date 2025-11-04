@@ -326,18 +326,24 @@ HTML;
 			<input type="hidden" name="config_type" value="%s" />
 			<input type="hidden" name="%s" value="%s" />
 			%s
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="config_name">%s</label></th>
-					<td width="67&#37;">%s</td>
-				</tr>
-				<tr class="value_placeholder">
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="config_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="config_comment" name="config_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="config_name">%s</label></th>
+							<td width="67&#37;">%s</td>
+						</tr>
+						<tr class="value_placeholder">
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="config_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="config_comment" name="config_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

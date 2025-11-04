@@ -315,20 +315,26 @@ HTML;
 			<input type="hidden" name="view_id" id="view_id" value="%d" />
 			<input type="hidden" name="view_order_id" value="%d" />
 			<input type="hidden" name="server_serial_no" value="%s" />
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="view_name">%s</label></th>
-					<td width="67&#37;"><input name="view_name" id="view_name" type="text" value="%s" size="40" placeholder="internal" maxlength="%d" class="required" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="view_key_id">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
-					<td width="67&#37;">%s</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="view_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="view_comment" name="view_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="view_name">%s</label></th>
+							<td width="67&#37;"><input name="view_name" id="view_name" type="text" value="%s" size="40" placeholder="internal" maxlength="%d" class="required" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="view_key_id">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+							<td width="67&#37;">%s</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="view_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="view_comment" name="view_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

@@ -268,22 +268,28 @@ HTML;
 			<input type="hidden" name="action" value="%s" />
 			<input type="hidden" name="group_id" value="%d" />
 			<input type="hidden" name="group_type" value="%s" />
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="group_name">%s</label></th>
-					<td width="67&#37;"><input name="group_name" id="group_name" type="text" value="%s" size="40" placeholder="http" maxlength="%d" class="required" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="group_items">%s</label></th>
-					<td width="67&#37;">
-						%s
-					</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="group_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="group_comment" name="group_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="group_name">%s</label></th>
+							<td width="67&#37;"><input name="group_name" id="group_name" type="text" value="%s" size="40" placeholder="http" maxlength="%d" class="required" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="group_items">%s</label></th>
+							<td width="67&#37;">
+								%s
+							</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="group_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="group_comment" name="group_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

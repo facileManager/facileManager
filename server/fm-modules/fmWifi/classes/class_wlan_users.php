@@ -312,6 +312,9 @@ HTML;
 		%s
 		<form name="manage" id="manage">
 		%s
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
 						<table class="form-table">
 							<tr>
 								<th width="33&#37;" scope="row"><label for="wlan_user_mac">%s</label></th>
@@ -330,6 +333,9 @@ HTML;
 								<td width="67&#37;"><textarea id="wlan_user_comment" name="wlan_user_comment" rows="4" cols="30">%s</textarea></td>
 							</tr>
 						</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

@@ -337,18 +337,24 @@ HTML;
 			<input type="hidden" name="%s" value="%s" />
 			%s
 			%s
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="cfg_name">%s</label></th>
-					<td width="67&#37;">%s</td>
-				</tr>
-				<tr class="value_placeholder">
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="cfg_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="cfg_comment" name="cfg_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="cfg_name">%s</label></th>
+							<td width="67&#37;">%s</td>
+						</tr>
+						<tr class="value_placeholder">
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="cfg_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="cfg_comment" name="cfg_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>
