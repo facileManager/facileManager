@@ -2,6 +2,7 @@
 ==================
 * Server - [feature] Added support for 2FA via e-mail.
 * Server - [improvement] Added display name field to user accounts.
+* Server - [improvement] Updated popup windows' CSS.
 * Server - [bug] CSS fixes for the login form.
 * Server - [bug] Standardized some text across the application.
 * Server - [bug] Fixed user creation when using LDAP authentication.

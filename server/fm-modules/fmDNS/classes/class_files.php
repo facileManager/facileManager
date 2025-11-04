@@ -310,24 +310,30 @@ HTML;
 			<input type="hidden" name="action" id="action" value="%s" />
 			<input type="hidden" name="file_id" id="file_id" value="%d" />
 			<input type="hidden" name="server_serial_no" value="%s" />
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="file_location">%s</label></th>
-					<td width="67&#37;">%s</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="file_name">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
-					<td width="67&#37;"><input name="file_name" id="file_name" type="text" value="%s" size="40" placeholder="custom-file" maxlength="%d" class="required" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="file_contents">%s</label></th>
-					<td width="67&#37;"><textarea id="file_contents" name="file_contents" rows="10" cols="40">%s</textarea></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="file_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="file_comment" name="file_comment" rows="4" cols="40">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="file_location">%s</label></th>
+							<td width="67&#37;">%s</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="file_name">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+							<td width="67&#37;"><input name="file_name" id="file_name" type="text" value="%s" size="40" placeholder="custom-file" maxlength="%d" class="required" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="file_contents">%s</label></th>
+							<td width="67&#37;"><textarea id="file_contents" name="file_contents" rows="10" cols="40">%s</textarea></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="file_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="file_comment" name="file_comment" rows="4" cols="40">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>
