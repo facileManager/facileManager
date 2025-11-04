@@ -53,18 +53,58 @@ if (array_key_exists('otp_2fa', $_POST)) {
 			break;
 		case 'verify':
 			// Verify TOTP 2FA
-			$result = $fm_login->process2FAForm($_POST['code']);
-			if ($result === true) {
-				if (isset($_SESSION['user']['uri'])) {
-					echo $_SESSION['user']['uri'];
-					@session_start();
-					unset($_SESSION['user']['uri']);
-				} else {
-					echo $GLOBALS['RELPATH'];
+			if (isset($_POST['secret']) && !empty($_POST['secret'])) {
+				// Authenticator app setup verification
+				$result = $fm_login->process2FAAuthAppMethod($_POST['code'], $_POST['secret']);
+				if ($result === true) {
+					sleep(1);
+					echo 'success';
+					exit;
 				}
 			} else {
-				echo 'failed';
+				// Login 2FA verification
+				$result = $fm_login->process2FAForm($_POST['code']);
+				if ($result === true) {
+					if (isset($_SESSION['user']['uri'])) {
+						echo $_SESSION['user']['uri'];
+						@session_start();
+						unset($_SESSION['user']['uri']);
+					} else {
+						echo $GLOBALS['RELPATH'];
+					}
+					exit;
+				}
 			}
+
+			echo 'failed';
+			break;
+		case 'setup-app':
+			$tfa = new RobThree\Auth\TwoFactorAuth(new RobThree\Auth\Providers\Qr\BaconQrCodeProvider());
+			$user_2fa_setup_secret = $tfa->createSecret();
+			if ($user_2fa_setup_secret === false) {
+				echo 'failed';
+				break;
+			}
+
+			$user_2fa_setup_app_ouput = '
+			<input type="hidden" id="user_2fa_secret" name="user_2fa_secret" value="' . $user_2fa_setup_secret . '" />
+			<div id="tfa_app_setup_form">
+				<div class="flex qr-code-container">
+					<img src="' . $tfa->getQRCodeImageAsDataUri($fm_name, $user_2fa_setup_secret) . '">
+					<div>
+						<p>' . _('Scan the QR code with your authenticator app and enter the generated code below to complete setup.') . '</p>
+						<p>' . sprintf(_('Alternatively, you can manually configure your authenticator app using the %s and then enter the generated code to complete setup.'), sprintf('<a href="javascript:void(0)" class="tooltip-left" data-tooltip="%s">%s</a>', chunk_split($user_2fa_setup_secret, 4, ' '), _('setup key'))) . '</p>
+					</div>
+				</div>
+				<input name="app_otp" id="app_otp" type="text" class="required" placeholder="XXXXXX" autocomplete="off" maxlength="6" />
+				<a name="submit" id="verify_otpbtn" class="button green"><i class="fa fa-check" aria-hidden="true"></i> ' . _('Verify') . '</a>
+				<p id="message"></p>
+			</div>
+			<script type="text/javascript">
+				$("#app_otp").focus();
+			</script>
+			';
+			echo $user_2fa_setup_app_ouput;
 			break;
 		default:
 			return;

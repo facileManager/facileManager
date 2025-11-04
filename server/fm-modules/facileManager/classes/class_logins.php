@@ -71,7 +71,7 @@ class fm_login {
 				<div id="form_messaging">
 					<div class="terms-accept">%s</div>
 					<div id="message" class="message"></div>
-', _('Enter your username and password to sign in.'), _('Username'), _('Password'), _('Show'), _('Login'), $forgot_link, $terms_accept),
+', _('Enter your username and password to sign in.'), _('Username'), _('Show'), _('Password'), _('Login'), $forgot_link, $terms_accept),
 			nl2br($login_message), 'terms', 'loginform', $_SERVER['REQUEST_URI'], $terms_display);
 		
 		printFooter();
@@ -827,13 +827,13 @@ This link expires in %s.',
 				<div class="message">%s</div>
 				<input type="hidden" name="verify_otp" value="1" />
 				<div class="input-wrapper">
-					<input type="text" name="app_otp" id="app_otp" placeholder="%s" autocomplete="off" />
+					<input type="text" name="app_otp" id="app_otp" placeholder="XXXXXX" autocomplete="off" maxlength="6" />
 				</div>
 				<div class="button-wrapper"><a name="submit" id="verify_otpbtn" class="button"><i class="fa fa-check" aria-hidden="true"></i> %s</a></div>
 				<p id="forgotton_link"><a href="%s">&larr; %s</a></p>
 				<div id="message" class="message">%s</div>
 				',
-				$instructions, 'XXXXXX', _('Verify'), $GLOBALS['RELPATH'], _('Login form'), $message), null, null, '2fa_form');
+				$instructions, _('Verify'), $GLOBALS['RELPATH'], _('Login form'), $message), null, null, '2fa_form');
 
 	}
 
@@ -926,9 +926,28 @@ This link expires in %s.',
 	 * @package facileManager
 	 *
 	 * @param string $code 2FA code
+	 * @param string $secret 2FA secret (optional)
 	 * @return boolean
 	 */
-	function process2FAAuthAppMethod($code) {
+	function process2FAAuthAppMethod($code, $secret = null) {
+		// Get user 2FA secret
+		if (!$secret) {
+			$secret = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_secret');
+		}
+
+		// No results
+		if (!$secret) {
+			sleep(1);
+			return false;
+		}
+		
+		// Verify TOTP code
+		$tfa = new RobThree\Auth\TwoFactorAuth(new RobThree\Auth\Providers\Qr\BaconQrCodeProvider());
+		if (!$tfa->verifyCode($secret, $code) === true) {
+			sleep(1);
+			return false;
+		}
+
 		return true;
 	}
 

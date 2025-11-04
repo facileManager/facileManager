@@ -959,8 +959,19 @@ if (!isset($__FM_CONFIG)) {
 	$("#manage_item_contents").delegate("#enable_2fa", "click", function(e) {
 		if ($(this).is(":checked")) {
 			$("tr.user_2fa_method_row").show();
+			$("#user_2fa_method").change();
 		} else {
 			$("tr.user_2fa_method_row").hide();
+			$("tr.user_2fa_setup_row").hide();
+		}
+	});
+
+	/* Account 2FA method changes */
+	$("#manage_item_contents").delegate("#user_2fa_method", "change", function(e) {
+		if ($(this).val() == "app") {
+			$("tr.user_2fa_setup_row").show();
+		} else {
+			$("tr.user_2fa_setup_row").hide();
 		}
 	});
 
@@ -1032,6 +1043,65 @@ if (!isset($__FM_CONFIG)) {
 		return false;
     });
 
+	/* Setup user 2FA app */
+	$("#manage_item_contents").delegate("#setup_2fa_app_button", "click", function(e) {
+		var $this 		= $(this);
+
+		$this.html("<i class=\"fa fa-spinner fa-spin\" aria-hidden=\"true\"></i> ' . _('Generating QR Code...') . '");
+		$this.addClass("disabled").attr("disabled", "disabled");
+
+		var form_data = {
+			otp_2fa: "setup-app",
+			is_ajax: 1
+		};
+
+		$.ajax({
+			type: "POST",
+			url: "' . $GLOBALS['RELPATH'] . '../ajax/getData.php",
+			data: form_data,
+			success: function(response)
+			{
+				if (response.toLowerCase().indexOf("failed") >= 0) {
+						$("#popup_response").html("<p>" + response + "</p>");
+
+						/* Popup response more link */
+						$("#popup_response").delegate("a.more", "click tap", function(e1) {
+							e1.preventDefault();
+							error_div = $("#popup_response div#error")
+							if (error_div.is(":visible")) {
+								error_div.hide();
+								$(this).text("' . _('more') . '");
+							} else {
+								error_div.show();
+								$(this).text("' . _('less') . '");
+							}
+						});
+						$("#popup_response").delegate("#response_close i.close", "click tap", function(e2) {
+							e2.preventDefault();
+							$("#popup_response").fadeOut(200, function() {
+								$("#popup_response").html();
+							});
+						});
+					
+						$("#popup_response").fadeIn(200);
+
+						if (response.indexOf("a class=\"more\"") <= 0) {
+							$("#popup_response").delay(2000).fadeOut(200, function() {
+								$("#popup_response").html();
+							});
+						}
+				} else if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				} else {
+					$("#2fa_setup_container").html(response);
+				}
+			}
+		});
+		
+		return false;
+	});
+
 	/* Prevent 2fa_form submission on enter keypress and only accept numbers and ctrl-v or cmd-v */
 	$("#2fa_form").on("keypress", function(e) {
 		if (e.which == KEYCODE_ENTER) {
@@ -1084,15 +1154,21 @@ if (!isset($__FM_CONFIG)) {
 	});
 
 	/* 2FA verification */
-	$("#verify_otpbtn").click(function() {
-		var $this 		= $(this);
+	$.fn.verify2FAButtonClick = function() {
+		var $button		= $("#verify_otpbtn");
 		var $code		= $("#app_otp").val();
+		var $secret		= $("#user_2fa_secret").val();
+		var $form		= $("#login_form");
+		if ($form.length > 0) {
+			var $form		= $("#app_otp");
+		}
 
-		$this.html("<i class=\"fa fa-spinner fa-spin\" aria-hidden=\"true\"></i> ' . _('Verifying...') . '");
-		$this.addClass("disabled").attr("disabled", "disabled");
+		$button.html("<i class=\"fa fa-spinner fa-spin\" aria-hidden=\"true\"></i> ' . _('Verifying...') . '");
+		$button.addClass("disabled").attr("disabled", "disabled");
 
 		var form_data = {
 			code: $code,
+			secret: $secret,
 			otp_2fa: "verify",
 			is_ajax: 1
 		};
@@ -1103,14 +1179,25 @@ if (!isset($__FM_CONFIG)) {
 			data: form_data,
 			success: function(response)
 			{
-				if (response == "failed") {
-					$("#login_form").effect("shake");
-					$this.removeClass("disabled").removeAttr("disabled");
-					$this.html("<i class=\"fa fa-check\" aria-hidden=\"true\"></i> ' . _('Verify') . '");
+				if (response.indexOf("failed") >= 0) {
+					$form.effect("shake");
+					$("#app_otp").addClass("validate-error");
+					$button.removeClass("disabled").removeAttr("disabled");
+					$button.html("<i class=\"fa fa-check\" aria-hidden=\"true\"></i> ' . _('Verify') . '");
 					$("#app_otp").val("").focus();
+					if (typeof $secret !== "undefined") {
+						$("#message").html("' . _('The code you entered is invalid. Please try again.') . '").addClass("failed");
+						$("#message").fadeIn(200);
+						$("#message").delay(4000).fadeOut(200, function() {
+							$("#message").html("");
+						});
+					}
 				} else if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
 					doLogout();
 					return false;
+				} else if (typeof $secret !== "undefined") {
+					/* 2FA setup successful */
+					$("#tfa_app_setup_form").html("<p id=\"message\" class=\"success\"><i class=\"fa fa-check ok\" aria-hidden=\"true\"></i> ' . _('Code was verified successfully.') . '</p>");
 				} else {
 					window.location = response;
 				}
@@ -1118,7 +1205,19 @@ if (!isset($__FM_CONFIG)) {
 		});
 		
 		return false;
+	};
+	$("#verify_otpbtn").click(function() {
+		$(this).verify2FAButtonClick();
 	});
+	$("#manage_item_contents").delegate("#app_otp", "input", function(e) {
+		if ($(this).val().length == 6) {
+			$(this).verify2FAButtonClick();
+		}
+	});
+	$("#manage_item_contents").delegate("#verify_otpbtn", "click tap", function(e) {
+		$(this).verify2FAButtonClick();
+	});
+
 
 	/* Resend 2FA OTP */
 	$("#resend_otp").click(function() {

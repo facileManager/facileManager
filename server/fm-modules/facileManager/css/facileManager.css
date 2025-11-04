@@ -321,6 +321,35 @@ div.header-container {
     align-items: center;
 }
 
+.qr-code-container img {
+	margin: 0 1em 1em 0;
+	border-radius: 5px;
+}
+.qr-code-container p {
+	margin-top: 0;
+}
+#tfa_app_setup_form #app_otp {
+	text-align: center;
+	font-size: 14pt;
+	letter-spacing: 5px;
+	width: 10.4em;
+	padding-right: unset;
+}
+#message {
+	display: none;
+    max-height: 310px;
+    overflow-y: scroll;
+    margin: 1em 0 0;
+    color: light-dark(#7c7c7c, #c1c1c1);
+}
+#message.success {
+	margin-top: 0;
+	display: block;
+}
+#message.failed {
+    color: light-dark(#b95757, #e67e7e);
+}
+
 .top-banner {
 	padding: 10px;
 	text-align: center;
