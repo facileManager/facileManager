@@ -77,6 +77,11 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 		exit;
 	}
 	
+	/** Include Composer autoload */
+	if (file_exists(dirname(ABSPATH) . '/vendor/autoload.php')) {
+		include(dirname(ABSPATH) . '/vendor/autoload.php');
+	}
+
 	/** Load language */
 	include_once(ABSPATH . 'fm-includes/i18n.php');
 	

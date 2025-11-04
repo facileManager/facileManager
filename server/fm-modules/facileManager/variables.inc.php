@@ -43,11 +43,6 @@ $GLOBALS['FM_URL'] = $GLOBALS['REQUEST_PROTOCOL'] . '://' . $_SERVER['HTTP_HOST'
 /** Load languages for translations */
 require_once(ABSPATH . 'fm-includes/i18n.php');
 
-/** Include Composer autoload */
-if (file_exists(ABSPATH . 'vendor/autoload.php')) {
-	include(ABSPATH . 'vendor/autoload.php');
-}
-
 if (!@is_array($__FM_CONFIG)) $__FM_CONFIG = array();
 
 /** Images */
