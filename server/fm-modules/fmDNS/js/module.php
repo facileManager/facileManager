@@ -696,6 +696,64 @@ $(document).ready(function() {
 		}
 	});
 
+	/* Zone subelement deletes */
+	$("#table_edits").delegate("i.zone-favorite", "click tap", function(e) {
+		var $this 		= $(this);
+		item_type		= $("#table_edits").attr("name");
+		item_id			= $this.attr("rel");
+
+		var form_data = {
+			item_id: item_id,
+			item_type: item_type,
+			action: "toggle-zone-favorite",
+			is_ajax: 1
+		};
+
+		$.ajax({
+			type: "POST",
+			url: "fm-modules/facileManager/ajax/processPost.php",
+			data: form_data,
+			success: function(response)
+			{
+				if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				} else if (response == "' . _('Success') . '") {
+					setTimeout(function() {
+						$this.stop(true,true).fadeOut(200, function() {
+							if ($(this).hasClass("fa-star")) {
+								$(this).parent().data("data-tooltip", "' . _('Unmark as Favorite') . '");
+								$(this).removeClass("fa-star star");
+								$(this).addClass("fa-star-o grey").fadeIn(200);
+							} else {
+								$(this).parent().data("data-tooltip", "' . _('Mark as Favorite') . '");
+								$(this).removeClass("fa-star-o grey");
+								$(this).addClass("fa-star star").fadeIn(200);
+							}
+						});
+					}, 10);
+				} else {
+					$("#response").html("<p class=\"error\">"+response+"</p>");
+					$("#response")
+						.css("opacity", 0)
+						.slideDown(400, function() {
+							$("#response").animate(
+								{ opacity: 1 },
+								{ queue: false, duration: 200 }
+							);
+						});
+					if (response.toLowerCase().indexOf("response_close") == -1) {
+						$("#response").delay(3000).fadeTo(200, 0.00, function() {
+							$("#response").slideUp(400);
+						});
+					}
+				}
+			}
+		});
+
+		return false;
+	});
+
 	$("#manage_item_contents").delegate("#cfg_destination", "change", function(e) {
 		if ($(this).val() == "file") {
 			$("#syslog_options").slideUp();

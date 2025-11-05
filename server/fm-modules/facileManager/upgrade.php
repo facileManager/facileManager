@@ -1112,3 +1112,28 @@ function fmUpgrade_540b1($database) {
 	
 	return $success;
 }
+
+/** fM v6.0.0 **/
+function fmUpgrade_600($database) {
+	global $fmdb;
+	
+	/** Prereq */
+	$success = ($GLOBALS['running_db_version'] < 60) ? fmUpgrade_540b1($database) : true;
+	
+	$queries = [];
+	if ($success) {
+		$queries[] = "ALTER TABLE `fm_users` ADD `user_module_prefs` TEXT NULL DEFAULT NULL AFTER `user_caps`";
+
+		/** Create table schema */
+		if (count($queries) && $queries[0]) {
+			foreach ($queries as $schema) {
+				$fmdb->query($schema);
+				if (!$fmdb->result || $fmdb->sql_errors) return false;
+			}
+		}
+	}
+
+	upgradeConfig('fm_db_version', 61, false);
+	
+	return $success;
+}
