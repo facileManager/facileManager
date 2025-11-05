@@ -169,9 +169,12 @@ class fm_users {
 		}
 
 		if (!isset($user_default_module)) $user_default_module = '';
+
+		// Hash the password if using local authentication
+		$user_password = ($user_auth_type === 1) ? password_hash($user_password, PASSWORD_DEFAULT) : '';
 		
 		$query = "INSERT INTO `fm_users` (`account_id`, `user_login`, `user_password`, `user_comment`, `user_email`, `user_group`, `user_force_pwd_change`, `user_default_module`, `user_caps`, `user_template_only`, `user_status`, `user_auth_type`) 
-				VALUES('{$_SESSION['user']['account_id']}', '$user_login', '" . password_hash($user_password, PASSWORD_DEFAULT) . "', '$user_comment', '$user_email', '$user_group', '$user_force_pwd_change', '$user_default_module', '" . serialize($user_caps) . "', '$user_template_only', '$user_status', $user_auth_type)";
+				VALUES('{$_SESSION['user']['account_id']}', '$user_login', '" . $user_password . "', '$user_comment', '$user_email', '$user_group', '$user_force_pwd_change', '$user_default_module', '" . serialize($user_caps) . "', '$user_template_only', '$user_status', $user_auth_type)";
 		$fmdb->query($query);
 		
 		if ($fmdb->sql_errors) {
