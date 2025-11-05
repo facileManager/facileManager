@@ -1113,8 +1113,8 @@ function fmUpgrade_540b1($database) {
 	return $success;
 }
 
-/** fM v6.0.0 **/
-function fmUpgrade_600($database) {
+/** fM v5.4.4 **/
+function fmUpgrade_544($database) {
 	global $fmdb;
 	
 	/** Prereq */

@@ -1,4 +1,4 @@
-0.11.1 (2025-10-??)
+0.11.1 (2025-11-05)
 ===================
 * Server - [bug] Fixed missing display of items when a submenu is selected and a column is sorted. (#718)
 
