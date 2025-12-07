@@ -37,11 +37,10 @@ if (is_array($_POST) && array_key_exists('action', $_POST) && $_POST['action'] =
 
 /** Handle zone file import from records page */
 if (is_array($_POST) && array_key_exists('uri_params', $_POST) && array_key_exists('domain_id', $_POST['uri_params'])) {
-	$output = '';
 	if (!empty($_FILES['import-file']['tmp_name'])) {
 		$output = $fm_module_tools->zoneImportWizard($_POST['uri_params']['domain_id']);
+		exit($output);
 	}
-	exit($output);
 }
 
 $checks_array = array('servers' => 'manage_servers',

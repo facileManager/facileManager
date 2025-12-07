@@ -1,3 +1,7 @@
+7.3.1 (2025-??-??)
+==================
+* Server - [bug] Fixed ability to create zone options.
+
 7.3.0 (2025-11-03)
 ==================
 * Server - [improvement] Added ability to mark zones as favorites for quick access on the dashboard.
