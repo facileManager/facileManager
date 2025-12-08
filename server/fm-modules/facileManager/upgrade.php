@@ -1131,12 +1131,40 @@ function fmUpgrade_540b1($database) {
 }
 
 
+/** fM v5.4.4 **/
+function fmUpgrade_544($database) {
+	global $fmdb;
+	
+	/** Prereq */
+	$success = ($GLOBALS['running_db_version'] < 60) ? fmUpgrade_540b1($database) : true;
+	
+	$queries = [];
+	if ($success) {
+		if (!columnExists('fm_users', 'user_module_prefs')) {
+			$queries[] = "ALTER TABLE `fm_users` ADD `user_module_prefs` TEXT NULL DEFAULT NULL AFTER `user_caps`";
+		}
+
+		/** Create table schema */
+		if (count($queries) && $queries[0]) {
+			foreach ($queries as $schema) {
+				$fmdb->query($schema);
+				if (!$fmdb->result || $fmdb->sql_errors) return false;
+			}
+		}
+	}
+
+	upgradeConfig('fm_db_version', 61, false);
+	
+	return $success;
+}
+
+
 /** fM v6.0.0 **/
 function fmUpgrade_600($database) {
 	global $fmdb;
 	
 	/** Prereq */
-	$success = ($GLOBALS['running_db_version'] < 60) ? fmUpgrade_540b1($database) : true;
+	$success = ($GLOBALS['running_db_version'] < 61) ? fmUpgrade_544($database) : true;
 	
 	$queries = [];
 	if ($success) {
@@ -1148,9 +1176,6 @@ function fmUpgrade_600($database) {
 		}
 		if (!columnExists('fm_users', 'user_display_name')) {
 			$queries[] = "ALTER TABLE `fm_users` ADD `user_display_name` VARCHAR(255) NULL AFTER `user_password`";
-		}
-		if (!columnExists('fm_users', 'user_module_prefs')) {
-			$queries[] = "ALTER TABLE `fm_users` ADD `user_module_prefs` TEXT NULL DEFAULT NULL AFTER `user_caps`";
 		}
 		if (!tableExists('fm_temp_auth_keys')) {
 			$queries[] = "RENAME TABLE `fm_pwd_resets` TO `fm_temp_auth_keys`";
@@ -1165,7 +1190,7 @@ function fmUpgrade_600($database) {
 		}
 	}
 
-	upgradeConfig('fm_db_version', 61, false);
+	upgradeConfig('fm_db_version', 62, false);
 	
 	return $success;
 }
