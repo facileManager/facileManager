@@ -1,4 +1,4 @@
-7.3.0 (2025-11-02)
+7.3.0 (2025-11-03)
 ==================
 * Server - [improvement] Added ability to mark zones as favorites for quick access on the dashboard.
 * Server - [bug] Fixed missing display of items when a submenu is selected and a column is sorted. (#718)

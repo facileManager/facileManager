@@ -411,7 +411,7 @@ CREATE TABLE IF NOT EXISTS `$database`.`fm_users` (
   `user_theme` varchar(255) NULL DEFAULT NULL,
   `user_theme_mode` enum('Light','Dark','System') NULL DEFAULT 'System',
   `user_auth_type` int(1) NOT NULL DEFAULT '1',
-  `user_caps` text,
+  `user_caps` text NULL DEFAULT NULL,
   `user_module_prefs` TEXT NULL DEFAULT NULL,
   `user_last_login` int(10) NOT NULL DEFAULT '0',
   `user_ipaddr` varchar(255) DEFAULT NULL,

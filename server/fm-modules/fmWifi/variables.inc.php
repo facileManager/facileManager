@@ -35,7 +35,7 @@ $__FM_CONFIG['fmWifi'] = array(
 		'client_version'					=> '0.8.0',
 		'description'						=> __('Manage wifi access points with hostapd.', 'fmWifi'),
 		'prefix'							=> 'wifi_',
-		'required_fm_version'				=> '6.0.0',
+		'required_fm_version'				=> '5.4.4',
 		'required_daemon_version'			=> '2.4',
 		'min_client_auto_upgrade_version'	=> '0.1'
 	);
