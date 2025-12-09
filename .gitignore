@@ -3,3 +3,4 @@ scratch
 config.inc.php
 fmSquid
 phpmyadmin
+vendor
