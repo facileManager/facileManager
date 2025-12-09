@@ -319,12 +319,24 @@ class fm_users {
 		// Process 2FA method
 		if (isset($post['user_2fa_method']) && !isset($post['enable_2fa'])) {
 			$post['user_2fa_method'] = '0';
+			$post['user_2fa_secret'] = '';
+			unset($post['app_otp']);
 			$log_message .= formatLogKeyData('user_', '2FA Method', 'Disabled');
 		} elseif (isset($post['user_2fa_method'])) {
+			if ($post['user_2fa_method'] != 'app') {
+				$post['user_2fa_secret'] = '';
+				unset($post['app_otp']);
+			}
+			if (($post['user_2fa_method'] == 'app' && empty($post['user_2fa_secret'])) || array_key_exists('app_otp', $post)) {
+				return _('2FA is not fully set up. Please complete the setup below with your authenticator app.');
+			}
 			unset($post['enable_2fa']);
 			$map = array_column($__FM_CONFIG['options']['2fa_methods'], 0, 1);
 			if (isset($map[$post['user_2fa_method']])) {
 				$log_message .= formatLogKeyData('user_', '2FA Method', $map[$post['user_2fa_method']]);
+			} else {
+				unset($post['user_2fa_method'], $post['user_2fa_secret']);
+				return _('Invalid 2FA method selected.');
 			}
 		}
 
@@ -338,7 +350,8 @@ class fm_users {
 				// Convert certain fields for friendly logging
 				if ($key == 'user_auth_type') $data = $__FM_CONFIG['options']['auth_method'][$data][0];
 				if ($key == 'user_group') $data = $this->getName('group', $data);
-				if ($key == 'user_2fa_method') continue;
+				// Do not log 2FA secret
+				if (in_array($key, ['user_2fa_method', 'user_2fa_secret'])) continue;
 				$log_message .= formatLogKeyData('user_', $key, $data);
 			}
 		}
@@ -783,10 +796,13 @@ HTML;
 		}
 		
 		if (in_array('user_2fa_method', $form_bits) && getOption('auth_method') && count($__FM_CONFIG['options']['2fa_methods'])) {
+			$user_2fa_status = '';
 			$user_2fa_method_options = buildSelect('user_2fa_method', 'user_2fa_method', $__FM_CONFIG['options']['2fa_methods'], $user_2fa_method);
 			$require_2fa_note = (getOption('require_2fa')) ? '<div class="popup-note"><p>' . _('Two-Factor Authentication defaults to E-Mail and is required by the system policy.') . '</p></div>' : null;
 			$enable_2fa_checked = ($user_2fa_method) ? 'checked' : null;
 			$user_2fa_methods_display = (!$user_2fa_method) ? 'style="display: none;"' : null;
+			$user_secret = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_secret');
+			$user_2fa_setup_display = ($user_2fa_method == 'app') ? null : 'style="display: none;"';
 			$user_2fa_form = '<tr>
 					<th width="33%" scope="row">' . _('Enable 2FA') . '</th>
 					<td width="67%">
@@ -798,6 +814,24 @@ HTML;
 					<th width="33%" scope="row">' . _('2FA Method') . '</th>
 					<td width="67%">' . $user_2fa_method_options . '</td>
 				</tr>';
+
+			// Include the 2FA setup if applicable
+			if (in_array('app', array_column($__FM_CONFIG['options']['2fa_methods'], 1), true)) {
+				if ($user_secret) {
+					$user_2fa_setup_btn = _('Edit');
+					$user_2fa_status = '<a href="javascript:void(0);" class="tooltip-top" data-tooltip="' . _('2FA is setup is already complete.') . '"><i class="fa fa-check ok" aria-hidden="true"></i></a> ';
+				} else {
+					$user_2fa_setup_btn = _('Setup App');
+					$user_2fa_status = '';
+				}
+				$user_2fa_form .= '<tr class="user_2fa_setup_row" ' . $user_2fa_setup_display . '>
+					<th width="25%" scope="row">' . _('2FA Setup') . '</th>
+					<td width="75%" id="2fa_setup_container">
+						' . $user_2fa_status . '
+						<a href="javascript:void(0);" class="button" id="setup_2fa_app_button">' . $user_2fa_setup_btn . '</a>
+					</td>
+				</tr>';
+			}
 
 			$user_2fa_form = sprintf('
 		<div id="tab" class="user_2fa">

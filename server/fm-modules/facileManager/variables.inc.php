@@ -93,7 +93,7 @@ $__FM_CONFIG['limit']['records']	= array(20, 35, 50, 75, 100, 200);
 $__FM_CONFIG['options']['auth_method']					= array(array(_('None'), 0), array(_('Built-in Authentication'), 1));
 $__FM_CONFIG['options']['2fa_methods']					= [];
 /** Add authenticator app 2FA option if library is installed */
-if (class_exists('RobThree\Auth\TwoFactorAuth')) {
+if (class_exists('RobThree\Auth\TwoFactorAuth') && class_exists('Imagick')) {
 	$__FM_CONFIG['options']['2fa_methods'][] = array(_('Authenticator app'), 'app');
 }
 /** Add e-mail 2FA option if mailing is enabled */
