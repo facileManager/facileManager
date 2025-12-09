@@ -42,10 +42,9 @@ class fm_settings {
 
 		/** Convert password_reset_expiry[] into a single variable */
 		if (isset($_POST['password_reset_expiry']) && is_array($_POST['password_reset_expiry'])) {
-			$days = (isset($_POST['password_reset_expiry']['days'][$_SESSION['user']['account_id']]) && verifyNumber($_POST['password_reset_expiry']['days'][$_SESSION['user']['account_id']], 0, 30, false)) ? $_POST['password_reset_expiry']['days'][$_SESSION['user']['account_id']] : 0;
 			$hours = (isset($_POST['password_reset_expiry']['hours'][$_SESSION['user']['account_id']]) && verifyNumber($_POST['password_reset_expiry']['hours'][$_SESSION['user']['account_id']], 0, 23, false)) ? $_POST['password_reset_expiry']['hours'][$_SESSION['user']['account_id']] : 0;
 			$minutes = (isset($_POST['password_reset_expiry']['minutes'][$_SESSION['user']['account_id']]) && verifyNumber($_POST['password_reset_expiry']['minutes'][$_SESSION['user']['account_id']], 0, 59, false)) ? $_POST['password_reset_expiry']['minutes'][$_SESSION['user']['account_id']] : 0;
-			$_POST['password_reset_expiry'] = "$days days $hours hours $minutes minutes";
+			$_POST['password_reset_expiry'] = "$hours hours $minutes minutes";
 		}
 		
 		foreach ($_POST as $key => $data) {
@@ -227,14 +226,13 @@ class fm_settings {
 		
 		/** Password reset expiry Section */
 		$password_reset_expiry = explode(' ', getOption('password_reset_expiry'));
-		if (count($password_reset_expiry) < 6) {
+		if (count($password_reset_expiry) < 4) {
 			 /** Default to 15 minutes if not set */
-			$password_reset_expiry = array_merge(array(0, 'days', 0, 'hours'), explode(' ', $__FM_CONFIG['default']['password_reset_expiry']));
+			$password_reset_expiry = array_merge(array(0, 'hours'), explode(' ', $__FM_CONFIG['default']['password_reset_expiry']));
 		}
 		$password_reset_expiry_list = [
-			'days' => buildSelect('password_reset_expiry[days][' . $_SESSION['user']['account_id'] . ']', 'password_reset_expiry_d', range(0, 30), $password_reset_expiry[0]),
-			'hours' => buildSelect('password_reset_expiry[hours][' . $_SESSION['user']['account_id'] . ']', 'password_reset_expiry_h', range(0, 23), $password_reset_expiry[2]),
-			'minutes' => buildSelect('password_reset_expiry[minutes][' . $_SESSION['user']['account_id'] . ']', 'password_reset_expiry_m', range(0, 59), $password_reset_expiry[4])
+			'hours' => buildSelect('password_reset_expiry[hours][' . $_SESSION['user']['account_id'] . ']', 'password_reset_expiry_h', range(0, 23), $password_reset_expiry[0]),
+			'minutes' => buildSelect('password_reset_expiry[minutes][' . $_SESSION['user']['account_id'] . ']', 'password_reset_expiry_m', range(0, 59), $password_reset_expiry[2])
 		];
 
 		/** LDAP Section */
@@ -414,9 +412,8 @@ class fm_settings {
 							</div>
 							<div class="choices">
 								<table>
-								<thead><th>' . _('Days') . '</th><th>' . _('Hours') . '</th><th>' . _('Minutes') . '</th></thead>
+								<thead><th>' . _('Hours') . '</th><th>' . _('Minutes') . '</th></thead>
 								<tr>
-									<td>' . $password_reset_expiry_list['days'] . '</td>
 									<td>' . $password_reset_expiry_list['hours'] . '</td>
 									<td>' . $password_reset_expiry_list['minutes'] . '</td>
 								</tr>
