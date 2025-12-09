@@ -95,6 +95,7 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 	}
 	
 	if (!defined('INSTALL') && !defined('CLIENT') && !defined('FM_NO_CHECKS') && !$invoke_api) {
+		include(ABSPATH . 'fm-modules/' . $fm_name . '/variables.inc.php');
 		$fmdb = new fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host']);
 
 		/** Trim and sanitize inputs */
@@ -239,7 +240,6 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 		}
 		
 		/** Include module variables */
-		include(ABSPATH . 'fm-modules/' . $fm_name . '/variables.inc.php');
 		if (isset($_SESSION['module'])) include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/variables.inc.php');
 
 		/** Handle module change request */

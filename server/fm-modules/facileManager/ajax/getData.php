@@ -34,6 +34,9 @@ if (array_key_exists('otp_2fa', $_POST)) {
 			// Get user 2FA method
 			$user_2fa_method = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_method');
 
+			// Ensure $user_2fa_method is valid
+			$user_2fa_method = $fm_login->validate2FAMethod($user_2fa_method);
+
 			// Set user_2fa_method to e-mail if not set
 			if (!$user_2fa_method && getOption('require_2fa')) {
 				$user_2fa_method = 'email';

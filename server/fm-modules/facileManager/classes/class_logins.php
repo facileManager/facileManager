@@ -310,7 +310,7 @@ class fm_login {
 			$this->setSession($successful_auth);
 			
 			/** Process 2FA if equipped */
-			if (getOption('require_2fa') || $successful_auth->user_2fa_method) {
+			if (getOption('require_2fa') || ($successful_auth->user_2fa_method && $this->validate2FAMethod($successful_auth->user_2fa_method))) {
 				@session_start();
 				$_SESSION['user']['2fa_status'] = 'pending';
 				$_SESSION['user']['uri'] = $_SERVER['REQUEST_URI'];
@@ -812,6 +812,9 @@ This link expires in %s.',
 		/** Get user 2FA method */
 		$user_2fa_method = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_method');
 
+		// Ensure $user_2fa_method is valid
+		$user_2fa_method = $this->validate2FAMethod($user_2fa_method);
+
 		// Set user_2fa_method to e-mail if not set
 		if (!$user_2fa_method && getOption('require_2fa')) {
 			$user_2fa_method = 'email';
@@ -855,6 +858,9 @@ This link expires in %s.',
 		// Get user 2FA method
 		$user_2fa_method = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_method');
 
+		// Ensure $user_2fa_method is valid
+		$user_2fa_method = $this->validate2FAMethod($user_2fa_method);
+
 		// Set user_2fa_method to e-mail if not set
 		if (!$user_2fa_method && getOption('require_2fa')) {
 			$user_2fa_method = 'email';
@@ -887,6 +893,25 @@ This link expires in %s.',
 
 
 	/**
+	 * Validates the 2FA authentication method
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param string $user_2fa_method User configured 2FA method
+	 * @return null|string
+	 */
+	function validate2FAMethod($user_2fa_method) {
+		global $__FM_CONFIG;
+
+		if (in_array($user_2fa_method, array_column($__FM_CONFIG['options']['2fa_methods'], 1), true)) {
+			return $user_2fa_method;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Processes the 2FA authentication e-mail
 	 *
 	 * @since 6.0.0
@@ -898,8 +923,12 @@ This link expires in %s.',
 	function process2FAEmailMethod($code) {
 		global $__FM_CONFIG, $fmdb;
 
+		// Get password reset expirey
+		$otp_expiry = getOption('otp_expiry');
+		if (!$otp_expiry) $otp_expiry = $__FM_CONFIG['default']['password_reset_expiry'];
+
 		// Verify E-mail TOTP 2FA
-		$time = date("U", strtotime($__FM_CONFIG['clean']['time'] . ' ago'));
+		$time = date("U", strtotime($otp_expiry . ' ago'));
 		$query = "SELECT * FROM `fm_temp_auth_keys` WHERE `pwd_id` LIKE '$%' AND `pwd_login`={$_SESSION['user']['id']} AND `pwd_timestamp`>='$time' ORDER BY `pwd_timestamp` DESC LIMIT 1";
 		$fmdb->get_results($query);
 
@@ -968,7 +997,11 @@ This link expires in %s.',
 	function generateOTP($action = 'generate') {
 		global $__FM_CONFIG, $fmdb;
 
-		$timestamp = ($action == 'generate') ? strtotime($__FM_CONFIG['clean']['time'] . ' ago') : time();
+		// Get password reset expirey
+		$otp_expiry = getOption('otp_expiry');
+		if (!$otp_expiry) $otp_expiry = $__FM_CONFIG['default']['password_reset_expiry'];
+
+		$timestamp = ($action == 'generate') ? strtotime($otp_expiry . ' ago') : time();
 
 		/** Delete old OTP codes */
 		$fmdb->query("DELETE FROM `fm_temp_auth_keys` WHERE `pwd_timestamp`<'" . date("U", $timestamp) . "'");
@@ -1031,6 +1064,10 @@ This link expires in %s.',
 	function buildOTPEmail($user_info, $otp, $build_html = true, $title = null, $from_address = null) {
 		global $fm_name, $__FM_CONFIG;
 		
+		// Get password reset expirey
+		$otp_expiry = getOption('otp_expiry');
+		if (!$otp_expiry) $otp_expiry = $__FM_CONFIG['default']['password_reset_expiry'];
+
 		if ($build_html) {
 			$branding_logo = getBrandLogo();
 			if ($GLOBALS['RELPATH'] != '/') {
@@ -1056,7 +1093,7 @@ This link expires in %s.',
 <p>Hi {$user_info['user_login']},</p>
 <p>You (or somebody else) has requested a one-time passcode to login to $fm_name.</p>
 <h2>$otp</h2>
-<p>This code expires in {$__FM_CONFIG['clean']['time']}.</p>
+<p>This code expires in {$otp_expiry}.</p>
 </div>
 </div>
 <p style="font-size: 10px; color: #888; text-align: center;">$fm_name | $from_address</p>
@@ -1073,7 +1110,7 @@ You (or somebody else) has requested a one-time passcode to login to %s.
 This code expires in %s.',
 		$user_info['user_login'], $fm_name,
 		$otp,
-		$__FM_CONFIG['clean']['time']);
+		$otp_expiry);
 		}
 		
 		return $body;

@@ -92,8 +92,8 @@ if (!isset($__FM_CONFIG)) {
 				width: "200px",
 				minimumResultsForSearch: 10
 			});
-		// Match any element whose id starts with password_reset_expiry_
-		$("[id^=\"password_reset_expiry_\"]").select2({
+		// Match any element whose id starts with password_reset_expiry_ or otp_expiry_
+		$("[id^=\"password_reset_expiry_\"], [id^=\"otp_expiry_\"]").select2({
 			width: "60px"
 		});
 		$("select.allow-clear").select2({

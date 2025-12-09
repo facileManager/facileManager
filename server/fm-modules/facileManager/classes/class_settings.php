@@ -47,6 +47,13 @@ class fm_settings {
 			$_POST['password_reset_expiry'] = "$hours hours $minutes minutes";
 		}
 		
+		/** Convert otp_expiry[] into a single variable */
+		if (isset($_POST['otp_expiry']) && is_array($_POST['otp_expiry'])) {
+			$hours = (isset($_POST['otp_expiry']['hours'][$_SESSION['user']['account_id']]) && verifyNumber($_POST['otp_expiry']['hours'][$_SESSION['user']['account_id']], 0, 23, false)) ? $_POST['otp_expiry']['hours'][$_SESSION['user']['account_id']] : 0;
+			$minutes = (isset($_POST['otp_expiry']['minutes'][$_SESSION['user']['account_id']]) && verifyNumber($_POST['otp_expiry']['minutes'][$_SESSION['user']['account_id']], 0, 59, false)) ? $_POST['otp_expiry']['minutes'][$_SESSION['user']['account_id']] : 0;
+			$_POST['otp_expiry'] = "$hours hours $minutes minutes";
+		}
+		
 		foreach ($_POST as $key => $data) {
 			if (!in_array($key, $exclude)) {
 				unset($data_array);
@@ -274,6 +281,17 @@ class fm_settings {
 
 		/** Require 2FA Section */
 		$require_2fa_checked = (getOption('require_2fa')) ? 'checked' : null;
+
+		/** OTP expiry Section */
+		$otp_expiry = explode(' ', getOption('otp_expiry'));
+		if (count($otp_expiry) < 4) {
+			 /** Default to 15 minutes if not set */
+			$otp_expiry = array_merge(array(0, 'hours'), explode(' ', $__FM_CONFIG['default']['password_reset_expiry']));
+		}
+		$otp_expiry_list = [
+			'hours' => buildSelect('otp_expiry[hours][' . $_SESSION['user']['account_id'] . ']', 'otp_expiry_h', range(0, 23), $otp_expiry[0]),
+			'minutes' => buildSelect('otp_expiry[minutes][' . $_SESSION['user']['account_id'] . ']', 'otp_expiry_m', range(0, 59), $otp_expiry[2])
+		];
 
 		/** SSL Section */
 		$enforce_ssl_checked = (getOption('enforce_ssl')) ? 'checked' : null;
@@ -591,6 +609,21 @@ class fm_settings {
 						</div>
 						<div class="choices">
 							<input name="require_2fa" id="require_2fa" type="checkbox" value="1" ' . $require_2fa_checked . ' /><label for="require_2fa">' . _('Require 2FA') . '</label>
+						</div>
+					</div>
+					<div id="setting-row">
+						<div class="description">
+							<label for="otp_expiry_list_d">' . _('One-Time Passcode Expiry') . '</label>
+							<p>' . _('Defines how long the e-mailed One-Time Passcode is valid for.') . '</p>
+						</div>
+						<div class="choices">
+							<table>
+							<thead><th>' . _('Hours') . '</th><th>' . _('Minutes') . '</th></thead>
+							<tr>
+								<td>' . $otp_expiry_list['hours'] . '</td>
+								<td>' . $otp_expiry_list['minutes'] . '</td>
+							</tr>
+							</table>
 						</div>
 					</div>
 				</div>

@@ -94,11 +94,11 @@ $__FM_CONFIG['options']['auth_method']					= array(array(_('None'), 0), array(_(
 $__FM_CONFIG['options']['2fa_methods']					= [];
 /** Add authenticator app 2FA option if library is installed */
 if (class_exists('RobThree\Auth\TwoFactorAuth') && class_exists('Imagick')) {
-	$__FM_CONFIG['options']['2fa_methods'][] = array(_('Authenticator app'), 'app');
+	array_push($__FM_CONFIG['options']['2fa_methods'], array(_('Authenticator app'), 'app'));
 }
 /** Add e-mail 2FA option if mailing is enabled */
 if (getOption('mail_enable')) {
-	$__FM_CONFIG['options']['2fa_methods'][] = array(_('E-mail'), 'email');
+	array_push($__FM_CONFIG['options']['2fa_methods'], array(_('E-mail'), 'email'));
 }
 $__FM_CONFIG['options']['ldap_version']					= array(array(_('Version 2'), 2), array(_('Version 3'), 3));
 $__FM_CONFIG['options']['ldap_encryption']				= array(_('None'), 'SSL', 'TLS');
