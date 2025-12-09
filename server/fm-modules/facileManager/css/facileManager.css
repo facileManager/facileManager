@@ -816,7 +816,7 @@ h4 {
 	font-weight: 400;
 }
 
-.display_results td:first-child, th:first-child {
+.display_results td:first-child, th:not(:is(div.choices *)):first-child {
 	padding-left: 2em;
 	white-space: nowrap;
 }
@@ -994,7 +994,7 @@ h4 {
 	font-weight: bold;
 }
 
-thead {
+thead:not(:is(div.choices *)) {
 	background: var(--table-header-bg);
 	color: var(--table-header-text);
 	font-size: 13px;

@@ -76,7 +76,6 @@ if (isset($_SESSION['module'])) {
 
 /** Cleanup options */
 $__FM_CONFIG['clean']['prefixes']	= array('fm_accounts' => 'account', 'fm_users' => 'user');
-$__FM_CONFIG['clean']['time']		= '15 minutes';
 
 /** Text string variables */
 $__FM_CONFIG['password_hint']['medium']		= array(_('Medium'), _('The password must be at least seven (7) characters long containing letters and numbers.'));
@@ -115,8 +114,9 @@ $__FM_CONFIG['options']['syslog_facilities']			= array(array('auth', 32), array(
 if (function_exists('ldap_connect')) array_push($__FM_CONFIG['options']['auth_method'], array(_('LDAP Authentication'), 2));
 
 /** Defaults */
-$__FM_CONFIG['default']['theme']				= 'Ocean';
-$__FM_CONFIG['default']['popup']['dimensions'] 	= 'width=700,height=800';
+$__FM_CONFIG['default']['theme']                 = 'Ocean';
+$__FM_CONFIG['default']['popup']['dimensions']   = 'width=700,height=800';
+$__FM_CONFIG['default']['password_reset_expiry'] = '15 minutes';
 
 /** Webserver Runas */
 if (function_exists('posix_getpwuid')) {
