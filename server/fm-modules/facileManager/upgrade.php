@@ -1172,7 +1172,10 @@ function fmUpgrade_600($database) {
 			$queries[] = "ALTER TABLE `fm_users` ADD `user_2fa_method` ENUM('0', 'app', 'email') NOT NULL DEFAULT '0' AFTER `user_group`";
 		}
 		if (!columnExists('fm_users', 'user_2fa_secret')) {
-			$queries[] = "ALTER TABLE `fm_users` ADD `user_2fa_secret` VARCHAR(255) NULL AFTER `user_2fa_method`";
+			$queries[] = "ALTER TABLE `fm_users` ADD `user_2fa_secret` VARCHAR(255) DEFAULT NULL AFTER `user_2fa_method`";
+		}
+		if (!columnExists('fm_users', 'user_2fa_recovery_code')) {
+			$queries[] = "ALTER TABLE `fm_users` ADD `user_2fa_recovery_code` VARCHAR(255) DEFAULT NULL AFTER `user_2fa_secret`";
 		}
 		if (!columnExists('fm_users', 'user_display_name')) {
 			$queries[] = "ALTER TABLE `fm_users` ADD `user_display_name` VARCHAR(255) NULL AFTER `user_password`";

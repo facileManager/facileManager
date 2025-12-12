@@ -24,11 +24,7 @@ if (!isset($__FM_CONFIG)) {
 	// Installer jquery
 	echo '
 	$("#install_enable_ssl").click(function() {
-		if ($(this).is(":checked")) {
-			$("#install_ssl_options").show("slow");
-		} else {
-			$("#install_ssl_options").slideUp();
-		}
+		$("#install_ssl_options").slideToggle("slow");
 	});
 
 	$("#btn_install_config_submit").click(function() {
@@ -1106,21 +1102,101 @@ if (!isset($__FM_CONFIG)) {
 		return false;
 	});
 
+	/* Generate 2FA recovery code */
+	$("#manage_item_contents").delegate("#generate_2fa_recovery_code", "click", function(e) {
+		var $this 		= $(this);
+
+		$this.html("<i class=\"fa fa-spinner fa-spin\" aria-hidden=\"true\"></i> ' . _('Generating Recovery Code...') . '");
+		$this.addClass("disabled").attr("disabled", "disabled");
+
+		var form_data = {
+			otp_2fa: "generate-recovery-code",
+			is_ajax: 1
+		};
+
+		$.ajax({
+			type: "POST",
+			url: "' . $GLOBALS['RELPATH'] . '../ajax/getData.php",
+			data: form_data,
+			success: function(response)
+			{
+				if (response.toLowerCase().indexOf("failed") >= 0) {
+						$("#popup_response").html("<p>" + response + "</p>");
+
+						/* Popup response more link */
+						$("#popup_response").delegate("a.more", "click tap", function(e1) {
+							e1.preventDefault();
+							error_div = $("#popup_response div#error")
+							if (error_div.is(":visible")) {
+								error_div.hide();
+								$(this).text("' . _('more') . '");
+							} else {
+								error_div.show();
+								$(this).text("' . _('less') . '");
+							}
+						});
+						$("#popup_response").delegate("#response_close i.close", "click tap", function(e2) {
+							e2.preventDefault();
+							$("#popup_response").fadeOut(200, function() {
+								$("#popup_response").html();
+							});
+						});
+					
+						$("#popup_response").fadeIn(200);
+
+						if (response.indexOf("a class=\"more\"") <= 0) {
+							$("#popup_response").delay(2000).fadeOut(200, function() {
+								$("#popup_response").html();
+							});
+						}
+				} else if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+					doLogout();
+					return false;
+				} else {
+					$this.parent().html(response);
+				}
+			}
+		});
+		
+		return false;
+	});
+
 	/* Prevent 2fa_form submission on enter keypress and only accept numbers and ctrl-v or cmd-v */
 	$("#2fa_form").on("keypress", function(e) {
 		if (e.which == KEYCODE_ENTER) {
 			return false;
 		}
 		var charCode = (e.which) ? e.which : e.keyCode;
-		if (charCode < 48 || charCode > 57) {
-			return false;
+		/* Allow capital letters */
+		if ($("#verify_otp").val() == "recovery") {
+			if ((charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122)) {
+				return true;
+			}
+		}
+		/* Allow numbers */
+		if (charCode >= 48 && charCode <= 57) {
+			return true;
 		}
 		/* Allow ctrl-v or cmd-v */
 		if (e.ctrlKey && charCode == 118) {
 			return true;
 		}
+		
+		/* Disallow all other characters */
+		return false;
 	});
 
+	/* Format recovery code input with spaces every 4 characters */
+	$("#app_otp").on("input", function() {
+		if ($("#verify_otp").val() == "recovery") {
+			var otp_field = $(this);
+			var otp_value = otp_field.val().split(" ").join(""); // remove hyphens
+			if (otp_value.length > 0) {
+				otp_value = otp_value.match(new RegExp(".{1,4}", "g")).join(" ");
+			}
+			otp_field.val(otp_value);
+		}
+	});
 	/* Generate 2FA code when two-factor is in request uri */
 	function generateOtpIfOnTwoFactor() {
 		if (window.location.pathname.replace(/[?#].*$/,"").replace(/\/+$/,"").split("/").pop() == "two-factor") {
@@ -1152,7 +1228,19 @@ if (!isset($__FM_CONFIG)) {
 		var $this 		= $(this);
 		var $code		= $this.val();
 
-		if ($code.length == 6) {
+		if ($("#verify_otp").val() == "recovery") {
+			var otp_field = $(this);
+			var otp_value = otp_field.val().split(" ").join(""); // remove hyphens
+			if (otp_value.length > 0) {
+				otp_value = otp_value.match(new RegExp(".{1,4}", "g")).join(" ");
+			}
+			otp_field.val(otp_value);
+
+			var max_length = 14;
+		} else {
+			var max_length = 6;
+		}
+		if ($code.length == max_length) {
 			$("#verify_otpbtn").click();
 		}
 	});
@@ -1162,6 +1250,7 @@ if (!isset($__FM_CONFIG)) {
 		var $button		= $("#verify_otpbtn");
 		var $code		= $("#app_otp").val();
 		var $secret		= $("#user_2fa_secret").val();
+		var $otp_method = $("#verify_otp").val();
 		var $form		= $("#login_form");
 		if ($form.length > 0) {
 			var $form		= $("#app_otp");
@@ -1173,7 +1262,7 @@ if (!isset($__FM_CONFIG)) {
 		var form_data = {
 			code: $code,
 			secret: $secret,
-			otp_2fa: "verify",
+			otp_2fa: $otp_method,
 			is_ajax: 1
 		};
 
@@ -1183,28 +1272,30 @@ if (!isset($__FM_CONFIG)) {
 			data: form_data,
 			success: function(response)
 			{
-				if (response.indexOf("failed") >= 0) {
-					$form.effect("shake");
-					$("#app_otp").addClass("validate-error");
-					$button.removeClass("disabled").removeAttr("disabled");
-					$button.html("<i class=\"fa fa-check\" aria-hidden=\"true\"></i> ' . _('Verify') . '");
-					$("#app_otp").val("").focus();
-					if (typeof $secret !== "undefined") {
-						$("#message").html("' . _('The code you entered is invalid. Please try again.') . '").addClass("failed");
-						$("#message").fadeIn(200);
-						$("#message").delay(4000).fadeOut(200, function() {
-							$("#message").html("");
-						});
+				setTimeout(function() {
+					if (response.indexOf("failed") >= 0) {
+						$form.effect("shake");
+						$("#app_otp").addClass("validate-error");
+						$button.removeClass("disabled").removeAttr("disabled");
+						$button.html("<i class=\"fa fa-check\" aria-hidden=\"true\"></i> ' . _('Verify') . '");
+						$("#app_otp").val("").focus();
+						if (typeof $secret !== "undefined") {
+							$("#message").html("' . _('The code you entered is invalid. Please try again.') . '").addClass("failed");
+							$("#message").fadeIn(200);
+							$("#message").delay(4000).fadeOut(200, function() {
+								$("#message").html("");
+							});
+						}
+					} else if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
+						doLogout();
+						return false;
+					} else if (typeof $secret !== "undefined") {
+						/* 2FA setup successful */
+						$("#tfa_app_setup_form").html("<p id=\"message\" class=\"success\"><i class=\"fa fa-check ok\" aria-hidden=\"true\"></i> ' . _('Code was verified successfully.') . '</p>");
+					} else {
+						window.location = response;
 					}
-				} else if (response.indexOf("force_logout") >= 0 || response.indexOf("login_form") >= 0) {
-					doLogout();
-					return false;
-				} else if (typeof $secret !== "undefined") {
-					/* 2FA setup successful */
-					$("#tfa_app_setup_form").html("<p id=\"message\" class=\"success\"><i class=\"fa fa-check ok\" aria-hidden=\"true\"></i> ' . _('Code was verified successfully.') . '</p>");
-				} else {
-					window.location = response;
-				}
+				}, 300);
 			}
 		});
 		
@@ -1222,6 +1313,11 @@ if (!isset($__FM_CONFIG)) {
 		$(this).verify2FAButtonClick();
 	});
 
+	/* 2FA more options */
+	$("#message.more-options").click(function() {
+		$("#more_options").slideToggle("slow");
+		return false;
+	});
 
 	/* Resend 2FA OTP */
 	$("#resend_otp").click(function() {
@@ -1316,11 +1412,7 @@ if (!isset($__FM_CONFIG)) {
 	});
 	
 	$("#ldap_group_require").click(function() {
-		if ($(this).is(":checked")) {
-			$("#ldap_group_require_options").show("slow");
-		} else {
-			$("#ldap_group_require_options").slideUp();
-		}
+		$("#ldap_group_require_options").slideToggle("slow");
 	});
 	
 	$("#api_token_support").click(function() {
@@ -1336,27 +1428,15 @@ if (!isset($__FM_CONFIG)) {
 	});
 	
 	$("#mail_enable").click(function() {
-		if ($(this).is(":checked")) {
-			$("#fm_mailing_options").show("slow");
-		} else {
-			$("#fm_mailing_options").slideUp();
-		}
+		$("#fm_mailing_options").slideToggle("slow");
 	});
 	
 	$("#mail_smtp_auth").click(function() {
-		if ($(this).is(":checked")) {
-			$("#mail_smtp_auth_options").show("slow");
-		} else {
-			$("#mail_smtp_auth_options").slideUp();
-		}
+		$("#mail_smtp_auth_options").slideToggle("slow");
 	});
 	
 	$("#proxy_enable").click(function() {
-		if ($(this).is(":checked")) {
-			$("#fm_proxy_options").show("slow");
-		} else {
-			$("#fm_proxy_options").slideUp();
-		}
+		$("#fm_proxy_options").slideToggle("slow");
 	});
 	
 	$("#log_method").change(function() {
@@ -1368,11 +1448,7 @@ if (!isset($__FM_CONFIG)) {
 	});
 	
 	$("#software_update").click(function() {
-		if ($(this).is(":checked")) {
-			$("#software_update_options").show("slow");
-		} else {
-			$("#software_update_options").slideUp();
-		}
+		$("#software_update_options").slideToggle("slow");
 	});
 	
 	$(function () {

@@ -806,9 +806,15 @@ This link expires in %s.',
 	 * @since 6.0.0
 	 * @package facileManager
 	 *
+	 * @param string $form_type Type of 2FA form to display (verify/recovery)
 	 * @return void
 	 */
-	function print2FAForm() {
+	function print2FAForm($form_type = 'verify') {
+		if ($form_type == 'recovery') {
+			$this->print2FARecoveryForm();
+			return;
+		}
+
 		/** Get user 2FA method */
 		$user_2fa_method = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_method');
 
@@ -820,28 +826,59 @@ This link expires in %s.',
 			$user_2fa_method = 'email';
 		}
 
-		$message = '';
+		$more_2fa_options = '';
 		$instructions = _('Enter the code from your two-factor authentication app below.');
 		if ($user_2fa_method == 'email') {
-			$message = '<a id="resend_otp" href="">' . _('Resend code') . '</a>';
+			$more_2fa_options = '<div class="button-wrapper"><a name="submit" id="resend_otp" class="button grey">' . _('Resend code') . '</a></div>';
 			$instructions = _('Enter the code sent to your e-mail address below.');
 		}
 
-		printHeader(_('Two-factor Authentication'), 'login');
+		$more_2fa_options .= '<div class="button-wrapper"><a href="recovery/" id="recover_otpbtn" class="button grey alert">' . _('2FA recovery code') . '</a></div>';
+
+		$title = _('Two-factor Authentication');
+		printHeader($title, 'login');
 		
-		echo displayPreAppForm(_('Two-factor Authentication'), 'login_form',
+		echo displayPreAppForm($title, 'login_form',
 		sprintf('
 				<div class="message">%s</div>
-				<input type="hidden" name="verify_otp" value="1" />
+				<input type="hidden" name="verify_otp" id="verify_otp" value="verify" />
 				<div class="input-wrapper">
 					<input type="text" name="app_otp" id="app_otp" placeholder="XXXXXX" autocomplete="off" maxlength="6" />
 				</div>
 				<div class="button-wrapper"><a name="submit" id="verify_otpbtn" class="button"><i class="fa fa-check" aria-hidden="true"></i> %s</a></div>
 				<p id="forgotton_link"><a href="%s">&larr; %s</a></p>
-				<div id="message" class="message">%s</div>
+				<div id="message" class="more-options">%s <i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+				<div id="more_options">%s</div>
 				',
-				$instructions, _('Verify'), $GLOBALS['RELPATH'], _('Login form'), $message), null, null, '2fa_form');
+				$instructions, _('Verify'), $GLOBALS['RELPATH'], _('Login form'), _('More options'), $more_2fa_options), null, null, '2fa_form');
+	}
 
+
+	/**
+	 * Display 2FA recovery form.
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @return void
+	 */
+	private function print2FARecoveryForm() {
+		$instructions = _('Enter your two-factor authentication recovery code below.');
+
+		$title = _('Two-factor Recovery');
+		printHeader($title, 'login');
+		
+		echo displayPreAppForm($title, 'login_form',
+		sprintf('
+				<div class="message">%s</div>
+				<input type="hidden" name="verify_otp" id="verify_otp" value="recovery" />
+				<div class="input-wrapper">
+					<input type="text" name="app_otp" id="app_otp" placeholder="XXXX XXXX XXXX" autocomplete="off" maxlength="14" />
+				</div>
+				<div class="button-wrapper"><a name="submit" id="verify_otpbtn" class="button"><i class="fa fa-check" aria-hidden="true"></i> %s</a></div>
+				<p id="forgotton_link"><a href="%s">&larr; %s</a></p>
+				',
+				$instructions, _('Verify'), $GLOBALS['RELPATH'], _('Login form')), null, null, '2fa_form');
 	}
 
 
@@ -852,35 +889,50 @@ This link expires in %s.',
 	 * @package facileManager
 	 *
 	 * @param string $code 2FA code
+	 * @param string $process_type Form process type (verify/recovery)
 	 * @return boolean
 	 */
-	function process2FAForm($code) {
-		// Get user 2FA method
-		$user_2fa_method = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_method');
-
-		// Ensure $user_2fa_method is valid
-		$user_2fa_method = $this->validate2FAMethod($user_2fa_method);
-
-		// Set user_2fa_method to e-mail if not set
-		if (!$user_2fa_method && getOption('require_2fa')) {
-			$user_2fa_method = 'email';
-		}
-
-		switch ($user_2fa_method) {
-			case 'app':
-				// Verify TOTP 2FA Auth App
-				if ($this->process2FAAuthAppMethod($code) === false) {
-					return false;
-				}
-				break;
-			case 'email':
-				// Verify TOTP 2FA E-mail
-				if ($this->process2FAEmailMethod($code) === false) {
-					return false;
-				}
-				break;
-			default:
+	function process2FAForm($code, $process_type) {
+		// Process recovery code
+		if ($process_type == 'recovery') {
+			// PHP hashing
+			if (!password_verify(str_replace(' ', '', $code), getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_recovery_code'))) {
 				return false;
+			}
+
+			// Add log entry
+			addLogEntry(_('Two-factor authentication recovery code used to log in.'));
+
+			// Invalidate recovery code
+			$this->generate2FARecoveryCode('reset');
+		} else {
+			// Get user 2FA method
+			$user_2fa_method = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_method');
+
+			// Ensure $user_2fa_method is valid
+			$user_2fa_method = $this->validate2FAMethod($user_2fa_method);
+
+			// Set user_2fa_method to e-mail if not set
+			if (!$user_2fa_method && getOption('require_2fa')) {
+				$user_2fa_method = 'email';
+			}
+
+			switch ($user_2fa_method) {
+				case 'app':
+					// Verify TOTP 2FA Auth App
+					if ($this->process2FAAuthAppMethod($code) === false) {
+						return false;
+					}
+					break;
+				case 'email':
+					// Verify TOTP 2FA E-mail
+					if ($this->process2FAEmailMethod($code) === false) {
+						return false;
+					}
+					break;
+				default:
+					return false;
+			}
 		}
 
 		// Set user as logged in
@@ -1115,6 +1167,59 @@ This code expires in %s.',
 		
 		return $body;
 	}
+
+
+	/**
+	 * Generates a random recovery code
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param string $action Action on code generation (optional)
+	 * @return string
+	 */
+	function generate2FARecoveryCode($action = 'generate') {
+		global $fmdb;
+		
+		$recovery_code = '';
+		$log_message = sprintf("Updated user '%s':\n", $_SESSION['user']['name']);
+
+		if ($action == 'generate') {
+			// Generate 12 character code (A-Z, 0-9) and add a space after every 4 chars
+			$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+			$length = 12;
+			$max = strlen($chars) - 1;
+			for ($i = 0; $i < $length; $i++) {
+				$recovery_code .= $chars[random_int(0, $max)]; // random_int for cryptographic randomness
+			}
+			$sql_recovery_code = "'" . password_hash($recovery_code, PASSWORD_DEFAULT) . "'";
+
+			// Log the recovery code generation
+			$log_message .= formatLogKeyData('user_', '2FA Recovery Code', 'Generated new');
+
+		} elseif ($action == 'reset') {
+			$log_message .= formatLogKeyData('user_', '2FA', 'Reset Configuration');
+
+			// Reset 2FA settings for user
+			$fmdb->query("UPDATE `fm_users` SET `user_2fa_method`='0', `user_2fa_secret`=NULL, `user_2fa_recovery_code`=NULL WHERE `user_id`=" . $_SESSION['user']['id']);
+			if ($fmdb->rows_affected) {
+				addLogEntry($log_message);
+				return true;
+			}
+			return false;
+		}
+
+		// Add to the database
+		$fmdb->query("UPDATE `fm_users` SET `user_2fa_recovery_code`=" . $sql_recovery_code . " WHERE `user_id`=" . $_SESSION['user']['id']);
+
+		if ($fmdb->rows_affected) {
+			addLogEntry($log_message);
+			return trim(chunk_split($recovery_code, 4, ' ')); // e.g. "ABCD 1234 EFGH"
+		}
+
+		return false;
+	}
+
 
 }
 

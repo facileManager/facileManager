@@ -108,7 +108,7 @@ class fm_users {
 		extract($data, EXTR_SKIP);
 		
 		$log_message = "Added user:\n";
-		$exclude = array_merge($global_form_field_excludes, array('user_id', 'cpassword', 'user_password', 'user_caps', 'process_user_caps', 'type'));
+		$exclude = array_merge($global_form_field_excludes, array('user_id', 'cpassword', 'user_password', 'user_caps', 'process_user_caps', 'type', 'user_2fa_recovery_code'));
 
 		foreach ($data as $key => $val) {
 			if (!in_array($key, $exclude)) {
@@ -327,10 +327,10 @@ class fm_users {
 				$post['user_2fa_secret'] = '';
 				unset($post['app_otp']);
 			}
-			if (($post['user_2fa_method'] == 'app' && empty($post['user_2fa_secret'])) || array_key_exists('app_otp', $post)) {
+			if (!array_key_exists('tfa_setup_complete', $post) && ($post['user_2fa_method'] == 'app' && empty($post['user_2fa_secret'])) || array_key_exists('app_otp', $post)) {
 				return _('2FA is not fully set up. Please complete the setup below with your authenticator app.');
 			}
-			unset($post['enable_2fa']);
+			unset($post['enable_2fa'], $post['tfa_setup_complete']);
 			$map = array_column($__FM_CONFIG['options']['2fa_methods'], 0, 1);
 			if (isset($map[$post['user_2fa_method']])) {
 				$log_message .= formatLogKeyData('user_', '2FA Method', $map[$post['user_2fa_method']]);
@@ -342,7 +342,7 @@ class fm_users {
 
 		$sql_edit = '';
 		
-		$exclude = array_merge($global_form_field_excludes, array('user_id', 'cpassword', 'user_password', 'user_caps', 'process_user_caps', 'type'));
+		$exclude = array_merge($global_form_field_excludes, array('user_id', 'cpassword', 'user_password', 'user_caps', 'process_user_caps', 'type', 'user_2fa_recovery_code'));
 
 		foreach ($post as $key => $data) {
 			if (!in_array($key, $exclude)) {
@@ -713,8 +713,8 @@ HTML;
 			$username_form = ($action == 'add' || (string) array_search('user_login', $form_bits) == 'editable') ? '<input name="user_login" id="user_login" type="text" value="' . $user_login . '" size="40" maxlength="' . $field_length . '" class="required" />' : '<span id="form_username">' . $user_login . '</span>';
 			$hidden .= '<input type="hidden" name="user_id" value="' . $user_id . '" />';
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row"><label for="user_login">' . _('User Login') . '</label></th>
-					<td width="67%">' . $username_form . '</td>
+					<th width="25%" scope="row"><label for="user_login">' . _('User Login') . '</label></th>
+					<td width="75%">' . $username_form . '</td>
 				</tr>';
 		}
 		if (in_array('user_display_name', $form_bits)) {
@@ -722,8 +722,8 @@ HTML;
 			$field_length = getColumnLength('fm_users', 'user_display_name');
 			
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row"><label for="user_display_name">' . _('Display Name') . '</label></th>
-					<td width="67%"><input name="user_display_name" id="user_display_name" type="text" value="' . $user_display_name . '" size="32" maxlength="' . $field_length . '" ' . $disabled . ' /></td>
+					<th width="25%" scope="row"><label for="user_display_name">' . _('Display Name') . '</label></th>
+					<td width="75%"><input name="user_display_name" id="user_display_name" type="text" value="' . $user_display_name . '" size="32" maxlength="' . $field_length . '" ' . $disabled . ' /></td>
 				</tr>';
 		}
 		if (in_array('user_comment', $form_bits)) {
@@ -731,8 +731,8 @@ HTML;
 			$field_length = getColumnLength('fm_users', 'user_comment');
 			
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row"><label for="user_comment">' . _('Comment') . '</label></th>
-					<td width="67%"><input name="user_comment" id="user_comment" type="text" value="' . $user_comment . '" size="32" maxlength="' . $field_length . '" ' . $disabled . ' /></td>
+					<th width="25%" scope="row"><label for="user_comment">' . _('Comment') . '</label></th>
+					<td width="75%"><input name="user_comment" id="user_comment" type="text" value="' . $user_comment . '" size="32" maxlength="' . $field_length . '" ' . $disabled . ' /></td>
 				</tr>';
 		}
 		if (in_array('user_email', $form_bits)) {
@@ -740,8 +740,8 @@ HTML;
 			$field_length = getColumnLength('fm_users', 'user_login');
 			
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row"><label for="user_email">' . _('E-mail Address') . '</label> <a href="#" class="tooltip-top" data-tooltip="' . _('The e-mail address is used for sending password reset links and 2FA codes.') . '"><i class="fa fa-question-circle"></i></a></th>
-					<td width="67%"><input name="user_email" id="user_email" type="email" value="' . $user_email . '" size="32" maxlength="' . $field_length . '" ' . $disabled . ' class="required" /></td>
+					<th width="25%" scope="row"><label for="user_email">' . _('E-mail Address') . '</label> <a href="#" class="tooltip-top" data-tooltip="' . _('The e-mail address is used for sending password reset links and 2FA codes.') . '"><i class="fa fa-question-circle"></i></a></th>
+					<td width="75%"><input name="user_email" id="user_email" type="email" value="' . $user_email . '" size="32" maxlength="' . $field_length . '" ' . $disabled . ' class="required" /></td>
 				</tr>';
 		}
 
@@ -753,8 +753,8 @@ HTML;
 			$auth_method_types = $__FM_CONFIG['options']['auth_method'];
 			if (array_shift($auth_method_types) && count($auth_method_types) > 1) {
 				$return_form_rows .= '<tr>
-					<th width="33%" scope="row"><label for="user_auth_type">' . _('Authentication Method') . '</label></th>
-					<td width="67%">' . buildSelect('user_auth_type', 'user_auth_type', $auth_method_types, $user_auth_type) . '</td>
+					<th width="25%" scope="row"><label for="user_auth_type">' . _('Authentication Method') . '</label></th>
+					<td width="75%">' . buildSelect('user_auth_type', 'user_auth_type', $auth_method_types, $user_auth_type) . '</td>
 				</tr>';
 			}
 		}
@@ -770,56 +770,55 @@ HTML;
 			$strength = $GLOBALS['PWD_STRENGTH'];
 			if (array_key_exists('user_password', $form_bits)) $strength = $form_bits['user_password'];
 			$return_form_rows .= '<tr class="user_password">
-					<th width="33%" scope="row"><label for="user_password">' . _('Password') . '</label></th>
-					<td width="67%"><input name="user_password" id="user_password" type="password" value="" size="40" onkeyup="javascript:checkPasswd(\'user_password\', \'' . $button_id . '\', \'' . $strength . '\');" ' . $field_required . '/></td>
+					<th width="25%" scope="row"><label for="user_password">' . _('Password') . '</label></th>
+					<td width="75%"><input name="user_password" id="user_password" type="password" value="" size="40" onkeyup="javascript:checkPasswd(\'user_password\', \'' . $button_id . '\', \'' . $strength . '\');" ' . $field_required . '/></td>
 				</tr>
 				<tr class="user_password">
-					<th width="33%" scope="row"><label for="cpassword">' . _('Confirm Password') . '</label></th>
-					<td width="67%"><input name="cpassword" id="cpassword" type="password" value="" size="40" onkeyup="javascript:checkPasswd(\'cpassword\', \'' . $button_id . '\', \'' . $strength . '\');" ' . $field_required . '/></td>
+					<th width="25%" scope="row"><label for="cpassword">' . _('Confirm Password') . '</label></th>
+					<td width="75%"><input name="cpassword" id="cpassword" type="password" value="" size="40" onkeyup="javascript:checkPasswd(\'cpassword\', \'' . $button_id . '\', \'' . $strength . '\');" ' . $field_required . '/></td>
 				</tr>
 				<tr class="user_password">
-					<th width="33%" scope="row">' . _('Password Validity') . '</th>
-					<td width="67%"><div id="passwd_check">' . _('No Password') . '</div></td>
+					<th width="25%" scope="row">' . _('Password Validity') . '</th>
+					<td width="75%"><div id="passwd_check">' . _('No Password') . '</div></td>
 				</tr>
 				<tr class="pwdhint user_password">
-					<th width="33%" scope="row">' . _('Hint') . '</th>
-					<td width="67%">' . $__FM_CONFIG['password_hint'][$strength][1] . '</td>
+					<th width="25%" scope="row">' . _('Hint') . '</th>
+					<td width="75%">' . $__FM_CONFIG['password_hint'][$strength][1] . '</td>
 				</tr>';
 		}
 		
 		if (in_array('user_groups', $form_bits) && $user_id != $default_id) {
 			$user_group_options = buildSelect('user_group', 'user_group', $this->getGroups(), $user_group);
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row">' . _('Associated Group') . '</th>
-					<td width="67%">' . $user_group_options . '</td>
+					<th width="25%" scope="row">' . _('Associated Group') . '</th>
+					<td width="75%">' . $user_group_options . '</td>
 				</tr>';
 		}
 		
 		if (in_array('user_2fa_method', $form_bits) && getOption('auth_method') && count($__FM_CONFIG['options']['2fa_methods'])) {
 			$user_2fa_status = '';
 			$user_2fa_method_options = buildSelect('user_2fa_method', 'user_2fa_method', $__FM_CONFIG['options']['2fa_methods'], $user_2fa_method);
-			$require_2fa_note = (getOption('require_2fa')) ? '<div class="popup-note"><p>' . _('Two-Factor Authentication defaults to E-Mail and is required by the system policy.') . '</p></div>' : null;
+			$require_2fa_note = (getOption('require_2fa')) ? '<div class="popup-note"><p>' . _('Two-Factor Authentication is required by the system policy and defaults to e-mail if an alternative method is unspecified.') . '</p></div>' : null;
 			$enable_2fa_checked = ($user_2fa_method) ? 'checked' : null;
 			$user_2fa_methods_display = (!$user_2fa_method) ? 'style="display: none;"' : null;
-			$user_secret = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_secret');
 			$user_2fa_setup_display = ($user_2fa_method == 'app') ? null : 'style="display: none;"';
 			$user_2fa_form = '<tr>
-					<th width="33%" scope="row">' . _('Enable 2FA') . '</th>
-					<td width="67%">
+					<th width="25%" scope="row">' . _('Enable 2FA') . '</th>
+					<td width="75%">
 						<input type="hidden" name="user_2fa_method" value="0" />
 						<input name="enable_2fa" id="enable_2fa" type="checkbox" ' . $enable_2fa_checked . ' />
 					</td>
 				</tr>
 				<tr class="user_2fa_method_row" ' . $user_2fa_methods_display . '>
-					<th width="33%" scope="row">' . _('2FA Method') . '</th>
-					<td width="67%">' . $user_2fa_method_options . '</td>
+					<th width="25%" scope="row">' . _('2FA Method') . '</th>
+					<td width="75%">' . $user_2fa_method_options . '</td>
 				</tr>';
 
 			// Include the 2FA setup if applicable
 			if (in_array('app', array_column($__FM_CONFIG['options']['2fa_methods'], 1), true)) {
-				if ($user_secret) {
+				if ($user_2fa_secret) {
 					$user_2fa_setup_btn = _('Edit');
-					$user_2fa_status = '<a href="javascript:void(0);" class="tooltip-top" data-tooltip="' . _('2FA is setup is already complete.') . '"><i class="fa fa-check ok" aria-hidden="true"></i></a> ';
+					$user_2fa_status = '<input type="hidden" name="tfa_setup_complete" /><span" class="tooltip-top" data-tooltip="' . _('2FA is setup is already complete.') . '"><i class="fa fa-check ok" aria-hidden="true"></i></span> ';
 				} else {
 					$user_2fa_setup_btn = _('Setup App');
 					$user_2fa_status = '';
@@ -828,10 +827,21 @@ HTML;
 					<th width="25%" scope="row">' . _('2FA Setup') . '</th>
 					<td width="75%" id="2fa_setup_container">
 						' . $user_2fa_status . '
-						<a href="javascript:void(0);" class="button" id="setup_2fa_app_button">' . $user_2fa_setup_btn . '</a>
+						<a class="button" id="setup_2fa_app_button">' . $user_2fa_setup_btn . '</a>
 					</td>
 				</tr>';
 			}
+
+			// 2FA recovery code
+			$user_2fa_recovery_status = ($user_2fa_recovery_code) ? '<span class="tooltip-top" data-tooltip="' . _('2FA recovery code is set.') . '"><i class="fa fa-check ok" aria-hidden="true"></i></span> ' : '';
+			$user_2fa_form .= '<tr class="user_2fa_method_row" ' . $user_2fa_methods_display . '>
+				<th width="25%" scope="row">' . _('Recovery Code') . ' <span class="tooltip-top" data-tooltip="' . _('The recovery code is used in case you lose access to your 2FA device or e-mail address. Once generated, store in a safe place.') . '"><i class="fa fa-question-circle" aria-hidden="true"></i></span></th>
+				<td width="75%">
+					' . $user_2fa_recovery_status . '
+					<a class="button" id="generate_2fa_recovery_code">' . _('Generate') . '</a>
+				</td>
+			</tr>';
+
 
 			$user_2fa_form = sprintf('
 		<div id="tab" class="user_2fa">
@@ -852,8 +862,8 @@ HTML;
 			if (count($active_modules) > 1) {
 				$user_module_options = buildSelect('user_default_module', 'user_default_module', $active_modules, $user_default_module);
 				$return_form_rows .= '<tr>
-					<th width="33%" scope="row">' . _('Default Module') . '</th>
-					<td width="67%">' . $user_module_options . '</td>
+					<th width="25%" scope="row">' . _('Default Module') . '</th>
+					<td width="75%">' . $user_module_options . '</td>
 				</tr>';
 			}
 			unset($active_modules);
@@ -865,12 +875,12 @@ HTML;
 			$user_theme_options = buildSelect('user_theme', 'user_theme', getThemes(), $user_theme);
 			$user_theme_mode_options = buildSelect('user_theme_mode', 'user_theme_mode', enumMYSQLSelect('fm_users', 'user_theme_mode'), $user_theme_mode);
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row">' . _('Theme') . '</th>
-					<td width="67%">' . $user_theme_options . '</td>
+					<th width="25%" scope="row">' . _('Theme') . '</th>
+					<td width="75%">' . $user_theme_options . '</td>
 				</tr>
 				<tr class="theme-mode-selector">
-					<th width="33%" scope="row">' . _('Theme Mode') . '</th>
-					<td width="67%">' . $user_theme_mode_options . '</td>
+					<th width="25%" scope="row">' . _('Theme Mode') . '</th>
+					<td width="75%">' . $user_theme_mode_options . '</td>
 				</tr>';
 		}
 		
@@ -878,8 +888,8 @@ HTML;
 			$force_pwd_check = ($user_force_pwd_change == 'yes') ? 'checked disabled' : null;
 			$user_template_only_check = ($user_template_only == 'yes') ? 'checked' : null;
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row">' . _('Options') . '</th>
-					<td width="67%">
+					<th width="25%" scope="row">' . _('Options') . '</th>
+					<td width="75%">
 						<input name="user_force_pwd_change" id="user_force_pwd_change" value="yes" type="checkbox" ' . $force_pwd_check . '/><label for="user_force_pwd_change">' . _('Force Password Change at Next Login') . '</label><br />
 						<input name="user_template_only" id="user_template_only" value="yes" type="checkbox" ' . $user_template_only_check . '/><label for="user_template_only">' . _('Template User') . '</label>
 					</td>
@@ -888,8 +898,8 @@ HTML;
 		
 		if (in_array('user_token', $form_bits) && getOption('api_token_support') && $user_id == $_SESSION['user']['id']) {
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row"></th>
-					<td width="67%">
+					<th width="25%" scope="row"></th>
+					<td width="75%">
 						<span><a href="admin-users.php?type=keys">' . _('Configure API Keys') . ' &raquo;</a></span>
 					</td>
 				</tr>';
@@ -902,31 +912,31 @@ HTML;
 			$hidden .= '<input type="hidden" name="group_id" value="' . $group_id . '" />';
 			$hidden .= $action != 'add' ? '<input type="hidden" name="group_name" value="' . $group_name . '" />' : null;
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row"><label for="group_name">' . _('Group Name') . '</label></th>
-					<td width="67%"><input name="group_name" id="group_name" type="text" value="' . $group_name . '" size="32" maxlength="' . $field_length . '" ' . $disabled . ' class="required" /></td>
+					<th width="25%" scope="row"><label for="group_name">' . _('Group Name') . '</label></th>
+					<td width="75%"><input name="group_name" id="group_name" type="text" value="' . $group_name . '" size="32" maxlength="' . $field_length . '" ' . $disabled . ' class="required" /></td>
 				</tr>';
 		}
 		
 		if (in_array('comment', $form_bits)) {
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row"><label for="group_comment">' . _('Comment') . '</label></th>
-					<td width="67%"><textarea id="group_comment" name="group_comment" rows="4" cols="30">' . $group_comment . '</textarea></td>
+					<th width="25%" scope="row"><label for="group_comment">' . _('Comment') . '</label></th>
+					<td width="75%"><textarea id="group_comment" name="group_comment" rows="4" cols="30">' . $group_comment . '</textarea></td>
 				</tr>';
 		}
 		
 		if (in_array('group_users', $form_bits)) {
 			$group_users = buildSelect('group_users', 'group_users', $this->getGroupUsers(), $this->getGroupUsers($group_id), 5, null, true, null, 'wide_select', _('Select one or more users'));
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row">' . _('Associated Users') . '</th>
-					<td width="67%">' . $group_users . '</td>
+					<th width="25%" scope="row">' . _('Associated Users') . '</th>
+					<td width="75%">' . $group_users . '</td>
 				</tr>';
 		}
 		
 		if (in_array('verbose', $form_bits)) {
 			$hidden .= '<input type="hidden" name="verbose" value="0" />' . "\n";
 			$return_form_rows .= '<tr>
-					<th width="33%" scope="row">' . _('Options') . '</th>
-					<td width="67%"><input name="verbose" id="verbose" type="checkbox" value="1" checked /><label for="verbose">' . _('Verbose Output') . '</label></td>
+					<th width="25%" scope="row">' . _('Options') . '</th>
+					<td width="75%"><input name="verbose" id="verbose" type="checkbox" value="1" checked /><label for="verbose">' . _('Verbose Output') . '</label></td>
 				</tr>';
 		}
 		
@@ -968,8 +978,8 @@ HTML;
 			if (!empty($fm_perm_boxes)) {
 				$perm_boxes .= <<<PERM
 				<tr id="userperms" class="user_permissions">
-					<th width="33%" scope="row">$fm_name</th>
-					<td width="67%">
+					<th width="25%" scope="row">$fm_name</th>
+					<td width="75%">
 						<input type="hidden" name="process_user_caps" value="1" />
 						$fm_perm_boxes
 					</td>
@@ -1009,8 +1019,8 @@ PERM;
 				if (!empty($module_perm_boxes)) {
 					$perm_boxes .= <<<PERM
 					<tr id="userperms" class="user_permissions">
-						<th width="33%" scope="row">$module_name</th>
-						<td width="67%">
+						<th width="25%" scope="row">$module_name</th>
+						<td width="75%">
 						$module_perm_boxes
 						</td>
 					</tr>

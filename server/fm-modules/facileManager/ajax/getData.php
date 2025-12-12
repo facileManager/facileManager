@@ -55,6 +55,7 @@ if (array_key_exists('otp_2fa', $_POST)) {
 			}
 			break;
 		case 'verify':
+		case 'recovery':
 			// Verify TOTP 2FA
 			if (isset($_POST['secret']) && !empty($_POST['secret'])) {
 				// Authenticator app setup verification
@@ -66,7 +67,7 @@ if (array_key_exists('otp_2fa', $_POST)) {
 				}
 			} else {
 				// Login 2FA verification
-				$result = $fm_login->process2FAForm($_POST['code']);
+				$result = $fm_login->process2FAForm($_POST['code'], $_POST['otp_2fa']);
 				if ($result === true) {
 					if (isset($_SESSION['user']['uri'])) {
 						echo $_SESSION['user']['uri'];
@@ -99,6 +100,7 @@ if (array_key_exists('otp_2fa', $_POST)) {
 						<p>' . sprintf(_('Alternatively, you can manually configure your authenticator app using the %s and then enter the generated code to complete setup.'), sprintf('<a href="javascript:void(0)" class="tooltip-left" data-tooltip="%s">%s</a>', chunk_split($user_2fa_setup_secret, 4, ' '), _('setup key'))) . '</p>
 					</div>
 				</div>
+				<input type="hidden" name="verify_otp" id="verify_otp" value="verify" />
 				<input name="app_otp" id="app_otp" type="text" class="required" placeholder="XXXXXX" autocomplete="off" maxlength="6" />
 				<a name="submit" id="verify_otpbtn" class="button green"><i class="fa fa-check" aria-hidden="true"></i> ' . _('Verify') . '</a>
 				<p id="message"></p>
@@ -108,6 +110,15 @@ if (array_key_exists('otp_2fa', $_POST)) {
 			</script>
 			';
 			echo $user_2fa_setup_app_ouput;
+			break;
+		case 'generate-recovery-code';
+			$recovery_code = $fm_login->generate2FARecoveryCode();
+			if ($recovery_code !== false) {
+				echo '<p id="message" class="success"><i class="fa fa-check ok" aria-hidden="true"></i> <span class="recovery-code-display">' . $recovery_code . '</span></p>
+				<div id="config_check" class="info no-image">' . _('Store this recovery code in a safe place. This is your only chance to view it.') . '</div>';
+			} else {
+				echo 'failed';
+			}
 			break;
 		default:
 			return;

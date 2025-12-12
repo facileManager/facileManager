@@ -62,7 +62,7 @@ form div {
 
 #login_form {
     margin-top: 1em;
-    max-width: 24em;
+    max-width: 25em;
 }
 
 #login_form .input-wrapper input {
@@ -83,6 +83,7 @@ form div {
     text-align: center;
     font-size: 14pt;
     letter-spacing: 5px;
+    text-transform: uppercase;
 }
 
 .input-wrapper i.fa {
@@ -238,11 +239,21 @@ strong {
     line-height: 33px;
 }
 
+.button.grey {
+    background: light-dark(#3b8dbc, #375160);
+    border: 1px solid light-dark(#E0E0E0, #313131);
+    color: #dbdbdb;
+}
+
 .button.disabled {
     background: light-dark(#3b8dbc, #375160);
     border: 1px solid light-dark(#E0E0E0, #313131);
     color: light-dark(#fff, #a0a0a0);
 	cursor: not-allowed;
+}
+
+.button.alert {
+    color: #FC7E7E;
 }
 
 .fm-branding {
@@ -291,6 +302,15 @@ strong {
 }
 .message:first-of-type {
     margin-bottom: 1em;
+}
+
+.more-options {
+	font-size: 8pt;
+	margin-top: 2em;
+	cursor: pointer;
+}
+#more_options {
+    display: none;
 }
 
 .success {

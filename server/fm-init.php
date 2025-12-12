@@ -95,8 +95,8 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 	}
 	
 	if (!defined('INSTALL') && !defined('CLIENT') && !defined('FM_NO_CHECKS') && !$invoke_api) {
-		include(ABSPATH . 'fm-modules/' . $fm_name . '/variables.inc.php');
 		$fmdb = new fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host']);
+		include(ABSPATH . 'fm-modules/' . $fm_name . '/variables.inc.php');
 
 		/** Trim and sanitize inputs */
 		if (array_key_exists('uri_params', $_POST) && !is_array($_POST['uri_params']) && json_validate($_POST['uri_params'])) {
@@ -158,14 +158,17 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 		
 		if (array_key_exists('otp_2fa', $_POST)) return;
 		/** Process 2FA */
-		if (!$is_logged_in && $path_parts['basename'] == 'two-factor') {
+		if (!$is_logged_in
+			&& ($path_parts['basename'] == 'two-factor'
+			|| ($path_parts['basename'] == 'recovery' && substr($path_parts['dirname'], -10) == 'two-factor'))
+			) {
 			/** Send 404 if we don't have a session */
 			if (!isset($_SESSION['user']) || (isset($_SESSION['user']['2fa_status']) && $_SESSION['user']['2fa_status'] != 'pending')) {
 				throwHTTPError(404);
 				exit;
 			}
 
-			$fm_login->print2FAForm();
+			$fm_login->print2FAForm($path_parts['basename']);
 			
 			exit;
 		}

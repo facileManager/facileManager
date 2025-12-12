@@ -335,6 +335,12 @@ div.header-container {
 	width: 10.4em;
 	padding-right: unset;
 }
+.recovery-code-display {
+	font-family: monospace;
+	font-weight: bold;
+	font-size: larger;
+	color: var(--primary-body-text);
+}
 #message {
 	display: none;
     max-height: 310px;
@@ -2192,6 +2198,11 @@ a.subelement_edit img {
 #config_check.error {
 	background-image: url('../../facileManager/images/redshield64.png');
 	background-repeat: no-repeat;
+}
+#config_check.no-image {
+	background-image: none;
+	min-height: unset;
+	padding: 10px;
 }
 #config_check pre {
 	margin-left: 6.5em;

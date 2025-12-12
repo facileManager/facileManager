@@ -393,6 +393,7 @@ class fm_settings {
 			<input type="hidden" name="login_message_accept" value="0" />
 			<input type="hidden" name="client_auto_register" value="0" />
 			<input type="hidden" name="api_token_support" value="0" />
+			<input type="hidden" name="require_2fa" value="0" />
 			<input type="hidden" name="enforce_ssl" value="0" />
 			<input type="hidden" name="mail_enable" value="0" />
 			<input type="hidden" name="mail_smtp_auth" value="0" />
