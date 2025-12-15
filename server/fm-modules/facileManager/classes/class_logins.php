@@ -905,6 +905,9 @@ This link expires in %s.',
 
 			// Invalidate recovery code
 			$this->generate2FARecoveryCode('reset');
+
+			// Email the user about recovery code usage
+			$this->mail2FARecoveryCodeUsed($_SESSION['user']['id']);
 		} else {
 			// Get user 2FA method
 			$user_2fa_method = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_method');
@@ -1218,6 +1221,90 @@ This code expires in %s.',
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Mail the user regarding a used 2FA recovery code
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param string $userid UserID to send the mail to
+	 * @return boolean|string
+	 */
+	function mail2FARecoveryCodeUsed($userid) {
+		global $fm_name;
+		
+		$user_info = getUserInfo($userid);
+		if (isEmailAddressValid($user_info['user_email']) === false) {
+			sleep(1);
+			return true;
+		}
+		
+		$subject = sprintf(_('%s Recovery Code Used'), $fm_name);
+		$from = getOption('mail_from');
+		
+		return sendEmail($user_info['user_email'], $subject, $this->build2FARecoveryEmail($user_info, true, $subject, $from), $this->build2FARecoveryEmail($user_info, false));
+	}
+
+
+	/**
+	 * Builds the user 2FA recovery e-mail
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param array $user_info User information to build the e-mail from
+	 * @param boolean $build_html Whether or not to build a html version
+	 * @param string $title HTML E-mail title
+	 * @param string $from_address Displayed sent from address
+	 * @return string
+	 */
+	function build2FARecoveryEmail($user_info, $build_html = true, $title = null, $from_address = null) {
+		global $fm_name;
+		
+		if ($build_html) {
+			$branding_logo = getBrandLogo();
+			if ($GLOBALS['RELPATH'] != '/') {
+				$branding_logo = str_replace($GLOBALS['RELPATH'], '', $branding_logo);
+			}
+			$branding_logo = $GLOBALS['FM_URL'] . str_replace('//', '/', $branding_logo);
+			
+			$body = <<<BODY
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" style="background-color: #eeeeee;">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>$title</title>
+</head>
+<body style="background-color: #eeeeee; font: 13px 'Lucida Grande', 'Lucida Sans Unicode', Tahoma, Verdana, sans-serif; margin: 1em auto; min-width: 600px; max-width: 600px; padding: 20px; padding-bottom: 50px; -webkit-text-size-adjust: none;">
+<div style="margin-bottom: -8px;">
+<img src="$branding_logo" style="padding-left: 17px;" />
+<span style="font-size: 16pt; font-weight: bold; position: relative; top: -16px; margin-left: 10px;">$fm_name</span>
+</div>
+<div id="shadow" style="-moz-border-radius: 0% 0% 100% 100% / 0% 0% 8px 8px; -webkit-border-radius: 0% 0% 100% 100% / 0% 0% 8px 8px; border-radius: 0% 0% 100% 100% / 0% 0% 8px 8px; -moz-box-shadow: rgba(0,0,0,.30) 0 2px 3px !important; -webkit-box-shadow: rgba(0,0,0,.30) 0 2px 3px !important; box-shadow: rgba(0,0,0,.30) 0 2px 3px !important;">
+<div id="container" style="background-color: #fff; min-height: 200px; margin-top: 1em; padding: 0 1.5em .5em; border: 1px solid #fff; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: inset 0 2px 1px rgba(255,255,255,.97) !important; -moz-box-shadow: inset 0 2px 1px rgba(255,255,255,.97) !important; box-shadow: inset 0 2px 1px rgba(255,255,255,.97) !important;">
+<p>Hi {$user_info['user_login']},</p>
+<p>Someone has signed into $fm_name using the two-factor authentication recovery code associated with this account.</p>
+<p>As a result, your current 2FA configuration has been reset. You will need to reconfigure your two-factor authentication settings the next time you login.</p>
+</div>
+</div>
+<p style="font-size: 10px; color: #888; text-align: center;">$fm_name | $from_address</p>
+</body>
+</html>
+BODY;
+		} else {
+			$body = sprintf('Hi %s,
+
+Someone has signed into %s using the two-factor authentication recovery code associated with this account.
+
+As a result, your current 2FA configuration has been reset. You will need to reconfigure your two-factor authentication settings the next time you login.',
+		$user_info['user_login'], $fm_name);
+		}
+		
+		return $body;
 	}
 
 
