@@ -2,6 +2,7 @@
 * Server - [feature] Added support for 2FA via e-mail and authenticator app.
 * Server - [feature] Added support to set the password reset timeout period to maximum 23h 59m. (#721 #723)
 * Server - [improvement] Added display name field to user accounts.
+* Server - [improvement] Updated display of user API keys in the user list.
 * Server - [bug] CSS fixes for the login form.
 * Server - [bug] Standardized some text across the application.
 

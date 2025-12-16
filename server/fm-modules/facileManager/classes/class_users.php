@@ -57,12 +57,12 @@ class fm_users {
 				array('title' => _('Group Members'), 'class' => 'header-nosort'),
 				array('title' => _('Comment'), 'class' => 'header-nosort'));
 		} elseif ($type == 'keys') {
-			array_push($title_array,
-				array('title' => _('Key'), 'rel' => 'key_token'));
 			if (currentUserCan('manage_users')) {
 				array_push($title_array,
 					array('title' => _('User'), 'rel' => 'user_id'));	
 			}
+			array_push($title_array,
+				array('title' => _('Key'), 'rel' => 'key_token'));
 		}
 		$title_array[] = array('title' => _('Actions'), 'class' => 'header-actions header-nosort');
 
@@ -540,18 +540,21 @@ class fm_users {
 		$disabled_class = ($row->$property == 'disabled') ? ' class="disabled"' : null;
 		$icons = null;
 
+		$current_user_can_do_everything = currentUserCan('do_everything');
+		$current_user_can_manage_users = currentUserCan('manage_users');
+
 		if ($type == 'users') {
 			$id = $row->user_id;
 			$default_id = getDefaultAdminID();
-			if (currentUserCan('manage_users') && $_SESSION['user']['id'] != $row->user_id) {
+			if ($current_user_can_manage_users && $_SESSION['user']['id'] != $row->user_id) {
 				$edit_status = '';
-				if ($row->user_template_only == 'yes' && (currentUserCan('do_everything') || (!userCan($row->user_id, 'do_everything')))) {
+				if ($row->user_template_only == 'yes' && ($current_user_can_do_everything || (!userCan($row->user_id, 'do_everything')))) {
 					$edit_status .= '<a class="copy_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['copy'] . '</a>';
 					$edit_status .= '<a class="edit_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 				}
 				if ($row->user_template_only == 'no') {
 					if ($row->user_id != $_SESSION['user']['id']) {
-						if ((currentUserCan('do_everything') || !userCan($row->user_id, 'do_everything')) && $row->user_id != $default_id) {
+						if (($current_user_can_do_everything || !userCan($row->user_id, 'do_everything')) && $row->user_id != $default_id) {
 							$edit_status .= '<a class="edit_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 							$edit_status .= '<a class="status_form_link" href="#" rel="';
 							$edit_status .= ($row->user_status == 'active') ? 'disabled">' . $__FM_CONFIG['icons']['disable'] : 'active">' . $__FM_CONFIG['icons']['enable'];
@@ -566,7 +569,7 @@ class fm_users {
 						$edit_status .= sprintf('<center>%s</center>', _('Enabled'));
 					}
 				}
-				if ((currentUserCan('do_everything') || !userCan($row->user_id, 'do_everything')) && $row->user_id != $default_id) {
+				if (($current_user_can_do_everything || !userCan($row->user_id, 'do_everything')) && $row->user_id != $default_id) {
 					$edit_status .= '<a href="#" name="' . $type . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				}
 			} else {
@@ -577,7 +580,7 @@ class fm_users {
 			$template_user = ($row->user_template_only == 'yes') ? $__FM_CONFIG['icons']['template_user'] : null;
 			/** API key */
 			if (array_key_exists('keys', $__FM_CONFIG['users']['avail_types']) && $key_status = getNameFromID($row->user_id, 'fm_keys', 'key_', 'user_id', 'key_status')) {
-				$icons[] = sprintf('<a href="?type=keys" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-key %s" aria-hidden="true"></i></a>', _('API key exists'), ($key_status == 'active') ? 'secure' : '');
+				$icons[] = sprintf('<a href="?type=keys%s" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-key" aria-hidden="true"></i></a>', ($current_user_can_manage_users) ? '&uid=' . $row->user_id : null, _('API key exists'));
 			}
 
 			/** 2FA enabled */
@@ -616,7 +619,7 @@ class fm_users {
 			$name = $row->user_login;
 		} elseif ($type == 'groups') {
 			$id = $row->group_id;
-			if (currentUserCan('do_everything') || (!groupCan($row->group_id, 'do_everything') && currentUserCan('manage_users'))) {
+			if ($current_user_can_do_everything || (!groupCan($row->group_id, 'do_everything') && $current_user_can_manage_users)) {
 				$edit_status = '<a class="edit_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 				$edit_status .= '<a href="#" name="' . $type . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 			} else {
@@ -638,8 +641,7 @@ class fm_users {
 			$name = $row->group_name;
 		} elseif ($type == 'keys') {
 			$edit_status = $id = $user_column = '';
-			$can_manage_users = currentUserCan('manage_users');
-			if ($can_manage_users || $row->user_id == $_SESSION['user']['id']) {
+			if ($current_user_can_manage_users || $row->user_id == $_SESSION['user']['id']) {
 				$id = $row->key_id;
 				$edit_status .= '<a class="status_form_link" href="#" rel="';
 				$edit_status .= ($row->key_status == 'active') ? 'disabled' : 'active';
@@ -649,13 +651,13 @@ class fm_users {
 				$edit_status .= '<a href="#" name="' . $type . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 			}
 
-			if ($can_manage_users) {
+			if ($current_user_can_manage_users) {
 				$user_column = sprintf('<td>%s</td>', getNameFromID($row->user_id, 'fm_users', 'user_', 'user_id', 'user_login'));
 			}
 
 			$column = "<td></td>
-			<td>{$row->key_token}</td>
-			$user_column";
+			$user_column
+			<td>{$row->key_token}</td>";
 			$name = $row->key_token;
 		}
 		
