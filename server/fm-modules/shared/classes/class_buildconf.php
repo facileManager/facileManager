@@ -48,18 +48,26 @@ class fm_shared_module_buildconf {
 			if (strpos($check_status, _('Your configuration is loadable.')) === false) {
 				$i = 1;
 				$contents_array = explode("\n", $contents);
+				$preview_line_numbers = $preview_line_content = [];
 				foreach ($contents_array as $line) {
 					$line = htmlentities($line);
-					$preview .= '<font color="#ccc">' . str_pad($i, strlen(count($contents_array)), ' ', STR_PAD_LEFT) . '</font> ';
 					if (strpos($check_status, "$filename:$i:") !== false || strpos($check_status, "$filename line $i:") !== false) {
-						$preview .= sprintf('<font color="red">%s</font>', $line);
+						$preview_line_numbers[] = sprintf('<a name="%1$s:%2$d">%2$d</a>', $filename, $i);
+						$preview_line_content[] = sprintf('<font color="red">%s</font>', $line);
+						$check_status = str_replace("$filename:$i:", sprintf('%1$s:<a href="#%1$s:%2$d">%2$d</a>:', $filename, $i), $check_status);
 					} else {
-						$preview .= $line;
+						$preview_line_numbers[] = $i;
+						$preview_line_content[] = $line;
 					}
-					$preview .= "\n";
 					$i++;
 				}
-				$preview .= "\n";
+				$preview .= sprintf('<file class="flex">
+					<div class="line-number">%s</div>
+					<div class="file-content">%s</div>
+				</file>' . "\n",
+					implode("\n", $preview_line_numbers),
+					implode("\n", $preview_line_content)
+				);
 			} else {
 				$preview .= "$contents\n\n";
 			}

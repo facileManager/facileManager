@@ -2210,6 +2210,16 @@ a.subelement_edit img {
 	font-size: 9pt;
 }
 
+.line-number {
+	text-align: right;
+	color: #ccc;
+	padding-right: 10px;
+}
+
+.line-number a {
+	color: red;
+}
+
 #tabs {
 	position: relative;
 	height: 300px;
