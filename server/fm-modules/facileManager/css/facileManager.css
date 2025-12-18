@@ -2224,6 +2224,7 @@ a.subelement_edit img {
 	position: relative;
 	height: 300px;
 	max-height: calc(100vh - 15em);
+	width: 36em;
 	clear: both;
 }
 #tab {
@@ -2270,7 +2271,7 @@ a.subelement_edit img {
 #tabs.window-tall {
 	height: 35em;
 }
-#tabs.window-tall.window-wide {
+#tabs.window-wide {
 	min-width: 45em;
 }
 
