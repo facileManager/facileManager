@@ -1022,21 +1022,25 @@ if (!isset($__FM_CONFIG)) {
 					doLogout();
 					return false;
 				}
-				$("#response").html(response);
-				$("#response")
-					.css("opacity", 0)
-					.slideDown(400, function() {
-						$("#response").animate(
-							{ opacity: 1 },
-							{ queue: false, duration: 200 }
-						);
-					});
-				$this.html(\'' . $__FM_CONFIG['icons']['pwd_reset'] . '\');
-				if (response.toLowerCase().indexOf("response_close") == -1) {
-					$("#response").delay(3000).fadeTo(200, 0.00, function() {
-						$("#response").slideUp(400);
-					});
+				if (response.toLowerCase().indexOf("response_close") >= 0) {
+					$("#response").html(response);
+					$("#response")
+						.css("opacity", 0)
+						.slideDown(400, function() {
+							$("#response").animate(
+								{ opacity: 1 },
+								{ queue: false, duration: 200 }
+							);
+						});
+					$this.html(\'' . $__FM_CONFIG['icons']['fail'] . '\').fadeIn(200);
+				} else {
+					$this.html(\'' . $__FM_CONFIG['icons']['ok'] . '\').fadeIn(200);
 				}
+				setTimeout(function() {
+					$this.stop(true,true).fadeOut(200, function() {
+						$this.html(\'' . $__FM_CONFIG['icons']['pwd_reset'] . '\').fadeIn(200);
+					});
+				}, 3000);
 			}
 		});
 		
@@ -1197,6 +1201,7 @@ if (!isset($__FM_CONFIG)) {
 			otp_field.val(otp_value);
 		}
 	});
+
 	/* Generate 2FA code when two-factor is in request uri */
 	function generateOtpIfOnTwoFactor() {
 		if (window.location.pathname.replace(/[?#].*$/,"").replace(/\/+$/,"").split("/").pop() == "two-factor") {
