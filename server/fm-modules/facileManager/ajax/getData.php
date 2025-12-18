@@ -97,7 +97,7 @@ if (array_key_exists('otp_2fa', $_POST)) {
 					<img src="' . $tfa->getQRCodeImageAsDataUri($fm_name, $user_2fa_setup_secret) . '">
 					<div>
 						<p>' . _('Scan the QR code with your authenticator app and enter the generated code below to complete setup.') . '</p>
-						<p>' . sprintf(_('Alternatively, you can manually configure your authenticator app using the %s and then enter the generated code to complete setup.'), sprintf('<a href="javascript:void(0)" class="tooltip-left" data-tooltip="%s">%s</a>', chunk_split($user_2fa_setup_secret, 4, ' '), _('setup key'))) . '</p>
+						<p>' . sprintf(_('Alternatively, you can manually configure your authenticator app using the %s and then enter the generated code to complete setup.'), sprintf('<a class="tooltip-left" data-tooltip="%s">%s</a>', chunk_split($user_2fa_setup_secret, 4, ' '), _('setup key'))) . '</p>
 					</div>
 				</div>
 				<input type="hidden" name="verify_otp" id="verify_otp" value="verify" />

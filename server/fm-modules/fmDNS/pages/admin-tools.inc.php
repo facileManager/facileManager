@@ -87,7 +87,7 @@ $tools_option[] = sprintf('<div id="admin-tools-select">
 					<th>%s:</th>
 					<td>
 						%s<br />
-						<p id="table_edits" name="domains"><a id="plus" href="#" title="%s" name="forward">+ %s</a></p>
+						<p id="table_edits" name="domains"><a id="plus" title="%s" name="forward">+ %s</a></p>
 					</td>
 				</tr>
 			</table>

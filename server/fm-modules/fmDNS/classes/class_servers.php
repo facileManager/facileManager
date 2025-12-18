@@ -488,7 +488,7 @@ class fm_module_servers extends fm_shared_module_servers {
 			$os_image = ($row->server_type == 'remote') ? '<i class="fa fa-globe fa-2x grey" style="font-size: 1.5em" title="' . __('Remote server') . '" aria-hidden="true"></i>' : setOSIcon($row->server_os_distro);
 
 			$edit_actions = $preview = ($row->server_type != 'remote') ? '<a href="preview.php" onclick="javascript:void window.open(\'preview.php?server_serial_no=' . $row->server_serial_no . '\',\'1356124444538\',\'' . $__FM_CONFIG['default']['popup']['dimensions'] . ',toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0\');return false;">' . $__FM_CONFIG['icons']['preview'] . '</a>' : null;
-			if ($row->server_url_server_type) $icons[] = sprintf('<a href="#" class="tooltip-top mini-icon" data-tooltip="%s"><i class="fa fa-globe" aria-hidden="true"></i></a>', sprintf(__('This server hosts URL redirects with %s for the URL RR'), $row->server_url_server_type));
+			if ($row->server_url_server_type) $icons[] = sprintf('<a class="tooltip-top mini-icon" data-tooltip="%s"><i class="fa fa-globe" aria-hidden="true"></i></a>', sprintf(__('This server hosts URL redirects with %s for the URL RR'), $row->server_url_server_type));
 			$checkbox = null;
 
 			if (currentUserCan('build_server_configs', $_SESSION['module']) && $row->server_installed == 'yes') {
@@ -499,9 +499,9 @@ class fm_module_servers extends fm_shared_module_servers {
 			}
 			if (currentUserCan('manage_servers', $_SESSION['module'])) {
 				if ($row->server_type != 'url-only') $icons[] = sprintf('<a href="config-options.php?server_id=%d" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-sliders" aria-hidden="true"></i></a>', $row->server_id, __('Configure Additional Options'));
-				$edit_status = '<a class="edit_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+				$edit_status = '<a class="edit_form_link" name="' . $type . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 				if ($row->server_installed == 'yes' || $row->server_type == 'remote') {
-					$edit_status .= '<a class="status_form_link" href="#" rel="';
+					$edit_status .= '<a class="status_form_link" rel="';
 					$edit_status .= ($row->server_status == 'active') ? 'disabled' : 'active';
 					$edit_status .= '">';
 					$edit_status .= ($row->server_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
@@ -512,7 +512,7 @@ class fm_module_servers extends fm_shared_module_servers {
 					OR group_slaves='{$row->server_id}' OR group_slaves LIKE '{$row->server_id};%' OR group_slaves LIKE '%;{$row->server_id};%' OR group_slaves LIKE '%;{$row->server_id}')";
 				$result = $fmdb->get_results($query);
 				if (!$fmdb->num_rows) {
-					$edit_status .= '<a href="#" class="delete" name="' . $type . '">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+					$edit_status .= '<a class="delete" name="' . $type . '">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				}
 			}
 			if (isset($row->server_client_version) && version_compare($row->server_client_version, getOption('client_version', 0, $_SESSION['module']), '<')) {
@@ -573,12 +573,12 @@ HTML;
 
 			if (currentUserCan('manage_servers', $_SESSION['module'])) {
 				$checkbox = '<input type="checkbox" name="group_list[]" value="g' . $row->group_id .'" />';
-				$edit_status = '<td class="column-actions"><a class="edit_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+				$edit_status = '<td class="column-actions"><a class="edit_form_link" name="' . $type . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 				$query = "SELECT domain_id FROM fm_{$__FM_CONFIG['fmDNS']['prefix']}domains WHERE account_id='{$_SESSION['user']['account_id']}' AND domain_status!='deleted' AND 
 					(domain_name_servers='g_{$row->group_id}' OR domain_name_servers LIKE 'g_{$row->group_id};%' OR domain_name_servers LIKE '%;g_{$row->group_id};%' OR domain_name_servers LIKE '%;g_{$row->group_id}')";
 				$result = $fmdb->get_results($query);
 				if (!$fmdb->num_rows) {
-					$edit_status .= '<a href="#" class="delete" name="' . $type . '">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+					$edit_status .= '<a class="delete" name="' . $type . '">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				}
 				$edit_status .= '</td>';
 			}
@@ -715,15 +715,15 @@ FORM;
 					<td width="67&#37;"><input name="server_name" id="server_name" type="text" value="%s" size="40" placeholder="dns1.local" maxlength="%d" class="required" /></td>
 				</tr>
 				<tr>
-					<th width="33&#37;" scope="row"><label for="server_type">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+					<th width="33&#37;" scope="row"><label for="server_type">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
 					<td width="67&#37;">%s</td>
 				</tr>
 				<tr class="local_server_options url_only_options">
-					<th width="33&#37;" scope="row"><label for="server_address">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+					<th width="33&#37;" scope="row"><label for="server_address">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
 					<td width="67&#37;"><input name="server_address" id="server_address" type="text" value="%s" size="40" placeholder="192.168.1.100" /></td>
 				</tr>
 				<tr class="local_server_options">
-					<th width="33&#37;" scope="row"><label for="server_key_with_rndc">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+					<th width="33&#37;" scope="row"><label for="server_key_with_rndc">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
 					<td width="67&#37;">%s</td>
 				</tr>
 				<tr class="local_server_options">
@@ -752,7 +752,7 @@ FORM;
 					<td width="67&#37;"><input name="server_zones_dir" id="server_zones_dir" type="text" value="%s" size="40" placeholder="%s" maxlength="%s" /></td>
 				</tr>
 				<tr class="local_server_options">
-					<th width="33&#37;" scope="row"><label for="server_slave_zones_dir">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+					<th width="33&#37;" scope="row"><label for="server_slave_zones_dir">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
 					<td width="67&#37;"><input name="server_slave_zones_dir" id="server_slave_zones_dir" type="text" value="%s" size="40" placeholder="%s" maxlength="%s" /></td>
 				</tr>
 			</table>
@@ -847,7 +847,7 @@ FORM;
 				<tr>
 					<th width="33&#37;" scope="row">%s</th>
 					<td width="67&#37;">
-						<input type="checkbox" id="group_auto_also_notify" name="group_auto_also_notify" value="yes" %s /><label for="group_auto_also_notify"> %s</label> <a href="#" class="tooltip-left" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
+						<input type="checkbox" id="group_auto_also_notify" name="group_auto_also_notify" value="yes" %s /><label for="group_auto_also_notify"> %s</label> <a class="tooltip-left" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
 					</td>
 				</tr>
 				<tr>

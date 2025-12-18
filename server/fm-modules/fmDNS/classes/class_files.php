@@ -238,14 +238,14 @@ class fm_dns_files {
 		
 		if (currentUserCan('manage_servers', $_SESSION['module'])) {
 			$edit_status = '<td class="column-actions">';
-			$edit_status .= '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 			if (!getConfigAssoc($row->file_id, 'file')) {
-				$edit_status .= '<a class="status_form_link" href="#" rel="';
+				$edit_status .= '<a class="status_form_link" rel="';
 				$edit_status .= ($row->file_status == 'active') ? 'disabled' : 'active';
 				$edit_status .= '">';
 				$edit_status .= ($row->file_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 				$edit_status .= '</a>';
-				$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				$checkbox = '<input type="checkbox" name="bulk_list[]" value="' . $row->file_id .'" />';
 			}
 			$edit_status .= '</td>';
@@ -316,7 +316,7 @@ HTML;
 					<td width="67&#37;">%s</td>
 				</tr>
 				<tr>
-					<th width="33&#37;" scope="row"><label for="file_name">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+					<th width="33&#37;" scope="row"><label for="file_name">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
 					<td width="67&#37;"><input name="file_name" id="file_name" type="text" value="%s" size="40" placeholder="custom-file" maxlength="%d" class="required" /></td>
 				</tr>
 				<tr>

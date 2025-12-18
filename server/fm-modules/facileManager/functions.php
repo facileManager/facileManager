@@ -303,7 +303,7 @@ function printHeader($subtitle = 'auto', $css = 'facileManager', $menu = 'menu')
 		$module_js
 	</head>
 <body>
-<a href="#" id="scroll-to-top" class=""></a>
+<a id="scroll-to-top" class=""></a>
 $head
 HTML;
 }
@@ -385,7 +385,7 @@ function getTopHeader() {
 	$module_menu = <<<HTML
 		<div id="menu_mainitems" class="module-menu">
 		<ul>
-			<li class="has-sub"><a href="#"><i class="fa fa-bars fa-lg menu-icon" aria-hidden="true"></i></a>
+			<li class="has-sub"><a><i class="fa fa-bars fa-lg menu-icon" aria-hidden="true"></i></a>
 				<ul class="sub-right">
 					<li><a href="https://docs.facileManager.com" target="_blank"><span class="menu-icon"><i class="fa fa-life-ring" aria-hidden="true"></i></span><span>$help</span></span> <span class="menu-icon mini-icon grey"><i class="fa fa-external-link" aria-hidden="true"></i></a></li>
 					<li><a href="https://github.com/facileManager/facileManager/issues" target="_blank"><span class="menu-icon"><i class="fa fa-github" aria-hidden="true"></i></span><span>$github_issues</span> <span class="menu-icon mini-icon grey"><i class="fa fa-external-link" aria-hidden="true"></i></span></a></li>
@@ -405,10 +405,10 @@ HTML;
 	}
 
 	if (defined('FM_INCLUDE_SEARCH') && FM_INCLUDE_SEARCH === true) {
-		$sections['right'][] = sprintf('<div class="flex-apart"><a class="search" href="#" title="%s"><i class="fa fa-search fa-lg"></i></a>%s</div>', _('Search this page'), displaySearchForm());
+		$sections['right'][] = sprintf('<div class="flex-apart"><a class="search" title="%s"><i class="fa fa-search fa-lg"></i></a>%s</div>', _('Search this page'), displaySearchForm());
 	}
 
-	$sections['right'][] = sprintf('<a class="process_all_updates tooltip-bottom" href="#" data-tooltip="%s"><i class="fa fa-refresh fa-lg"></i></a><span class="update_count"></span>', _('Process all available updates now'));
+	$sections['right'][] = sprintf('<a class="process_all_updates tooltip-bottom" data-tooltip="%s"><i class="fa fa-refresh fa-lg"></i></a><span class="update_count"></span>', _('Process all available updates now'));
 
 	$return_parts = '';
 	foreach ($sections as $class => $section_array) {
@@ -553,7 +553,7 @@ HTML;
 	$auth_method = getOption('auth_method');
 	if ($auth_method) {
 		$star = currentUserCan('do_everything') ? $__FM_CONFIG['icons']['star'] . ' ' : null;
-		$profile_link = ($auth_method) ? sprintf('<div><a class="account_settings" id="%s" href="#"><i class="fa fa-user-circle-o" aria-hidden="true"></i>%s</a></div>' . "\n", $_SESSION['user']['id'], _('Edit Profile')) : null;
+		$profile_link = ($auth_method) ? sprintf('<div><a class="account_settings" id="%s"><i class="fa fa-user-circle-o" aria-hidden="true"></i>%s</a></div>' . "\n", $_SESSION['user']['id'], _('Edit Profile')) : null;
 		$logout = _('Logout');
 		$name = (!empty($_SESSION['user']['display_name'])) ? $_SESSION['user']['display_name'] : $_SESSION['user']['name'];
 		$account_info = <<<HTML
@@ -1728,7 +1728,7 @@ function displayProgress($step, $result, $process = 'noisy', $error = null) {
 		}
 		$output = '<i class="fa fa-times fa-lg fail"></i>';
 		if ($error) {
-			$output .= ' <a href="#" class="error-message tooltip-right" data-tooltip="' . $error . '"><i class="fa fa-question-circle fa-lg"></i></a>';
+			$output .= ' <a class="error-message tooltip-right" data-tooltip="' . $error . '"><i class="fa fa-question-circle fa-lg"></i></a>';
 		}
 		$status = 'failed';
 	}
@@ -2076,7 +2076,7 @@ function printPageHeader($message = null, $title = null, $allowed_to_add = false
 		$class, $style, $message, $title,
 		($allowed_to_add) ? sprintf('<div>%s</div>', displayAddNew($name, $rel)) : null,
 		($allowed_to_add && $addl_buttons) ? sprintf('<div>%s</div>', $addl_buttons) : null,
-		(isset($comment)) ? sprintf('<a href="#" class="tooltip-right" data-tooltip="%s"><i class="fa fa-exclamation-triangle fa-lg notice grey" aria-hidden="true"></i></a>', $comment) : null,
+		(isset($comment)) ? sprintf('<a class="tooltip-right" data-tooltip="%s"><i class="fa fa-exclamation-triangle fa-lg notice grey" aria-hidden="true"></i></a>', $comment) : null,
 		implode("\n", $addl_title_blocks)
 	);
 }
@@ -3043,7 +3043,7 @@ function displayAddNew($name = null, $rel = null, $title = null, $style = 'defau
 		$title = 'class="tooltip-' . $position . ' mini-icon" data-tooltip="' . $title . '"';
 	}
 	
-	return sprintf('<a id="%s" href="#" %s%s%s>%s</a>', $id, $title, $name, $rel, $image);
+	return sprintf('<a id="%s" %s%s%s>%s</a>', $id, $title, $name, $rel, $image);
 }
 
 
@@ -3737,7 +3737,7 @@ function formatError($message, $option = null) {
 	$addl_text = null;
 	
 	if ($option == 'sql') {
-		$addl_text = ($fmdb->last_error) ? sprintf(' [<a class="more" href="#">%s</a>]', _('more')) . $fmdb->last_error : null;
+		$addl_text = ($fmdb->last_error) ? sprintf(' [<a class="more">%s</a>]', _('more')) . $fmdb->last_error : null;
 		$message = displayResponseClose($message . $addl_text);
 	}
 	

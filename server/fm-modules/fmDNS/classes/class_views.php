@@ -240,18 +240,18 @@ class fm_dns_views {
 		$icons = sprintf('<a href="config-options.php?view_id=%d%s" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-sliders" aria-hidden="true"></i></a>', $row->view_id, $server_serial_no, __('Configure Additional Options'));
 		if (currentUserCan('manage_servers', $_SESSION['module'])) {
 			$edit_status = '<td class="column-actions">';
-			$edit_status .= '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 
 			/** Are there any associated zones? */
 			basicGetList('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_id', 'domain_', "AND (`domain_view`={$row->view_id} or `domain_view` LIKE '{$row->view_id};%' or `domain_view` LIKE '%;{$row->view_id}' or `domain_view` LIKE '%;{$row->view_id};%')");
 			if (!$fmdb->num_rows) {
-				$edit_status .= '<a class="status_form_link" href="#" rel="';
+				$edit_status .= '<a class="status_form_link" rel="';
 				$edit_status .= ($row->view_status == 'active') ? 'disabled' : 'active';
 				$edit_status .= '">';
 				$edit_status .= ($row->view_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 				$edit_status .= '</a>';
 
-				$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				$edit_status .= '</td>';
 				$checkbox = '<input type="checkbox" name="bulk_list[]" value="' . $row->view_id .'" />';
 			}
@@ -321,7 +321,7 @@ HTML;
 					<td width="67&#37;"><input name="view_name" id="view_name" type="text" value="%s" size="40" placeholder="internal" maxlength="%d" class="required" /></td>
 				</tr>
 				<tr>
-					<th width="33&#37;" scope="row"><label for="view_key_id">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+					<th width="33&#37;" scope="row"><label for="view_key_id">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
 					<td width="67&#37;">%s</td>
 				</tr>
 				<tr>

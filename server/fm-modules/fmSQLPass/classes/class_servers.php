@@ -263,13 +263,13 @@ class fm_module_servers extends fm_shared_module_servers {
 		
 		if (currentUserCan('manage_servers', $_SESSION['module'])) {
 			$edit_status = '<td class="column-actions">';
-			$edit_status .= '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
-			$edit_status .= '<a class="status_form_link" href="#" rel="';
+			$edit_status .= '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="status_form_link" rel="';
 			$edit_status .= ($row->server_status == 'active') ? 'disabled' : 'active';
 			$edit_status .= '">';
 			$edit_status .= ($row->server_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 			$edit_status .= '</a>';
-			$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+			$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 			$edit_status .= '</td>';
 		} else {
 			$edit_status = null;
@@ -377,14 +377,14 @@ HTML;
 				<tr>
 					<th width="33&#37;" scope="row">
 						<label for="server_cred_user">%s</label>
-						<a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
+						<a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
 					</th>
 					<td width="67&#37;"><input name="server_credentials[]" id="server_cred_user" type="text" value="%s" size="40" /></td>
 				</tr>
 				<tr>
 					<th width="33&#37;" scope="row">
 						<label for="server_cred_password">%s</label>
-						<a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
+						<a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
 					</th>
 					<td width="67&#37;"><input name="server_credentials[]" id="server_cred_password" type="password" value="%s" size="40" /></td>
 				</tr>

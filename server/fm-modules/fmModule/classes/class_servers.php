@@ -251,15 +251,15 @@ class fm_module_servers extends fm_shared_module_servers {
 			}
 		}
 		if (currentUserCan('manage_servers', $_SESSION['module'])) {
-			$edit_status = '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status = '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 			if ($row->server_installed == 'yes') {
-				$edit_status .= '<a class="status_form_link" href="#" rel="';
+				$edit_status .= '<a class="status_form_link" rel="';
 				$edit_status .= ($row->server_status == 'active') ? 'disabled' : 'active';
 				$edit_status .= '">';
 				$edit_status .= ($row->server_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 				$edit_status .= '</a>';
 			}
-			$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+			$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 		}
 		$edit_name = currentUserCan(array('manage_policies', 'view_all'), $_SESSION['module']) ? '<a href="config-policy.php?server_serial_no=' . $row->server_serial_no . '">' . $row->server_name . '</a>' : $row->server_name;
 		

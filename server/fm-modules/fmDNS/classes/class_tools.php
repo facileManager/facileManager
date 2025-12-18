@@ -737,7 +737,7 @@ BODY;
 		$row .= "</td>\n";
 		$row .= '<td style="text-align: center;"><input type="hidden" name="' . $db_action . '[' . $id . '][record_append]" value="' . $array['record_append'] . '" />' . $array['record_append'] . "</td>\n";
 		$row .= '<td><label><input type="checkbox" class="import_skip" name="' . $db_action . '[' . $id . '][record_skip]" ' . $checked . ' />' . __('Skip Import') . '</label>';
-		$row .= ($editable && $array['record_type'] == 'A') ? '<br /><label><input type="checkbox" name="' . $db_action . '[' . $id . '][PTR]" />' . __('Create PTR') . '</label> <a href="#" class="tooltip-left" data-tooltip="' . __('This will only work if the reverse zone is already created or the Create Reverse Zones Automatically setting is enabled') . '"><i class="fa fa-question-circle"></i></a>' : null;
+		$row .= ($editable && $array['record_type'] == 'A') ? '<br /><label><input type="checkbox" name="' . $db_action . '[' . $id . '][PTR]" />' . __('Create PTR') . '</label> <a class="tooltip-left" data-tooltip="' . __('This will only work if the reverse zone is already created or the Create Reverse Zones Automatically setting is enabled') . '"><i class="fa fa-question-circle"></i></a>' : null;
 		$row .= "</td>\n";
 		$row .= "</tr>\n";
 

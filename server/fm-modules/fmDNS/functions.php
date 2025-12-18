@@ -191,7 +191,7 @@ function buildModuleToolbar() {
 		
 		$domain = displayFriendlyDomainName($domain_name);
 		$icon = (getNameFromID($_REQUEST['domain_id'], 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_dnssec') == 'yes') ? sprintf('<span><i class="mini-icon fa fa-lock" title="%s" aria-hidden="true"></i></span>', __('Zone is secured with DNSSEC')) : null;
-		$pending_changes = sprintf('<a href="#" class="tooltip-bottom" data-tooltip="%s"><i class="fa fa-circle" aria-hidden="true"></i></a>', __('Pending unsaved changes exist'));
+		$pending_changes = sprintf('<a class="tooltip-bottom" data-tooltip="%s"><i class="fa fa-circle" aria-hidden="true"></i></a>', __('Pending unsaved changes exist'));
 
 		if (!class_exists('fm_dns_zones')) {
 			include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_zones.php');

@@ -132,11 +132,11 @@ class fm_dhcp_leases {
 			if ($hardware) {
 				basicGet('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config', 'hardware', 'config_', 'config_name', "AND config_type='host' AND config_is_parent='no' AND config_data LIKE '%{$hardware}'");
 				if (!$fmdb->num_rows) {
-					$edit_status .= '<a href="#" class="edit_form_link" name="reserve_address" title="' . __('Tag as a fixed address (reservation)') . '"><i class="fa fa-tag" aria-hidden="true"></i></a> ';
+					$edit_status .= '<a class="edit_form_link" name="reserve_address" title="' . __('Tag as a fixed address (reservation)') . '"><i class="fa fa-tag" aria-hidden="true"></i></a> ';
 				}
 			}
 
-			$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+			$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 			$edit_status = '<td class="column-actions">' . $edit_status . '</td>';
 			$checkbox = '<td><input type="checkbox" name="bulk_list[]" value="' . $ip .'" /></td>';
 		}

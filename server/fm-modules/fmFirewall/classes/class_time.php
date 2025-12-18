@@ -199,14 +199,14 @@ class fm_module_time {
 		$edit_status = sprintf('<span rel="t%s">%s</span>', $row->time_id, $__FM_CONFIG['module']['icons']['search']);
 		
 		if (currentUserCan('manage_time', $_SESSION['module'])) {
-			$edit_status .= '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
-			$edit_status .= '<a class="status_form_link" href="#" rel="';
+			$edit_status .= '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="status_form_link" rel="';
 			$edit_status .= ($row->time_status == 'active') ? 'disabled' : 'active';
 			$edit_status .= '">';
 			$edit_status .= ($row->time_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 			$edit_status .= '</a>';
 			if (!isItemInPolicy($row->time_id, 'time')) {
-				$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				$checkbox = '<td><input type="checkbox" name="bulk_list[]" value="' . $row->time_id .'" /></td>';
 			} else {
 				$checkbox = '<td></td>';
@@ -294,7 +294,7 @@ HTML;
 		$time_zone_form = '<h4>' . _('Timezone') . '</h4>' . buildSelect('time_zone', 'time_zone', enumMYSQLSelect('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'time', 'time_zone'), $time_zone);
 
 		$checked = ($time_contiguous) ? 'checked' : null;
-		$time_options = sprintf('<input name="time_contiguous" id="time_contiguous" value="yes" type="checkbox" %s /><label for="time_contiguous">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a><br />',
+		$time_options = sprintf('<input name="time_contiguous" id="time_contiguous" value="yes" type="checkbox" %s /><label for="time_contiguous">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a><br />',
 			$checked, __('Use contiguous time'), __('When end time is smaller than start time, match this as a single time period instead of distinct intervals.')
 			);
 		
@@ -336,14 +336,14 @@ HTML;
 					<th width="33&#37;" scope="row">%s</th>
 					<td width="67&#37;" style="white-space: nowrap;">
 						%s<br />
-						<input name="time_weekdays_not" id="time_weekdays_not" value="!" type="checkbox" %s /><label for="time_weekdays_not">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
+						<input name="time_weekdays_not" id="time_weekdays_not" value="!" type="checkbox" %s /><label for="time_weekdays_not">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
 					</td>
 				</tr>
 				<tr>
 					<th width="33&#37;" scope="row">%s</th>
 					<td width="67&#37;" style="white-space: nowrap;">
 						%s<br />
-						<input name="time_monthdays_not" id="time_monthdays_not" value="!" type="checkbox" %s /><label for="time_monthdays_not">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
+						<input name="time_monthdays_not" id="time_monthdays_not" value="!" type="checkbox" %s /><label for="time_monthdays_not">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
 					</td>
 				</tr>
 				<tr>

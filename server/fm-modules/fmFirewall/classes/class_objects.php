@@ -194,9 +194,9 @@ class fm_module_objects {
 		$edit_status = sprintf('<span rel="o%s">%s</span>', $row->object_id, $__FM_CONFIG['module']['icons']['search']);
 		
 		if (currentUserCan('manage_objects', $_SESSION['module'])) {
-			$edit_status .= '<a class="edit_form_link" name="' . $row->object_type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="edit_form_link" name="' . $row->object_type . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 			if (!isItemInPolicy($row->object_id, 'object')) {
-				$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				$checkbox = '<td><input type="checkbox" name="bulk_list[]" value="' . $row->object_id .'" /></td>';
 			} else {
 				$checkbox = '<td></td>';

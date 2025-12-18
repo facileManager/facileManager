@@ -549,31 +549,31 @@ class fm_users {
 			if ($current_user_can_manage_users && $_SESSION['user']['id'] != $row->user_id) {
 				$edit_status = '';
 				if ($row->user_template_only == 'yes' && ($current_user_can_do_everything || (!userCan($row->user_id, 'do_everything')))) {
-					$edit_status .= '<a class="copy_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['copy'] . '</a>';
-					$edit_status .= '<a class="edit_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+					$edit_status .= '<a class="copy_form_link" name="' . $type . '">' . $__FM_CONFIG['icons']['copy'] . '</a>';
+					$edit_status .= '<a class="edit_form_link" name="' . $type . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 				}
 				if ($row->user_template_only == 'no') {
 					if ($row->user_id != $_SESSION['user']['id']) {
 						if (($current_user_can_do_everything || !userCan($row->user_id, 'do_everything')) && $row->user_id != $default_id) {
-							$edit_status .= '<a class="edit_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
-							$edit_status .= '<a class="status_form_link" href="#" rel="';
+							$edit_status .= '<a class="edit_form_link" name="' . $type . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+							$edit_status .= '<a class="status_form_link" rel="';
 							$edit_status .= ($row->user_status == 'active') ? 'disabled">' . $__FM_CONFIG['icons']['disable'] : 'active">' . $__FM_CONFIG['icons']['enable'];
 							$edit_status .= '</a>';
 						}
 
 						/** Cannot change password without mail_enable defined */
 						if (getOption('mail_enable') && $row->user_auth_type != 2 && $row->user_template_only == 'no') {
-							$edit_status .= '<a class="reset_password" id="' . $row->user_login . '" href="#">' . $__FM_CONFIG['icons']['pwd_reset'] . '</a>';
+							$edit_status .= '<a class="reset_password" id="' . $row->user_login . '">' . $__FM_CONFIG['icons']['pwd_reset'] . '</a>';
 						}
 					} else {
 						$edit_status .= sprintf('<center>%s</center>', _('Enabled'));
 					}
 				}
 				if (($current_user_can_do_everything || !userCan($row->user_id, 'do_everything')) && $row->user_id != $default_id) {
-					$edit_status .= '<a href="#" name="' . $type . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+					$edit_status .= '<a name="' . $type . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				}
 			} else {
-				$edit_status = '<a style="width: 110px; margin: auto;" class="account_settings" id="' . $_SESSION['user']['id'] . '" href="#">' . $__FM_CONFIG['icons']['pwd_change'] . '</a>';
+				$edit_status = '<a style="width: 110px; margin: auto;" class="account_settings" id="' . $_SESSION['user']['id'] . '">' . $__FM_CONFIG['icons']['pwd_change'] . '</a>';
 			}
 
 			$star = (userCan($row->user_id, 'do_everything')) ? $__FM_CONFIG['icons']['star'] : null;
@@ -620,8 +620,8 @@ class fm_users {
 		} elseif ($type == 'groups') {
 			$id = $row->group_id;
 			if ($current_user_can_do_everything || (!groupCan($row->group_id, 'do_everything') && $current_user_can_manage_users)) {
-				$edit_status = '<a class="edit_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
-				$edit_status .= '<a href="#" name="' . $type . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status = '<a class="edit_form_link" name="' . $type . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+				$edit_status .= '<a name="' . $type . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 			} else {
 				$edit_status = $id = '';
 			}
@@ -643,12 +643,12 @@ class fm_users {
 			$edit_status = $id = $user_column = '';
 			if ($current_user_can_manage_users || $row->user_id == $_SESSION['user']['id']) {
 				$id = $row->key_id;
-				$edit_status .= '<a class="status_form_link" href="#" rel="';
+				$edit_status .= '<a class="status_form_link" rel="';
 				$edit_status .= ($row->key_status == 'active') ? 'disabled' : 'active';
 				$edit_status .= '">';
 				$edit_status .= ($row->key_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 				$edit_status .= '</a>';
-				$edit_status .= '<a href="#" name="' . $type . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status .= '<a name="' . $type . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 			}
 
 			if ($current_user_can_manage_users) {
@@ -742,7 +742,7 @@ HTML;
 			$field_length = getColumnLength('fm_users', 'user_login');
 			
 			$return_form_rows .= '<tr>
-					<th width="25%" scope="row"><label for="user_email">' . _('E-mail Address') . '</label> <a href="#" class="tooltip-top" data-tooltip="' . _('The e-mail address is used for sending password reset links and 2FA codes.') . '"><i class="fa fa-question-circle"></i></a></th>
+					<th width="25%" scope="row"><label for="user_email">' . _('E-mail Address') . '</label> <a class="tooltip-top" data-tooltip="' . _('The e-mail address is used for sending password reset links and 2FA codes.') . '"><i class="fa fa-question-circle"></i></a></th>
 					<td width="75%"><input name="user_email" id="user_email" type="email" value="' . $user_email . '" size="32" maxlength="' . $field_length . '" ' . $disabled . ' class="required" /></td>
 				</tr>';
 		}

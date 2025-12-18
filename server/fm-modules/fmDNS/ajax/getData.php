@@ -127,8 +127,8 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 
 			printf('<th width="33&#37;" scope="row"><label for="cfg_data">%s</label></th>
 					<td width="67&#37;">
-					<label for="cfg_data_port"><b>Port</b></label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a> <input type="text" id="cfg_data_port" name="cfg_data_port" value="%s" maxlength="5" style="width: 5em;" onkeydown="return validateNumber(event)" />
-					<label for="cfg_data_dscp"><b>DSCP</b></label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a> <input type="text" id="cfg_data_dscp" name="cfg_data_dscp" value="%s" maxlength="2" style="width: 5em;" onkeydown="return validateNumber(event)" /><br />
+					<label for="cfg_data_port"><b>Port</b></label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a> <input type="text" id="cfg_data_port" name="cfg_data_port" value="%s" maxlength="5" style="width: 5em;" onkeydown="return validateNumber(event)" />
+					<label for="cfg_data_dscp"><b>DSCP</b></label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a> <input type="text" id="cfg_data_dscp" name="cfg_data_dscp" value="%s" maxlength="2" style="width: 5em;" onkeydown="return validateNumber(event)" /><br />
 					<input type="hidden" name="cfg_data" class="address_match_element" value="%s" /><br />
 					%s
 					<script>
@@ -188,9 +188,9 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 			printf('<th width="33&#37;" scope="row"><label for="cfg_data">%s</label></th>
 					<td width="67&#37;">
 					<label for="cfg_data_params[port]"><b>Port</b></label> <input type="text" id="cfg_data_params[port]" name="cfg_data_params[port]" value="%s" maxlength="5" style="width: 5em;" onkeydown="return validateNumber(event)" /><br />
-					<label for="cfg_data_params[proxy]"><b>Proxy</b></label>&nbsp;  <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>&nbsp; <input type="text" id="cfg_data_params[proxy]" name="cfg_data_params[proxy]" value="%s" /><br />
-					<label><b>TLS</b></label>&nbsp;  <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>&nbsp; %s<br />
-					<label><b>HTTP</b></label>&nbsp;  <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>&nbsp; %s<br />
+					<label for="cfg_data_params[proxy]"><b>Proxy</b></label>&nbsp;  <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>&nbsp; <input type="text" id="cfg_data_params[proxy]" name="cfg_data_params[proxy]" value="%s" /><br />
+					<label><b>TLS</b></label>&nbsp;  <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>&nbsp; %s<br />
+					<label><b>HTTP</b></label>&nbsp;  <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>&nbsp; %s<br />
 					<label for="cfg_data"><b>Address</b></label> <input type="hidden" name="cfg_data" class="address_match_element" value="%s" /><br />
 					<script>
 					$(".address_match_element").select2({
@@ -225,7 +225,7 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 				$checked = getNameFromID($_POST['cfg_id'], "fm_{$__FM_CONFIG['fmDNS']['prefix']}config", 'cfg_', 'cfg_id', 'cfg_in_clause') == 'no' ? 'checked' : null;
 				$checkbox = sprintf('<br /><input name="cfg_in_clause" id="cfg_in_clause" type="checkbox" value="no" %s /><label for="cfg_in_clause">%s</label>', $checked, __('Define outside of global options clause'));
 			} elseif (array_key_exists('domain_id', $_POST)) {
-				$tooltip = sprintf(' <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>', __('This file will be appended to the zone file as an $INCLUDE statement.'));
+				$tooltip = sprintf(' <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>', __('This file will be appended to the zone file as an $INCLUDE statement.'));
 			}
 
 			printf('<th width="33&#37;" scope="row"><label for="cfg_data">%s</label>%s</th>

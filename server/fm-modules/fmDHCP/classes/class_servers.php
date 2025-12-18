@@ -268,15 +268,15 @@ class fm_module_servers extends fm_shared_module_servers {
 			}
 		}
 		if (currentUserCan('manage_servers', $_SESSION['module'])) {
-			$edit_status = '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status = '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 			if ($row->server_installed == 'yes') {
-				$edit_status .= '<a class="status_form_link" href="#" rel="';
+				$edit_status .= '<a class="status_form_link" rel="';
 				$edit_status .= ($row->server_status == 'active') ? 'disabled' : 'active';
 				$edit_status .= '">';
 				$edit_status .= ($row->server_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 				$edit_status .= '</a>';
 			}
-			$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+			$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 		}
 		
 		if (isset($row->server_client_version) && version_compare($row->server_client_version, getOption('client_version', 0, $_SESSION['module']), '<')) {
@@ -381,7 +381,7 @@ HTML;
 					<td width="67&#37;"><input name="server_name" id="server_name" type="text" value="%s" size="40" placeholder="placeholder" maxlength="%d" class="required" /></td>
 				</tr>
 				<tr>
-					<th width="33&#37;" scope="row"><label for="server_address">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+					<th width="33&#37;" scope="row"><label for="server_address">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
 					<td width="67&#37;"><input name="server_address" id="server_address" type="text" value="%s" size="40" placeholder="192.168.1.100" /></td>
 				</tr>
 				<tr>

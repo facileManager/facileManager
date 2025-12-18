@@ -1380,6 +1380,7 @@ i.text_icon {
 a {
 	color: var(--primary-link-text);
 	text-decoration: none;
+	cursor: pointer;
 }
 a:not(.mini-icon) i.fa-question-circle,
 span:not(.mini-icon) i.fa-question-circle {

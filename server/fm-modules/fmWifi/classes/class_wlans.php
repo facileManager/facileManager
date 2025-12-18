@@ -365,13 +365,13 @@ class fm_wifi_wlans {
 		$icons = array();
 		
 		if (currentUserCan('manage_wlans', $_SESSION['module'])) {
-			$edit_status = '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
-			$edit_status .= '<a class="status_form_link" href="#" rel="';
+			$edit_status = '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="status_form_link" rel="';
 			$edit_status .= ($row->config_status == 'active') ? 'disabled' : 'active';
 			$edit_status .= '">';
 			$edit_status .= ($row->config_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 			$edit_status .= '</a>';
-			$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+			$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 			$edit_status = '<td class="column-actions">' . $edit_status . '</td>';
 			$checkbox = '<input type="checkbox" name="bulk_list[]" value="' . $row->config_id .'" />';
 		}
@@ -502,7 +502,7 @@ HTML;
 		$hw_mode_options = buildSelect('hw_mode', 'hw_mode', $hw_mode_options, $hw_mode);
 		$auth_algs_checked = (str_replace(array('"', "'"), '', $this->getConfig($config_id, 'auth_algs'))) ? 'checked' : null;
 		$macaddr_acl_options = buildSelect('macaddr_acl', 'macaddr_acl', $macaddr_acl_options, $this->getConfig($config_id, 'macaddr_acl'));
-		$macaddr_note = sprintf(' <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>', __('The ACL functionality of hostapd (macaddr_acl) does not seem to work with Raspbian. Therefore, the use of ebtables is recommended to deny clients.'));
+		$macaddr_note = sprintf(' <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>', __('The ACL functionality of hostapd (macaddr_acl) does not seem to work with Raspbian. Therefore, the use of ebtables is recommended to deny clients.'));
 
 		$wpa_passphrase = $this->getConfig($config_id, 'wpa_passphrase');
 		$wpa_key_mgmt = $fm_module_options->populateDefTypeDropdown($fm_module_options->parseDefType('wpa_key_mgmt'), $this->getConfig($config_id, 'wpa_key_mgmt'), 'wpa_key_mgmt');
@@ -512,7 +512,7 @@ HTML;
 		$country_code = ($config_id) ? $this->getConfig($config_id, 'country_code') : $country_code;
 		$country_code = $this->buildConfigOptions('country_code', $country_code);
 		$max_num_sta = $this->getConfig($config_id, 'max_num_sta');
-		$max_num_sta_note = sprintf(' <a href="#" class="tooltip-right" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>', __('Limit the number of clients that can connect or leave empty for the maximum (2007). In addition, you can choose to ignore broadcast Probe Request frames from unassociated clients if the maximum client count has been reached which would discourage clients from trying to associate with this AP if the association would be rejected due to the maximum client limit.'));
+		$max_num_sta_note = sprintf(' <a class="tooltip-right" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>', __('Limit the number of clients that can connect or leave empty for the maximum (2007). In addition, you can choose to ignore broadcast Probe Request frames from unassociated clients if the maximum client count has been reached which would discourage clients from trying to associate with this AP if the association would be rejected due to the maximum client limit.'));
 		$no_probe_resp_if_max_sta_checked = (str_replace(array('"', "'"), '', $this->getConfig($config_id, 'no_probe_resp_if_max_sta'))) ? 'checked' : null;
 
 		$ieee80211n_entry = 'none';
