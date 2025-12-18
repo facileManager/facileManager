@@ -110,6 +110,8 @@
 
 	--eye-attention-unselected: light-dark(#888, #e4e4e4);
 	--eye-attention-selected: var(--menu-select-highlight);
+
+	--menu-side-width: 17em;
 }
 
 /* Disable theme mode selector for browsers that don't support light-dark() */
@@ -435,13 +437,13 @@ div.header-container {
 #menuback {
 	position: relative;
 	background-color: var(--menu-bg);
-	flex: 0 17em;
+	flex: 0 var(--menu-side-width);
 	font-size: 10pt;
 	z-index: 3;
 	flex-direction: column;
 	color: var(--menu-text);
 	height: calc(100vh - 49px);
-	width: 17em;
+	width: var(--menu-side-width);
 }
 #menuback li:hover > a {
 	color: var(--menu-text);
@@ -707,7 +709,7 @@ div.header-container {
 }
 #menu_mainitems.drop-right ul li > ul {
 	top: 0;
-	left: 17em;
+	left: var(--menu-side-width);
 	border-radius: 0 5px 5px 0;
 	box-shadow: rgba(10,10,10,0.4) 5px 15px 40px -5px;
 }
@@ -1463,7 +1465,6 @@ a.delete:hover i {
 	margin: auto;
 	opacity: 1.0;
 	min-width: 500px;
-	max-width: 80%;
 	background-color: var(--form-popup-bg);
 	border: 1px solid #1e1e1e;
 	-webkit-border-radius: 6px;
@@ -1497,7 +1498,7 @@ a.delete:hover i {
 .manage_form_container_flex {
 	display: flex;
 	position: absolute;
-	width: 100%;
+	width: calc(100% + var(--menu-side-width));
 	height: 100%;
 	z-index: 1002;
 }

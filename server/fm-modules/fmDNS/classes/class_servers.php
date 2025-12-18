@@ -703,7 +703,7 @@ FORM;
 			$transfer_format = $this->buildConfigOptions('transfer-format', $this->getConfig($server_id, 'transfer-format'));
 			
 			$return_form .= sprintf('
-	<div id="tabs">
+	<div id="tabs" class="window-tall window-wide">
 		<div id="tab">
 			<input type="radio" name="tab-group-1" id="tab-1" checked />
 			<label for="tab-1">%s</label>
