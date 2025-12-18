@@ -339,24 +339,30 @@ HTML;
 			<input type="hidden" name="action" value="%s" />
 			<input type="hidden" name="master_id" value="%d" />
 			<input type="hidden" name="server_serial_no" value="%s" />
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="master_name">%s</label></th>
-					<td width="67&#37;"><input name="master_name" id="master_name" type="text" value="%s" size="40" placeholder="%s" maxlength="%d" class="required" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="master_port">%s</label></th>
-					<td width="67&#37;"><input name="master_port" id="master_port" type="text" value="%s" maxlength="5" style="width: 5em;" onkeydown="return validateNumber(event)" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="master_dscp">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
-					<td width="67&#37;"><input name="master_dscp" id="master_dscp" type="text" value="%s" maxlength="2" style="width: 5em;" onkeydown="return validateNumber(event)" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="master_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="master_comment" name="master_comment" rows="4" cols="26">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="master_name">%s</label></th>
+							<td width="67&#37;"><input name="master_name" id="master_name" type="text" value="%s" size="40" placeholder="%s" maxlength="%d" class="required" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="master_port">%s</label></th>
+							<td width="67&#37;"><input name="master_port" id="master_port" type="text" value="%s" maxlength="5" style="width: 5em;" onkeydown="return validateNumber(event)" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="master_dscp">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+							<td width="67&#37;"><input name="master_dscp" id="master_dscp" type="text" value="%s" maxlength="2" style="width: 5em;" onkeydown="return validateNumber(event)" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="master_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="master_comment" name="master_comment" rows="4" cols="26">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

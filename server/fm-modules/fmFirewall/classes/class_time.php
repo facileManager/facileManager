@@ -311,53 +311,59 @@ HTML;
 			<input type="hidden" name="time_weekdays_not" value="" />
 			<input type="hidden" name="time_monthdays_not" value="" />
 			<input type="hidden" name="time_contiguous" value="no" />
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="time_name">%s</label></th>
-					<td width="67&#37;"><input name="time_name" id="time_name" type="text" value="%s" size="40" maxlength="%d" class="required" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="time_start_date">%s</label></th>
-					<td width="67&#37;"><input name="time_start_date" id="time_start_date" type="date" value="%s" size="40" class="datepicker" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="time_start_time">%s</label></th>
-					<td width="67&#37;">%s</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="time_end_date">%s</label></th>
-					<td width="67&#37;"><input name="time_end_date" id="time_end_date" type="date" value="%s" size="40" class="datepicker" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="time_end_time">%s</label></th>
-					<td width="67&#37;">%s</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row">%s</th>
-					<td width="67&#37;" style="white-space: nowrap;">
-						%s<br />
-						<input name="time_weekdays_not" id="time_weekdays_not" value="!" type="checkbox" %s /><label for="time_weekdays_not">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
-					</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row">%s</th>
-					<td width="67&#37;" style="white-space: nowrap;">
-						%s<br />
-						<input name="time_monthdays_not" id="time_monthdays_not" value="!" type="checkbox" %s /><label for="time_monthdays_not">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
-					</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row">%s</th>
-					<td width="67&#37;">
-						%s
-						%s
-					</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="time_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="time_comment" name="time_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="time_name">%s</label></th>
+							<td width="67&#37;"><input name="time_name" id="time_name" type="text" value="%s" size="40" maxlength="%d" class="required" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="time_start_date">%s</label></th>
+							<td width="67&#37;"><input name="time_start_date" id="time_start_date" type="date" value="%s" size="40" class="datepicker" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="time_start_time">%s</label></th>
+							<td width="67&#37;">%s</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="time_end_date">%s</label></th>
+							<td width="67&#37;"><input name="time_end_date" id="time_end_date" type="date" value="%s" size="40" class="datepicker" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="time_end_time">%s</label></th>
+							<td width="67&#37;">%s</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row">%s</th>
+							<td width="67&#37;" style="white-space: nowrap;">
+								%s<br />
+								<input name="time_weekdays_not" id="time_weekdays_not" value="!" type="checkbox" %s /><label for="time_weekdays_not">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
+							</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row">%s</th>
+							<td width="67&#37;" style="white-space: nowrap;">
+								%s<br />
+								<input name="time_monthdays_not" id="time_monthdays_not" value="!" type="checkbox" %s /><label for="time_monthdays_not">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
+							</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row">%s</th>
+							<td width="67&#37;">
+								%s
+								%s
+							</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="time_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="time_comment" name="time_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

@@ -4,6 +4,7 @@
 
 0.11.1 (2025-11-05)
 ===================
+* Server - [improvement] Updated popup windows' CSS.
 * Server - [bug] Fixed missing display of items when a submenu is selected and a column is sorted. (#718)
 
 0.11.0 (2025-09-15)

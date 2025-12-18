@@ -545,7 +545,7 @@ HTML;
 			<input type="hidden" name="server_serial_no" value="%s" />
 			<input type="hidden" name="ctrl_interface" value="/var/run/hostapd" />
 			<input type="hidden" name="ctrl_interface_group" value="0" />
-			<div id="tabs">
+			<div id="tabs" class="window-tall">
 				<div id="tab">
 					<input type="radio" name="tab-group-1" id="tab-1" checked />
 					<label for="tab-1">%s</label>

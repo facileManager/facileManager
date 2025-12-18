@@ -5,6 +5,7 @@
 7.3.0 (2025-11-03)
 ==================
 * Server - [improvement] Added ability to mark zones as favorites for quick access on the dashboard.
+* Server - [improvement] Updated popup windows' CSS.
 * Server - [bug] Fixed missing display of items when a submenu is selected and a column is sorted. (#718)
 * Server - [bug] Fixed SOA negative cache TTL validation to match maximum allowed of 3 hours.
 * Server - [bug] Fixed zone list for RPZ to only include primary and secondary zones.

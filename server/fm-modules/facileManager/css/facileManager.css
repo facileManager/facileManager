@@ -1573,7 +1573,6 @@ a.delete:hover i {
 
 .popup-contents {
 	max-height: 480px;
-	overflow-y: auto;
 	padding: 0 2em;
 	background: var(--form-popup-bg);
 }
@@ -2261,14 +2260,17 @@ a.subelement_edit img {
 	position: absolute;
 	left: 0;
 	width: 100%;
-	height: 100%;
+	height: calc(100% - 53px);
+	overflow-y: scroll;
 	background: var(--form-popup-bg);
 	border-top: 1px solid var(--page-title-line);
 	margin-top: 9px;
 }
 
-#tabs.big-tabs {
+#tabs.window-tall {
 	height: 35em;
+}
+#tabs.window-tall.window-wide {
 	min-width: 45em;
 }
 
@@ -2280,6 +2282,7 @@ a.subelement_edit img {
 #tabs > #tab:only-child > #tab-content {
 	border: none;
 	margin-top: unset;
+	height: 100%;
 }
 
 .overflow {

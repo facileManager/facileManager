@@ -423,13 +423,19 @@ HTML;
 			<input type="hidden" name="key_id" value="%d" />
 			<input type="hidden" name="key_type" value="%s" />
 			<input type="hidden" name="key_signing" value="no" />
-			<table class="form-table">
-				%s
-				<tr>
-					<th width="33&#37;" scope="row"><label for="key_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="key_comment" name="key_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						%s
+						<tr>
+							<th width="33&#37;" scope="row"><label for="key_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="key_comment" name="key_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>',
 				$popup_header,

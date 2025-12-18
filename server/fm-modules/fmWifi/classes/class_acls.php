@@ -319,24 +319,30 @@ HTML;
 			<input type="hidden" name="action" value="%s" />
 			<input type="hidden" name="acl_id" value="%d" />
 			<input type="hidden" name="server_serial_no" value="%s" />
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="wlan_ids">%s</label></th>
-					<td width="67&#37;" nowrap>%s</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="acl_mac">%s</label></th>
-					<td width="67&#37;"><input name="acl_mac" id="acl_mac" type="text" value="%s" size="40" maxlength="17" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="acl_action">%s</label></th>
-					<td width="67&#37;" nowrap>%s</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="acl_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="acl_comment" name="acl_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="wlan_ids">%s</label></th>
+							<td width="67&#37;" nowrap>%s</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="acl_mac">%s</label></th>
+							<td width="67&#37;"><input name="acl_mac" id="acl_mac" type="text" value="%s" size="40" maxlength="17" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="acl_action">%s</label></th>
+							<td width="67&#37;" nowrap>%s</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="acl_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="acl_comment" name="acl_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

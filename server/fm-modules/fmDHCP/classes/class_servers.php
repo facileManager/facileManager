@@ -375,24 +375,30 @@ HTML;
 			<input type="hidden" name="action" value="%s" />
 			<input type="hidden" name="server_id" value="%d" />
 			%s
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="server_name">%s</label></th>
-					<td width="67&#37;"><input name="server_name" id="server_name" type="text" value="%s" size="40" placeholder="placeholder" maxlength="%d" class="required" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="server_address">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
-					<td width="67&#37;"><input name="server_address" id="server_address" type="text" value="%s" size="40" placeholder="192.168.1.100" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="server_update_method">%s</label></th>
-					<td width="67&#37;">%s<div id="server_update_port_option" %s><input type="number" name="server_update_port" value="%s" placeholder="80" onkeydown="return validateNumber(event)" maxlength="5" max="65535" /></div></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="server_config_file">%s</label></th>
-					<td width="67&#37;"><input name="server_config_file" id="server_config_file" type="text" value="%s" size="40" /></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="server_name">%s</label></th>
+							<td width="67&#37;"><input name="server_name" id="server_name" type="text" value="%s" size="40" placeholder="placeholder" maxlength="%d" class="required" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="server_address">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+							<td width="67&#37;"><input name="server_address" id="server_address" type="text" value="%s" size="40" placeholder="192.168.1.100" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="server_update_method">%s</label></th>
+							<td width="67&#37;">%s<div id="server_update_port_option" %s><input type="number" name="server_update_port" value="%s" placeholder="80" onkeydown="return validateNumber(event)" maxlength="5" max="65535" /></div></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="server_config_file">%s</label></th>
+							<td width="67&#37;"><input name="server_config_file" id="server_config_file" type="text" value="%s" size="40" /></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

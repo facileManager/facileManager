@@ -364,18 +364,24 @@ HTML;
 		<input type="hidden" name="acl_id" value="%d" />
 		<input type="hidden" name="acl_parent_id" value="%d" />
 		<input type="hidden" name="server_serial_no" value="%s" />
-		<table class="form-table">
-			<tr>
-				<th width="33&#37;" scope="row"><label for="acl_name">%s</label></th>
-				<td width="67&#37;">%s</td>
-			</tr>
-			%s
-			%s
-			<tr class="bulkhide">
-				<th width="33&#37;" scope="row"><label for="acl_comment">%s</label></th>
-				<td width="67&#37;"><textarea id="acl_comment" name="acl_comment" rows="4" cols="26">%s</textarea></td>
-			</tr>
-		</table>
+		<div id="tabs">
+			<div id="tab">
+				<div id="tab-content">
+				<table class="form-table">
+					<tr>
+						<th width="33&#37;" scope="row"><label for="acl_name">%s</label></th>
+						<td width="67&#37;">%s</td>
+					</tr>
+					%s
+					%s
+					<tr class="bulkhide">
+						<th width="33&#37;" scope="row"><label for="acl_comment">%s</label></th>
+						<td width="67&#37;"><textarea id="acl_comment" name="acl_comment" rows="4" cols="26">%s</textarea></td>
+					</tr>
+				</table>
+				</div>
+			</div>
+		</div>
 	%s
 	</form>
 	<script>

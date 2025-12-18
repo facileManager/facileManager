@@ -313,53 +313,59 @@ HTML;
 			<input type="hidden" name="page" value="services" />
 			<input type="hidden" name="action" value="%s" />
 			<input type="hidden" name="service_id" value="%s" />
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="service_name">%s</label></th>
-					<td width="67&#37;"><input name="service_name" id="service_name" type="text" value="%s" size="40" placeholder="http" maxlength="%d" class="required" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="service_type">%s</label></th>
-					<td width="67&#37;">
-						%s
-						<div id="icmp_option" style="display: %s;">
-							<label for="service_icmp_type">Type</label> <input type="number" name="service_icmp_type" value="%s" style="width: 5em;" onkeydown="return validateNumber(event)" placeholder="0" max="40" /><br />
-							<label for="service_icmp_code">Code</label> <input type="number" name="service_icmp_code" value="%s" style="width: 5em;" onkeydown="return validateNumber(event)" placeholder="0" max="15" />
-						</div>
-						<div id="tcpudp_option" style="display: %s;">
-							<h4>%s</h4>
-							<label for="port_src_start">%s</label> <input type="number" name="port_src[]" value="%s" placeholder="0" style="width: 5em;" onkeydown="return validateNumber(event)" max="65535" /> 
-							<label for="port_src_end">%s</label> <input type="number" name="port_src[]" value="%s" placeholder="0" style="width: 5em;" onkeydown="return validateNumber(event)" max="65535" />
-							<h4>%s</h4>
-							<label for="port_dest_start">%s</label> <input type="number" name="port_dest[]" value="%s" placeholder="0" style="width: 5em;" onkeydown="return validateNumber(event)" max="65535" /> 
-							<label for="port_dest_end">%s</label> <input type="number" name="port_dest[]" value="%s" placeholder="0" style="width: 5em;" onkeydown="return validateNumber(event)" max="65535" />
-						</div>
-						<div id="tcp_option" style="display: %s;">
-							<h4>%s <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle" aria-hidden="true"></i></a></h4>
-							<table class="form-table tcp-flags">
-								<tbody>
-									<tr>
-										<th></th>
-										%s
-									</tr>
-									<tr>
-										<th style="text-align: right;" title="%s">%s</th>
-										%s
-									</tr>
-									<tr>
-										<th style="text-align: right;">%s</th>
-										%s
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="service_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="service_comment" name="service_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="service_name">%s</label></th>
+							<td width="67&#37;"><input name="service_name" id="service_name" type="text" value="%s" size="40" placeholder="http" maxlength="%d" class="required" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="service_type">%s</label></th>
+							<td width="67&#37;">
+								%s
+								<div id="icmp_option" style="display: %s;">
+									<label for="service_icmp_type">Type</label> <input type="number" name="service_icmp_type" value="%s" style="width: 5em;" onkeydown="return validateNumber(event)" placeholder="0" max="40" /><br />
+									<label for="service_icmp_code">Code</label> <input type="number" name="service_icmp_code" value="%s" style="width: 5em;" onkeydown="return validateNumber(event)" placeholder="0" max="15" />
+								</div>
+								<div id="tcpudp_option" style="display: %s;">
+									<h4>%s</h4>
+									<label for="port_src_start">%s</label> <input type="number" name="port_src[]" value="%s" placeholder="0" style="width: 5em;" onkeydown="return validateNumber(event)" max="65535" /> 
+									<label for="port_src_end">%s</label> <input type="number" name="port_src[]" value="%s" placeholder="0" style="width: 5em;" onkeydown="return validateNumber(event)" max="65535" />
+									<h4>%s</h4>
+									<label for="port_dest_start">%s</label> <input type="number" name="port_dest[]" value="%s" placeholder="0" style="width: 5em;" onkeydown="return validateNumber(event)" max="65535" /> 
+									<label for="port_dest_end">%s</label> <input type="number" name="port_dest[]" value="%s" placeholder="0" style="width: 5em;" onkeydown="return validateNumber(event)" max="65535" />
+								</div>
+								<div id="tcp_option" style="display: %s;">
+									<h4>%s <a href="JavaScript:void(0);" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle" aria-hidden="true"></i></a></h4>
+									<table class="form-table tcp-flags">
+										<tbody>
+											<tr>
+												<th></th>
+												%s
+											</tr>
+											<tr>
+												<th style="text-align: right;" title="%s">%s</th>
+												%s
+											</tr>
+											<tr>
+												<th style="text-align: right;">%s</th>
+												%s
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="service_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="service_comment" name="service_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

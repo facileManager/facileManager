@@ -1052,7 +1052,7 @@ PERM;
 			$return_form .= sprintf('
 			<form id="fm_user_profile">
 			<input type="hidden" name="action" value="' . $action . '" />' . $hidden . '
-	<div id="tabs" class="big-tabs">
+	<div id="tabs" class="window-tall window-wide">
 		<div id="tab">
 			<input type="radio" name="tab-group-1" id="tab-1" checked />
 			<label for="tab-1">%s</label>

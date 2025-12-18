@@ -1206,75 +1206,82 @@ HTML;
 		
 		$return_form = (array_search('popup', $show) !== false) ? $popup_header . '<form name="manage" id="manage">' : null;
 		
-		$return_form .= sprintf('<input type="hidden" name="page" value="zones" />
+		$return_form .= sprintf('
+			<input type="hidden" name="page" value="zones" />
 			<input type="hidden" name="action" value="%s" />
 			<input type="hidden" name="domain_id" value="%d" />
-			<table class="form-table %s">
-				<tr class="include-with-template">
-					<th><label for="domain_name">%s</label></th>
-					<td><input type="text" id="domain_name" name="domain_name" size="40" value="%s" maxlength="%d" class="required" /></td>
-				</tr>
-				%s
-				%s
-				<tr class="include-with-template">
-					<th><label for="domain_view">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
-					<td>%s
-				</tr>
-				<tr>
-					<th><label for="domain_mapping">%s</label></th>
-					<td>%s</td>
-				</tr>
-				<tr>
-					<th><label for="domain_type">%s</label></th>
-					<td>
+			<div id="tabs" class="window-tall window-wide">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table %s">
+						<tr class="include-with-template">
+							<th><label for="domain_name">%s</label></th>
+							<td><input type="text" id="domain_name" name="domain_name" size="40" value="%s" maxlength="%d" class="required" /></td>
+						</tr>
 						%s
-						<div id="define_forwarders" style="display: %s">
-							<p>%s</p>
-							<input type="hidden" name="domain_required_servers[forwarders]" id="domain_required_servers" class="address_match_element required" data-placeholder="%s" value="%s" /><br />
-							( address_match_element )
-						</div>
-						<div id="define_masters" style="display: %s">
-							<input type="hidden" name="domain_required_servers[primaries]" id="domain_required_servers" class="address_match_element required" data-placeholder="%s" value="%s" /><br />
-							( address_match_element )
-						</div>
-						<div id="define_redirect_url" style="display: none">
-							<h4>%s <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle" aria-hidden="true"></i></a></h4>
-							<input type="text" id="domain_redirect_url" name="domain_redirect_url" size="40" value="" class="required" />
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<th><label for="domain_clone_domain_id">%s</label></th>
-					<td>
 						%s
-						<div id="clone_override" style="display: %s">
-							<p><input type="checkbox" id="domain_clone_dname_override" name="domain_clone_dname_override" value="yes" %s /><label for="domain_clone_dname_override"> %s</label></p>
-							<div id="clone_dname_options" style="display: %s">
-								<h4>%s</h4>
+						<tr class="include-with-template">
+							<th><label for="domain_view">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+							<td>%s
+						</tr>
+						<tr>
+							<th><label for="domain_mapping">%s</label></th>
+							<td>%s</td>
+						</tr>
+						<tr>
+							<th><label for="domain_type">%s</label></th>
+							<td>
 								%s
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<th><label for="domain_name_servers">%s</label></th>
-					<td>%s</td>
-				</tr>
-				<tr class="include-with-template">
-					<th><label for="domain_ttl">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
-					<td><input type="text" id="domain_ttl" name="domain_ttl" size="40" value="%s" maxlength="%d" onkeydown="return validateTimeFormat(event, this)" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="view_key_id">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
-					<td width="67&#37;">%s</td>
-				</tr>
-				%s
-				<tr class="include-with-template">
-					<th width="33&#37;" scope="row"><label for="domain_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="domain_comment" name="domain_comment" rows="4" cols="40">%s</textarea></td>
-				</tr>
-				%s
-			</table>',
+								<div id="define_forwarders" style="display: %s">
+									<p>%s</p>
+									<input type="hidden" name="domain_required_servers[forwarders]" id="domain_required_servers" class="address_match_element required" data-placeholder="%s" value="%s" /><br />
+									( address_match_element )
+								</div>
+								<div id="define_masters" style="display: %s">
+									<input type="hidden" name="domain_required_servers[primaries]" id="domain_required_servers" class="address_match_element required" data-placeholder="%s" value="%s" /><br />
+									( address_match_element )
+								</div>
+								<div id="define_redirect_url" style="display: none">
+									<h4>%s <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle" aria-hidden="true"></i></a></h4>
+									<input type="text" id="domain_redirect_url" name="domain_redirect_url" size="40" value="" class="required" />
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th><label for="domain_clone_domain_id">%s</label></th>
+							<td>
+								%s
+								<div id="clone_override" style="display: %s">
+									<p><input type="checkbox" id="domain_clone_dname_override" name="domain_clone_dname_override" value="yes" %s /><label for="domain_clone_dname_override"> %s</label></p>
+									<div id="clone_dname_options" style="display: %s">
+										<h4>%s</h4>
+										%s
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th><label for="domain_name_servers">%s</label></th>
+							<td>%s</td>
+						</tr>
+						<tr class="include-with-template">
+							<th><label for="domain_ttl">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+							<td><input type="text" id="domain_ttl" name="domain_ttl" size="40" value="%s" maxlength="%d" onkeydown="return validateTimeFormat(event, this)" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="view_key_id">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+							<td width="67&#37;">%s</td>
+						</tr>
+						%s
+						<tr class="include-with-template">
+							<th width="33&#37;" scope="row"><label for="domain_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="domain_comment" name="domain_comment" rows="4" cols="40">%s</textarea></td>
+						</tr>
+						%s
+					</table>
+					</div>
+				</div>
+			</div>',
 				$action, $domain_id, $classes,
 				__('Zone Name'), $domain_name, $domain_name_length,
 				$select_template, $template_name,
