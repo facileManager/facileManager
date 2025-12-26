@@ -1,5 +1,6 @@
 7.4.0 (2025-??-??)
 ==================
+* Server - [security] Users without module permission can no longer access this module.
 * Server - [improvement] Removed href="#" from non-navigational anchor tags.
 * Server - [improvement] Updated popup windows' CSS.
 

@@ -108,6 +108,7 @@ function getfmDNSUsersPermLogging($fm_user_caps, $perm, $value_array) {
 	global $__FM_CONFIG;
 
 	$specific_perms = ucwords(str_replace('_', ' ', $perm));
+	$specific_items = null;
 	if ($perm == 'access_specific_zones') {
 		if ($value_array[0] == '0') {
 			$specific_items[] = __('All Zones');

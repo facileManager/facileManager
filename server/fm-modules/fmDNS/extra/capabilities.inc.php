@@ -30,3 +30,17 @@ $fm_user_caps['fmDNS'] = array(
 		'manage_settings'		=> _('Manage Settings')
 	);
 
+/**
+ * Ensures only valid capabilities are assigned to fmDNS users
+ * @param mixed $caps
+ */
+if (!function_exists('verifyfmDNSUserCaps')) {
+	function verifyfmDNSUserCaps($caps) {
+		foreach ($caps as $cap => $value) {
+			if ($cap == 'access_specific_zones' && count($caps) <= 1) {
+				unset($caps[$cap]);
+			}
+		}
+		return $caps;
+	}
+}
