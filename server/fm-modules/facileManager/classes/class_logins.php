@@ -835,7 +835,7 @@ This link expires in %s.',
 
 		$more_2fa_options .= '<div class="button-wrapper"><a href="recovery/" id="recover_otpbtn" class="button grey alert">' . _('2FA recovery code') . '</a></div>';
 
-		$title = _('Two-factor Authentication');
+		$title = _('Two-Factor Authentication');
 		printHeader($title, 'login');
 		
 		echo displayPreAppForm($title, 'login_form',
@@ -865,7 +865,7 @@ This link expires in %s.',
 	private function print2FARecoveryForm() {
 		$instructions = _('Enter your two-factor authentication recovery code below.');
 
-		$title = _('Two-factor Recovery');
+		$title = _('Two-Factor Recovery');
 		printHeader($title, 'login');
 		
 		echo displayPreAppForm($title, 'login_form',
@@ -901,7 +901,7 @@ This link expires in %s.',
 			}
 
 			// Add log entry
-			addLogEntry(_('Two-factor authentication recovery code used to log in.'));
+			addLogEntry(_('Two-Factor authentication recovery code used to log in.'));
 
 			// Invalidate recovery code
 			$this->generate2FARecoveryCode('reset');

@@ -605,7 +605,7 @@ class fm_settings {
 					</div>
 					<div id="setting-row">
 						<div class="description">
-							<label for="require_2fa">' . _('Require Two-factor Authenticate') . '</label>
+							<label for="require_2fa">' . _('Require Two-Factor Authentication') . '</label>
 							<p>' . _('All users will be e-mailed a One Time Passcode that must be used during authentication (mailing must be enabled). Users may opt for alternative 2FA methods if available.') . '</p>
 						</div>
 						<div class="choices">

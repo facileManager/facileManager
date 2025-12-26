@@ -856,7 +856,7 @@ HTML;
 			</table>
 			</div>
 		</div>
-', _('Two-factor Authentication'), $require_2fa_note, $user_2fa_form);
+', _('Two-Factor Authentication'), $require_2fa_note, $user_2fa_form);
 		}
 
 		if (in_array('user_module', $form_bits)) {
