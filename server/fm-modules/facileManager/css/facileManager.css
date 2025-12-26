@@ -322,6 +322,9 @@ div.header-container {
     justify-content: space-between;
     align-items: center;
 }
+.flex-reverse {
+	flex-direction: row-reverse;
+}
 
 .qr-code-container img {
 	margin: 0 1em 1em 0;
@@ -2284,6 +2287,8 @@ a.subelement_edit img {
 #tabs > #tab:only-child > #tab-content {
 	border: none;
 	margin-top: unset;
+}
+#tabs > #tab:only-child > #tab-content {
 	height: 100%;
 }
 

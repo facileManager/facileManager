@@ -2867,15 +2867,13 @@ HTML;
 			if ($link !== null) {
 				$cancel = '<a href="' . $link . '" class="button" id="' . $id . '">' . $text . '</a>';
 			} else {
-				$cancel = '<input type="button" value="' . $text . '" class="button ';
-				$cancel .= count($buttons) > 1 ? 'left' : null;
-				$cancel .= '" id="' . $id . '" />';
+				$cancel = '<input type="button" value="' . $text . '" class="button" id="' . $id . '" />';
 			}
 		} else $cancel = null;
 		
 		return <<<HTML
 		</div>
-		<div class="popup-footer">
+		<div class="popup-footer flex flex-apart flex-reverse">
 			$submit
 			$cancel
 		</div>
