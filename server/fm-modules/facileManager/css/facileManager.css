@@ -1059,7 +1059,7 @@ thead:not(:is(div.choices *)) {
 .form-table th {
 	font-size: 14px;
 	text-align: left;
-	padding: 6px 10px 10px 0;
+	padding: 8px 10px 8px 0;
 	border-bottom: 8px solid transparent;
 	width: 140px;
 	vertical-align: top;
@@ -1175,11 +1175,6 @@ i.text_icon {
 
 #fm_user_profile .form-table td {
 	vertical-align: middle;
-}
-
-#fm_user_profile .form-table td #form_username {
-	position: relative;
-	top: -2px;
 }
 
 #setting-row > div {
@@ -1766,10 +1761,6 @@ i.popout {
 	font-family: "Open Sans",sans-serif;
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
-}
-
-#form_username span {
-	margin-top: -5px;
 }
 
 #fm_mailing_options, #fm_proxy_options,
