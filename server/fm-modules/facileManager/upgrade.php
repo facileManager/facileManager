@@ -1183,6 +1183,12 @@ function fmUpgrade_600($database) {
 		if (!tableExists('fm_temp_auth_keys')) {
 			$queries[] = "RENAME TABLE `fm_pwd_resets` TO `fm_temp_auth_keys`";
 		}
+		if (!columnExists('fm_keys', 'key_name')) {
+			$queries[] = "ALTER TABLE `fm_keys` ADD `key_name` VARCHAR(255) NULL AFTER `user_id`";
+		}
+		if (!columnExists('fm_keys', 'key_comment')) {
+			$queries[] = "ALTER TABLE `fm_keys` ADD `key_comment` TEXT NULL AFTER `key_secret`";
+		}
 
 		/** Create table schema */
 		if (count($queries) && $queries[0]) {

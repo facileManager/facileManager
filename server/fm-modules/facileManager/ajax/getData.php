@@ -164,7 +164,20 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 		if (!getOption('api_token_support')) returnUnAuth();
 		
 		include(ABSPATH . 'fm-modules/'. $fm_name . '/classes/class_users.php');
-		echo $fm_users->generateAPIKey();
+		if (isset($_POST['item_id']) && !empty($_POST['item_id'])) {
+			// Get the key details
+			basicGet('fm_keys', $_POST['item_id'], 'key_', 'key_id');
+			$results = $fmdb->last_result;
+
+			if (($fmdb->num_rows && $results[0]->user_id == $_SESSION['user']['id']) || currentUserCan('manage_users')) {
+				echo $fm_users->printAPIKeyForm($results[0]);
+			} else {
+				// Unauth if not allowed to manage users, no such key, or not owner of key
+				returnUnAuth();
+			}
+		} else {
+			echo $fm_users->generateAPIKey();
+		}
 		exit;
 	}
 

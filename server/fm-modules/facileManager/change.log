@@ -10,6 +10,7 @@
 * Server - [improvement] Updated popup windows' CSS.
 * Server - [improvement] UX improvements to the password reset process.
 * Server - [improvement] Added support to validate user permissions for modules.
+* Server - [improvement] API keys now have a name and comment field.
 * Server - [bug] CSS fixes for the login form.
 * Server - [bug] Standardized some text across the application.
 

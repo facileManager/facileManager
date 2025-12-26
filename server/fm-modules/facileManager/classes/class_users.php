@@ -59,10 +59,12 @@ class fm_users {
 		} elseif ($type == 'keys') {
 			if (currentUserCan('manage_users')) {
 				array_push($title_array,
-					array('title' => _('User'), 'rel' => 'user_id'));	
+					array('title' => _('Login'), 'rel' => 'user_id'));	
 			}
 			array_push($title_array,
-				array('title' => _('Key'), 'rel' => 'key_token'));
+				array('title' => _('Name'), 'rel' => 'key_name'),
+						array('title' => _('Key'), 'rel' => 'key_token'),
+						array('title' => _('Comment'), 'rel' => 'key_comment'));
 		}
 		$title_array[] = array('title' => _('Actions'), 'class' => 'header-actions header-nosort');
 
@@ -651,6 +653,7 @@ class fm_users {
 			$edit_status = $id = $user_column = '';
 			if ($current_user_can_manage_users || $row->user_id == $_SESSION['user']['id']) {
 				$id = $row->key_id;
+				$edit_status .= '<a class="edit_form_link" name="' . $type . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 				$edit_status .= '<a class="status_form_link" rel="';
 				$edit_status .= ($row->key_status == 'active') ? 'disabled' : 'active';
 				$edit_status .= '">';
@@ -665,7 +668,9 @@ class fm_users {
 
 			$column = "<td></td>
 			$user_column
-			<td>{$row->key_token}</td>";
+			<td>{$row->key_name}</td>
+			<td>{$row->key_token}</td>
+			<td>{$row->key_comment}</td>";
 			$name = $row->key_token;
 		}
 		
@@ -1316,6 +1321,8 @@ PERM;
 	 * @return array
 	 */
 	private function validateUserCaps($user_caps) {
+		global $fm_name;
+
 		/** Ensure valid capabilities are submitted */
 		foreach ($user_caps as $module => $caps) {
 			$caps_file = ABSPATH . "fm-modules/{$module}/extra/capabilities.inc.php";
@@ -1331,6 +1338,103 @@ PERM;
 		}
 
 		return $user_caps;
+	}
+
+
+	/**
+	 * Allows edits of the API key details
+	 * 
+	 * @since 6.0.0
+	 * @package facileManager
+	 * 
+	 * @param object $results Database results object
+	 * @return string
+	 */
+	function printAPIKeyForm($results) {
+		$key_name_length = getColumnLength('fm_keys', 'key_name');
+
+		$popup_header = buildPopup('header', _('API Key Details'));
+		$popup_footer = buildPopup('footer');
+		
+		$return_form = $popup_header;
+		$return_form .= sprintf('
+			<form id="fm_api_key_form">
+			<input type="hidden" name="action" value="edit_api_key" />
+			<input type="hidden" name="key_id" value="%d" />
+			<div id="tabs">
+				<div id="tab">
+					<input type="radio" name="tab-group-1" id="tab-1" checked />
+					<label for="tab-1">%s</label>
+					<div id="tab-content">
+						<div>
+							<table class="form-table">
+								<tr>
+									<th><label>%s</label></th>
+									<td>%s</td>
+								</tr>
+								<tr>
+									<th><label for="key_name">%s</label></th>
+									<td><input type="text" id="key_name" name="key_name" size="40" value="%s" maxlength="%d" /></td>
+								</tr>
+								<tr>
+									<th width="33%%" scope="row"><label for="key_comment">%s</label></th>
+									<td width="67%%"><textarea id="key_comment" name="key_comment" rows="4" cols="40">%s</textarea></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			%s
+			</form>
+		', $results->key_id, _('Details'),
+			_('Key'), $results->key_token,
+			_('Key Name'), $results->key_name, $key_name_length,
+			_('Comment'), $results->key_comment,
+			$popup_footer);
+		
+		return $return_form;
+	}
+
+
+	/**
+	 * Saves the API key details
+	 * 
+	 * @since 6.0.0
+	 * @package facileManager
+	 * 
+	 * @param array $details POST data array
+	 * @return string
+	 */
+	function saveAPIKey($details) {
+		global $fmdb, $fm_name;
+
+		// Get the key details
+		basicGet('fm_keys', $_POST['key_id'], 'key_', 'key_id');
+		$results = $fmdb->last_result;
+
+		if (($fmdb->num_rows && $results[0]->user_id == $_SESSION['user']['id']) || currentUserCan('manage_users')) {
+			$query = sprintf("UPDATE fm_keys SET key_name='%s', key_comment='%s' WHERE key_id=%d",
+				$details['key_name'],
+				$details['key_comment'],
+				$results[0]->key_id);
+			$fmdb->query($query);
+
+			if ($fmdb->sql_errors) {
+				return formatError(_('Could not save the API key details because a database error occurred.'), 'sql');
+			}
+			
+			$log_message = sprintf(_("Edited API key '%s':\n"), $results[0]->key_token);
+			$log_message .= formatLogKeyData('key_', 'Name', $details['key_name']);
+			$log_message .= formatLogKeyData('key_', 'Comment', $details['key_comment']);
+
+			addLogEntry($log_message, $fm_name);
+		} else {
+			// Unauth if not allowed to manage users, no such key, or not owner of key
+			returnUnAuth('text');
+		}
+
+		return _('Success');
 	}
 }
 

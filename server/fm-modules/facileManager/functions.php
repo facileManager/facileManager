@@ -3028,8 +3028,7 @@ function countArrayDimensions($array) {
  * @return string
  */
 function displayAddNew($name = null, $rel = null, $title = null, $style = 'default', $id = 'plus', $position = 'top') {
-	global $__FM_CONFIG;
-	
+	$tooltip = null;
 	if (empty($title)) $title = _('Add New');
 	$contents = ($style == 'default') ? $title : null;
 	
@@ -3038,10 +3037,10 @@ function displayAddNew($name = null, $rel = null, $title = null, $style = 'defau
 	
 	$image = '<i class="mini-icon ' . $style . '">' . $contents . '</i>';
 	if ($style != 'default') {
-		$title = 'class="tooltip-' . $position . ' mini-icon" data-tooltip="' . $title . '"';
+		$tooltip = 'class="tooltip-' . $position . ' mini-icon" data-tooltip="' . $title . '"';
 	}
 	
-	return sprintf('<a id="%s" %s%s%s>%s</a>', $id, $title, $name, $rel, $image);
+	return sprintf('<a id="%s" %s%s%s>%s</a>', $id, $tooltip, $name, $rel, $image);
 }
 
 
