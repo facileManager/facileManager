@@ -31,7 +31,7 @@ class fm_module_time {
 		$num_rows = $fmdb->num_rows;
 		$results = $fmdb->last_result;
 
-		if (currentUserCan('manage_servers', $_SESSION['module'])) {
+		if (currentUserCan('manage_time', $_SESSION['module'])) {
 			$bulk_actions_list = array(_('Delete'));
 		}
 
