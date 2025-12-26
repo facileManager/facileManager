@@ -1,4 +1,4 @@
-6.0.0 (2025-11-02)
+6.0.0 (2025-12-26)
 ==================
 * Server - [feature] Added support for 2FA via e-mail and authenticator app.
 * Server - [feature] Added support to set the password reset timeout period to maximum 23h 59m. (#721 #723)

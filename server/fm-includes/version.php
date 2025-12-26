@@ -31,7 +31,7 @@ $fm_version = '6.0.0';
  *
  * @global int $fm_db_version
  */
-$fm_db_version = 61;
+$fm_db_version = 62;
 
 /**
  * Holds the required PHP version

@@ -1,4 +1,4 @@
-3.4.0 (2025-??-??)
+3.4.0 (2025-12-26)
 ==================
 * Server - [improvement] Removed href="#" from non-navigational anchor tags.
 * Server - [improvement] Updated popup windows' CSS.
