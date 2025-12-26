@@ -70,6 +70,9 @@ if (array_key_exists('otp_2fa', $_POST)) {
 				$result = $fm_login->process2FAForm($_POST['code'], $_POST['otp_2fa']);
 				if ($result === true) {
 					if (isset($_SESSION['user']['uri'])) {
+						if (isUpgradeAvailable() && currentUserCan(array('do_everything', 'manage_modules'))) {
+							$_SESSION['user']['uri'] = $GLOBALS['RELPATH'] . 'fm-upgrade.php';
+						}
 						echo $_SESSION['user']['uri'];
 						@session_start();
 						unset($_SESSION['user']['uri']);
