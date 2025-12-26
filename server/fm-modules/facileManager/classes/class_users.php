@@ -164,6 +164,10 @@ class fm_users {
 				$user_caps = array($fm_name => array('do_everything' => 1));
 			}
 		}
+		/** Ensure valid capabilities are submitted */
+		$user_caps = $this->validateUserCaps($user_caps);
+		
+		/** Log user capabiliites */
 		if (isset($user_caps)) {
 			$log_message .= formatLogKeyData('', 'permissions', $this->getFriendlyCaps($user_caps));
 		}
@@ -365,6 +369,10 @@ class fm_users {
 				$post['user_caps'] = array($fm_name => array('do_everything' => 1));
 			}
 		}
+		/** Ensure valid capabilities are submitted */
+		$post['user_caps'] = $this->validateUserCaps($post['user_caps']);
+
+		/** Log user capabiliites */
 		if (isset($post['user_caps'])) {
 			$sql .= ",user_caps='" . serialize($post['user_caps']) . "'";
 			$log_message .= formatLogKeyData('', 'permissions', $this->getFriendlyCaps($post['user_caps']));
@@ -1295,6 +1303,34 @@ PERM;
 		}
 
 		return true;
+	}
+
+
+	/**
+	 * Validates user capabilities
+	 * 
+	 * @since 6.0.0
+	 * @package facileManager
+	 * 
+	 * @param array $user_caps User capabilities array
+	 * @return array
+	 */
+	private function validateUserCaps($user_caps) {
+		/** Ensure valid capabilities are submitted */
+		foreach ($user_caps as $module => $caps) {
+			$caps_file = ABSPATH . "fm-modules/{$module}/extra/capabilities.inc.php";
+			if (!file_exists($caps_file)) continue;
+			include_once($caps_file);
+			$caps_function = "verify{$module}UserCaps";
+			if (function_exists($caps_function)) {
+				$user_caps[$module] = $caps_function($caps);
+				if (empty($user_caps[$module])) {
+					unset($user_caps[$module]);
+				}
+			}
+		}
+
+		return $user_caps;
 	}
 }
 
