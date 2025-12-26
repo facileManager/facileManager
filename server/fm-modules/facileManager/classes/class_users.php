@@ -166,7 +166,7 @@ class fm_users {
 		}
 		/** Ensure valid capabilities are submitted */
 		$user_caps = $this->validateUserCaps($user_caps);
-		
+
 		/** Log user capabiliites */
 		if (isset($user_caps)) {
 			$log_message .= formatLogKeyData('', 'permissions', $this->getFriendlyCaps($user_caps));
@@ -910,7 +910,7 @@ HTML;
 			$return_form_rows .= '<tr>
 					<th width="25%" scope="row"></th>
 					<td width="75%">
-						<span><a href="admin-users.php?type=keys">' . _('Configure API Keys') . ' &raquo;</a></span>
+						<span><a href="admin-users.php?type=keys&uid=' . $_SESSION['user']['id'] . '">' . _('Configure API Keys') . ' &raquo;</a></span>
 					</td>
 				</tr>';
 		}
