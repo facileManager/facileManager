@@ -1574,6 +1574,7 @@ a.delete:hover i {
 	max-height: 480px;
 	padding: 0 2em;
 	background: var(--form-popup-bg);
+	overflow: auto;
 }
 .popup-contents p.complete {
 	padding: 0 10px;
