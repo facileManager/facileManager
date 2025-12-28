@@ -1,3 +1,7 @@
+6.0.1 (2025-12-28)
+==================
+* Server - [bug] Fixed SQL error during installation. (#729)
+
 6.0.0 (2025-12-26)
 ==================
 * Server - [feature] Added support for 2FA via e-mail and authenticator app.
