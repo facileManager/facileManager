@@ -151,7 +151,9 @@ if ($option_type == 'rpz') {
 } else {
 	$working_class = $fm_module_options;
 
-	if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']])) {
+	if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$option_type])) {
+		extract($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$option_type], EXTR_OVERWRITE);
+	} elseif (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']])) {
 		extract($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']], EXTR_OVERWRITE);
 	}
 

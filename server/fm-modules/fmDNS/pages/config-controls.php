@@ -38,7 +38,9 @@ $addl_title_blocks[] = buildServerSubMenu($server_serial_no);
 echo printPageHeader((string) $response, $display_type, currentUserCan('manage_servers', $_SESSION['module']), $type, null, 'noscroll', $addl_title_blocks);
 
 $sort_field = 'file_name';
-if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']])) {
+if (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$type])) {
+	extract($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']][$type], EXTR_OVERWRITE);
+} elseif (isset($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']])) {
 	extract($_SESSION[$_SESSION['module']][$GLOBALS['path_parts']['filename']], EXTR_OVERWRITE);
 }
 

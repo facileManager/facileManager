@@ -1,3 +1,12 @@
+5.4.4 (2025-11-05)
+==================
+* Server - [bug] Fixed module upgrade process when upgrading from the view changes dialog.
+* Server - [bug] Fixed missing display of items when a submenu is selected and a column is sorted. (#718 #719)
+* Server - [bug] Fixed submenu display on small screens. (#720 #722)
+* Server - [bug] Fixed user creation when using LDAP authentication.
+* Server - [bug] Fixed dashboard shadow box CSS.
+* Server - [bug] Enforces the minimum fM version when upgrading modules.
+
 5.4.3 (2025-10-10)
 ==================
 * Server - [bug] Fixed PHP error when adding new users. (#714)

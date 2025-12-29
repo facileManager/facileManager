@@ -1399,19 +1399,21 @@ HTML;
 						$val = $data['soa_append'] == 'yes' ? trim($val, '.') : trim($val, '.') . '.';
 						$data[$key] = $val;
 						if (!$this->verifyCNAME($data['soa_append'], $val, false) || ($key == 'soa_master_server' && !$this->validateHostname($val))) {
-							$messages['errors'][$key] = __('Invalid1');
+							$messages['errors'][$key] = __('Invalid');
 							continue;
 						}
 					} else {
-						if (in_array($key, array('soa_refresh', 'soa_retry', 'soa_expire', 'soa_ttl'))) {
-							if (!empty($val) && $this->verifyTTL($val) === false) {
-								$messages['errors'][$key] = __('Invalid');
+						if (in_array($key, array('soa_ncache'))) {
+							if (!empty($val) && $this->verifyTTL($val, '3h') === false) {
+								$messages['errors'][$key] = __('Negative Cache may not be more than 3 hours.');
 								continue;
 							}
-						// } elseif (array_key_exists('soa_template', $data) && $data['soa_template'] == 'yes') {
-							// if (!$this->verifyNAME($val, $id, false)) {
-							// 	$messages['errors'][$key] = __('Invalid');
-							// }
+						}
+						if (in_array($key, array('soa_refresh', 'soa_retry', 'soa_expire', 'soa_ttl'))) {
+							if (!empty($val) && $this->verifyTTL($val) === false) {
+								$messages['errors'][$key] = __('Invalid TTL format.');
+								continue;
+							}
 						}
 					}
 				}
@@ -1537,30 +1539,82 @@ HTML;
 	 * @package fmDNS
 	 *
 	 * @param string $ttl TTL to check
+	 * @param int|string $maximum_seconds Maximum seconds allowed
 	 * @return boolean
 	 */
-	private function verifyTTL($ttl) {
-		/** Return true if $ttl is a number */
-		if (verifyNumber($ttl)) return true;
-
-		/** Ensure first character is a number */
-		if (!verifyNumber(substr($ttl, 0, 1))) return false;
-		
-		/** Check if last character is a-z */
-		if (!preg_match('/[a-z]/i', substr($ttl, -1))) return false;
-		
-		/** Check for s, m, h, d, w */
-		preg_match_all('/\d+[a-z]/i', $ttl, $matches);
-		
-		/** Something is wrong */
-		if (count($matches) > 1) return false;
-		
-		foreach ($matches[0] as $match) {
-			$split = preg_split('/[smhdwy]/i', $match);
-			if (!verifyNumber($split[0])) return false;
+	private function verifyTTL($ttl, $maximum_seconds = null) {
+		// Convert human readable (3h4m9s) into seconds
+		$seconds = $this->ttlToSeconds($ttl);
+		if ($seconds === false) {
+			return false;
 		}
-		
+
+		// Convert maximum_seconds to integer if needed
+		if (is_int($maximum_seconds)) {
+			$maximum_seconds = (int) $maximum_seconds;
+		} elseif (is_string($maximum_seconds)) {
+			$maximum_seconds = $this->ttlToSeconds($maximum_seconds);
+		}
+
+		// Check if $ttl exceeds maximum allowed
+		if ($maximum_seconds !== null && $seconds > $maximum_seconds) {
+			return false;
+		}
+
 		return true;
+	}
+
+	/**
+	 * Convert a human-readable TTL (e.g. "1d3h4m9s", "5m", "300") into seconds.
+	 *
+	 * @since 7.3.0
+	 * @package fmDNS
+	 *
+	 * @param string $ttl TTL to check
+	 * @return integer|boolean
+	 */
+	private function ttlToSeconds($ttl) {
+		if ($ttl === null) return false;
+		$ttl = trim((string)$ttl);
+		if ($ttl === '') return false;
+
+		// If purely numeric, treat as seconds
+		if (ctype_digit($ttl)) {
+			return (int) $ttl;
+		}
+
+		// normalize and remove whitespace
+		$ttl = strtolower(preg_replace('/\s+/', '', $ttl));
+
+		// map units to seconds
+		$unitMap = [
+			's' => 1,
+			'm' => 60,
+			'h' => 3600,
+			'd' => 86400,
+			'w' => 604800,      // 7 days
+			'y' => 31536000,    // 365 days
+		];
+
+		// find all number+unit tokens
+		if (!preg_match_all('/(\d+)([smhdwy])/i', $ttl, $matches, PREG_SET_ORDER)) {
+			return false;
+		}
+
+		$total = 0;
+		$consumed = '';
+		foreach ($matches as $m) {
+			$val = (int)$m[1];
+			$unit = strtolower($m[2]);
+			if (!isset($unitMap[$unit])) return false;
+			$total += $val * $unitMap[$unit];
+			$consumed .= $m[0];
+		}
+
+		// ensure the entire string was matched (e.g. "1d3h" OK, "1d3x" -> invalid)
+		if ($consumed !== $ttl) return false;
+
+		return $total;
 	}
 }
 

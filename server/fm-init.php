@@ -231,6 +231,24 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 			exit;
 		}
 		
+		/** Ensure fM version meets the module minimum required version */
+		if (isset($_SESSION['module']) && $_SESSION['module'] != $fm_name) {
+			$module_version = getOption('version', 0, $_SESSION['module']);
+			if ($module_version !== false) {
+				$active_modules = getActiveModules();
+				if (in_array($_SESSION['module'], $active_modules)) {
+					// Deactivate module if fM version less than required
+					require(ABSPATH . 'fm-includes/version.php');
+					if (version_compare($fm_version, $__FM_CONFIG[$_SESSION['module']]['required_fm_version'], '<')) {
+						include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_tools.php');
+						if ($fm_tools->manageModule(sanitize($_SESSION['module']), 'deactivate')) {
+							addLogEntry(sprintf(_('%s was deactivated'), $_SESSION['module']), $fm_name);
+						}
+					}
+				}
+			}
+		}
+		
 		/** Ensure selected module is indeed active */
 		if (isset($_SESSION['module']) && $_SESSION['module'] != $fm_name && !in_array($_SESSION['module'], getActiveModules())) {
 			session_start();
