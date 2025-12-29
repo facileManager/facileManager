@@ -1,4 +1,4 @@
-6.0.2 (2025-12-28)
+6.0.2 (2025-12-29)
 ==================
 * Server - [bug] Fixed authentication after upgrade. (#730)
 * Server - [bug] Mail setting is no longer enabled by default during installation.
