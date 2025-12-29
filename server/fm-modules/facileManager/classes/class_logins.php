@@ -310,11 +310,13 @@ class fm_login {
 			$this->setSession($successful_auth);
 			
 			/** Process 2FA if equipped */
-			if (getOption('require_2fa') || ($successful_auth->user_2fa_method && $this->validate2FAMethod($successful_auth->user_2fa_method))) {
-				@session_start();
-				$_SESSION['user']['2fa_status'] = 'pending';
-				$_SESSION['user']['uri'] = $_SERVER['REQUEST_URI'];
-				return array('type' => '2fa', 'content' => $successful_auth);
+			if ($fm_db_version >= 62) {
+				if (getOption('require_2fa') || ($successful_auth->user_2fa_method && $this->validate2FAMethod($successful_auth->user_2fa_method))) {
+					@session_start();
+					$_SESSION['user']['2fa_status'] = 'pending';
+					$_SESSION['user']['uri'] = $_SERVER['REQUEST_URI'];
+					return array('type' => '2fa', 'content' => $successful_auth);
+				}
 			}
 
 			/** Enforce password change? */
@@ -496,7 +498,9 @@ This link expires in %s.',
 		session_regenerate_id(true);
 		$_SESSION['user']['id'] = $user->user_id;
 		$_SESSION['user']['name'] = $user->user_login;
-		$_SESSION['user']['display_name'] = $user->user_display_name;
+		if (property_exists($user, 'user_display_name')) {
+			$_SESSION['user']['display_name'] = $user->user_display_name;
+		}
 		$_SESSION['user']['last_login'] = $user->user_last_login;
 		$_SESSION['user']['account_id'] = $user->account_id;
 		$_SESSION['user']['theme'] = $user->user_theme;
