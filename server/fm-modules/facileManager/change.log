@@ -1,3 +1,7 @@
+6.0.3 (2026-??-??)
+==================
+* Server - [bug] Fixed logging of user and group changes.
+
 6.0.2 (2025-12-29)
 ==================
 * Server - [bug] Fixed authentication after upgrade. (#730)

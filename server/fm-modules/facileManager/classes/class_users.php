@@ -105,6 +105,8 @@ class fm_users {
 		if (isset($data['group_id'])) {
 			return $this->addGroup($data);
 		}
+
+		unset($data['tab-group-1']);
 		
 		if (!isset($data['user_template_only'])) $data['user_template_only'] = 'no';
 		extract($data, EXTR_SKIP);
@@ -155,7 +157,7 @@ class fm_users {
 		if ($fmdb->num_rows) return _('This user already exists.');
 		
 		if ($user_group) {
-			$user_caps = '';
+			$user_caps = [];
 		} else {
 			$user_group = 0;
 		}
@@ -195,6 +197,9 @@ class fm_users {
 
 		foreach ($data as $key => $data) {
 			if (!in_array($key, $exclude)) {
+				if ($key == 'user_group') {
+					$data = ($user_group) ? $this->getName('group', $user_group) : _('None');
+				}
 				$log_message .= formatLogKeyData('user_', $key, $data);
 			}
 		}
@@ -212,6 +217,7 @@ class fm_users {
 	function addGroup($data) {
 		global $fmdb, $global_form_field_excludes, $fm_name, $fm_login;
 		
+		unset($data['tab-group-1']);
 		extract($data, EXTR_SKIP);
 		
 		$log_message = "Added user group:\n";
@@ -356,6 +362,9 @@ class fm_users {
 				// Convert certain fields for friendly logging
 				if ($key == 'user_auth_type') $data = $__FM_CONFIG['options']['auth_method'][$data][0];
 				if ($key == 'user_group') $data = $this->getName('group', $data);
+				if ($key == 'user_group') {
+					$data = ($data) ? $this->getName('group', $data) : _('None');
+				}
 				// Do not log 2FA secret
 				if (in_array($key, ['user_2fa_method', 'user_2fa_secret'])) continue;
 				$log_message .= formatLogKeyData('user_', $key, $data);
@@ -421,6 +430,7 @@ class fm_users {
 	function editGroup($post) {
 		global $fmdb, $global_form_field_excludes, $fm_name, $fm_login;
 		
+		unset($post['tab-group-1']);
 		$post['group_id'] = intval($post['group_id']);
 		if (!isset($post['group_id'])) return _('This is a malformed request.');
 		if (empty($post['group_name'])) return _('No group name defined.');
