@@ -459,7 +459,7 @@ INSERTSQL;
 
 	$inserts[] = <<<INSERTSQL
 INSERT INTO `$database`.`fm_options` (`option_name`, `option_value`) 
-	SELECT 'mail_enable', '1' FROM DUAL
+	SELECT 'mail_enable', '0' FROM DUAL
 WHERE NOT EXISTS
 	(SELECT option_name FROM `$database`.`fm_options` WHERE option_name = 'mail_enable');
 INSERTSQL;
