@@ -85,7 +85,7 @@ class fm_module_templates {
 
 		if (currentUserCan('manage_zones', $_SESSION['module'])) {
 			$edit_status = '<td class="column-actions">';
-			$edit_status .= '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 			$show_delete = true;
 			
 			/** Cannot delete templates in use */
@@ -101,7 +101,7 @@ class fm_module_templates {
 				$show_delete = false;
 			}
 			
-			$edit_status .= $show_delete ? '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>' : null;
+			$edit_status .= $show_delete ? '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>' : null;
 			$edit_status .= '</td>';
 			$checkbox = ($show_delete) ? '<input type="checkbox" name="bulk_list[]" value="' . $check_id .'" />' : null;
 		} else {

@@ -105,7 +105,7 @@ if ($type == 'users') {
 } elseif ($type == 'groups') {
 	$result = basicGetList('fm_groups', array($sort_field, $default_sort_field), 'group_', null, null, false, $sort_direction);
 } elseif ($type == 'keys') {
-	$sql = (!currentUserCan('manage_users')) ? 'AND user_id=' . $_SESSION['user']['id'] : null;
+	$sql = (!currentUserCan('manage_users')) ? 'AND user_id=' . $_SESSION['user']['id'] : ((isset($_GET['uid']) && intval($_GET['uid'])) ? 'AND user_id=' . intval($_GET['uid']) : null);
 	$result = basicGetList('fm_keys', array($sort_field, $default_sort_field), 'key_', $sql, null, false, $sort_direction);
 }
 $total_pages = ceil($fmdb->num_rows / $_SESSION['user']['record_count']);

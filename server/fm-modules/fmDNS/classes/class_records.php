@@ -527,7 +527,7 @@ class fm_dns_records {
 
 				/** Linked PTR */
 				if (isset($record_ptr_id) && $record_ptr_id) {
-					$field_values['data']['Value']['Value'] .= ' <a href="#" class="tooltip-right" data-tooltip="' . __('Linked PTR exists') . '"><i class="mini-icon fa fa-exchange"></i></a>';
+					$field_values['data']['Value']['Value'] .= ' <a class="tooltip-right" data-tooltip="' . __('Linked PTR exists') . '"><i class="mini-icon fa fa-exchange"></i></a>';
 				}
 
 				/** Append */
@@ -650,7 +650,7 @@ class fm_dns_records {
 			$field_values['class'] = 'new-record build notice';
 			if (!isset($field_values['data']['Actions'])) $field_values['data']['Actions'] = '';
 		}
-		if (isset($field_values['data']['Actions'])) $field_values['data']['Actions'] .= sprintf('<div class="inline-record-actions" style="display: none;"><a href="#" class="inline-record-validate"><i class="fa fa-check" title="%s" aria-hidden="true"></i></a><a href="#" class="inline-record-cancel"><i class="fa fa-undo" title="%s" aria-hidden="true"></i></a></div>', __('Validate'), _('Cancel'));
+		if (isset($field_values['data']['Actions'])) $field_values['data']['Actions'] .= sprintf('<div class="inline-record-actions" style="display: none;"><a class="inline-record-validate"><i class="fa fa-check" title="%s" aria-hidden="true"></i></a><a class="inline-record-cancel"><i class="fa fa-undo" title="%s" aria-hidden="true"></i></a></div>', __('Validate'), _('Cancel'));
 		
 		for ($i=$start; $i<=$end; $i++) {
 			$form .= '<tr class="' . $field_values['class'] . '">' . "\n";

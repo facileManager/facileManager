@@ -201,8 +201,8 @@ function displaySetup($error = null) {
 					<td>
 						<div class="input-wrapper">
 							<i class="fa fa-key" aria-hidden="true"></i>
-							<input type="password" size="25" name="dbpass" id="dbpass" value="%s" placeholder="%s" />
 							<i id="show_password" class="fa fa-eye eye-attention" title="%s" aria-hidden="true"></i>
+							<input type="password" size="25" name="dbpass" id="dbpass" value="%s" placeholder="%s" />
 						</div>
 					</td>
 				</tr>
@@ -313,11 +313,11 @@ function displayAccountSetup($error = null) {
 			</td>
 		</tr>
 		<tr>
-			<th><label for="user_email">' . _('Email') . '</label></th>
+			<th><label for="user_email">' . _('E-mail') . '</label></th>
 			<td>
 				<div class="input-wrapper">
 					<i class="fa fa-envelope" aria-hidden="true"></i>
-					<input type="email" size="25" name="user_email" id="user_email" placeholder="email address" onkeyup="javascript:checkPasswd(\'user_password\', \'createaccount\', \'%1$s\');" />
+					<input type="email" size="25" name="user_email" id="user_email" placeholder="e-mail address" onkeyup="javascript:checkPasswd(\'user_password\', \'createaccount\', \'%1$s\');" />
 				</div>
 			</td>
 		</tr>
@@ -326,8 +326,8 @@ function displayAccountSetup($error = null) {
 			<td>
 				<div class="input-wrapper">
 					<i class="fa fa-key" aria-hidden="true"></i>
-					<input type="password" size="25" name="user_password" id="user_password" placeholder="password" onkeyup="javascript:checkPasswd(\'user_password\', \'createaccount\', \'%1$s\');" autocomplete="off" />
 					<i id="show_password" class="fa fa-eye eye-attention" title="%s" aria-hidden="true"></i>
+					<input type="password" size="25" name="user_password" id="user_password" placeholder="password" onkeyup="javascript:checkPasswd(\'user_password\', \'createaccount\', \'%1$s\');" autocomplete="off" />
 				</div>
 			</td>
 		</tr>

@@ -222,7 +222,7 @@ HTML;
 
 	if (isset($ap_client_stats)) {
 		foreach ($ap_client_stats as $mac => $client_info) {
-			$actions = sprintf('<a href="#" id="block-wifi-client" class="delete valid_error">%s %s</a>', $__FM_CONFIG['module']['icons']['block'], __('Block'));
+			$actions = sprintf('<a id="block-wifi-client" class="delete valid_error">%s %s</a>', $__FM_CONFIG['module']['icons']['block'], __('Block'));
 			
 			$user = getNameFromID($mac, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'wlan_users', 'wlan_user_', 'wlan_user_mac', 'wlan_user_login');
 			if (!$user) {

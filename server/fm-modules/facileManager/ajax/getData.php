@@ -26,13 +26,116 @@ require_once('../../../fm-init.php');
 
 include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'functions.php');
 
+/** Generate TOTP */
+if (array_key_exists('otp_2fa', $_POST)) {
+	switch ($_POST['otp_2fa']) {
+		case 'generate':
+		case 'resend':
+			// Get user 2FA method
+			$user_2fa_method = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_method');
+
+			// Ensure $user_2fa_method is valid
+			$user_2fa_method = $fm_login->validate2FAMethod($user_2fa_method);
+
+			// Set user_2fa_method to e-mail if not set
+			if (!$user_2fa_method && getOption('require_2fa')) {
+				$user_2fa_method = 'email';
+			}
+
+			// Generate & E-mail TOTP 2FA
+			if ($user_2fa_method == 'email') {
+				$otp = $fm_login->generateOTP($_POST['otp_2fa']);
+				if ($otp !== false) {
+					$query = "INSERT INTO `fm_temp_auth_keys` VALUES ('" . password_hash($otp, PASSWORD_DEFAULT) . "', '{$_SESSION['user']['id']}', " . time() . ")";
+					$fmdb->get_results($query);
+					if ($fmdb->rows_affected) {
+						$fm_login->mail2FAOTP($_SESSION['user']['id'], $otp);
+					}
+				}
+			}
+			break;
+		case 'verify':
+		case 'recovery':
+			// Verify TOTP 2FA
+			if (isset($_POST['secret']) && !empty($_POST['secret'])) {
+				// Authenticator app setup verification
+				$result = $fm_login->process2FAAuthAppMethod($_POST['code'], $_POST['secret']);
+				if ($result === true) {
+					sleep(1);
+					echo 'success';
+					exit;
+				}
+			} else {
+				// Login 2FA verification
+				$result = $fm_login->process2FAForm($_POST['code'], $_POST['otp_2fa']);
+				if ($result === true) {
+					if (isset($_SESSION['user']['uri'])) {
+						if (isUpgradeAvailable() && currentUserCan(array('do_everything', 'manage_modules'))) {
+							$_SESSION['user']['uri'] = $GLOBALS['RELPATH'] . 'fm-upgrade.php';
+						}
+						echo $_SESSION['user']['uri'];
+						@session_start();
+						unset($_SESSION['user']['uri']);
+					} else {
+						echo $GLOBALS['RELPATH'];
+					}
+					exit;
+				}
+			}
+
+			echo 'failed';
+			break;
+		case 'setup-app':
+			$tfa = new RobThree\Auth\TwoFactorAuth(new RobThree\Auth\Providers\Qr\BaconQrCodeProvider());
+			$user_2fa_setup_secret = $tfa->createSecret();
+			if ($user_2fa_setup_secret === false) {
+				echo 'failed';
+				break;
+			}
+
+			$user_2fa_setup_app_ouput = '
+			<input type="hidden" id="user_2fa_secret" name="user_2fa_secret" value="' . $user_2fa_setup_secret . '" />
+			<div id="tfa_app_setup_form">
+				<div class="flex qr-code-container">
+					<img src="' . $tfa->getQRCodeImageAsDataUri($fm_name, $user_2fa_setup_secret) . '">
+					<div>
+						<p>' . _('Scan the QR code with your authenticator app and enter the generated code below to complete setup.') . '</p>
+						<p>' . sprintf(_('Alternatively, you can manually configure your authenticator app using the %s and then enter the generated code to complete setup.'), sprintf('<a class="tooltip-left" data-tooltip="%s">%s</a>', chunk_split($user_2fa_setup_secret, 4, ' '), _('setup key'))) . '</p>
+					</div>
+				</div>
+				<input type="hidden" name="verify_otp" id="verify_otp" value="verify" />
+				<input name="app_otp" id="app_otp" type="text" class="required" placeholder="XXXXXX" autocomplete="off" maxlength="6" />
+				<a name="submit" id="verify_otpbtn" class="button green"><i class="fa fa-check" aria-hidden="true"></i> ' . _('Verify') . '</a>
+				<p id="message"></p>
+			</div>
+			<script type="text/javascript">
+				$("#app_otp").focus();
+			</script>
+			';
+			echo $user_2fa_setup_app_ouput;
+			break;
+		case 'generate-recovery-code';
+			$recovery_code = $fm_login->generate2FARecoveryCode();
+			if ($recovery_code !== false) {
+				echo '<p id="message" class="success"><i class="fa fa-check ok" aria-hidden="true"></i> <span class="recovery-code-display">' . $recovery_code . '</span></p>
+				<div id="config_check" class="info no-image">' . _('Store this recovery code in a safe place. This is your only chance to view it.') . '</div>';
+			} else {
+				echo 'failed';
+			}
+			break;
+		default:
+			return;
+	}
+	exit;
+}
+
 /** Process account settings */
 if (is_array($_POST) && array_key_exists('user_id', $_POST)) {
 	/** Password reset */
 	if (array_key_exists('reset_pwd', $_POST)) {
 		$result = $fm_login->processUserPwdResetForm($_POST['user_id']);
 		if ($result === true) {
-			printf(_('<p>Password reset email has been sent to %s.</p>'), $_POST['user_id']);
+			printf(_('<p>Password reset e-mail has been sent to %s.</p>'), $_POST['user_id']);
 		} else {
 			echo displayResponseClose($result);
 		}
@@ -44,7 +147,7 @@ if (is_array($_POST) && array_key_exists('user_id', $_POST)) {
 	
 	include(ABSPATH . 'fm-modules/'. $fm_name . '/classes/class_users.php');
 	
-	$form_bits = array('user_login', 'user_comment', 'user_email', 'user_module', 'user_token', 'user_theme');
+	$form_bits = array('user_login', 'user_display_name', 'user_comment', 'user_email', 'user_module', 'user_token', 'user_theme', 'user_2fa_method');
 	if (getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_auth_type') == 1) {
 		$form_bits[] = 'user_password';
 	}
@@ -64,7 +167,20 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 		if (!getOption('api_token_support')) returnUnAuth();
 		
 		include(ABSPATH . 'fm-modules/'. $fm_name . '/classes/class_users.php');
-		echo $fm_users->generateAPIKey();
+		if (isset($_POST['item_id']) && !empty($_POST['item_id'])) {
+			// Get the key details
+			basicGet('fm_keys', $_POST['item_id'], 'key_', 'key_id');
+			$results = $fmdb->last_result;
+
+			if (($fmdb->num_rows && $results[0]->user_id == $_SESSION['user']['id']) || currentUserCan('manage_users')) {
+				echo $fm_users->printAPIKeyForm($results[0]);
+			} else {
+				// Unauth if not allowed to manage users, no such key, or not owner of key
+				returnUnAuth();
+			}
+		} else {
+			echo $fm_users->generateAPIKey();
+		}
 		exit;
 	}
 
@@ -84,7 +200,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 	
 	if ($add_new) {
 		if (currentUserCan('manage_users')) {
-			$form_bits = ($_POST['item_sub_type'] == 'users') ? array('user_login', 'user_comment', 'user_email', 'user_auth_method', 'user_password', 'user_options', 'user_perms', 'user_module', 'user_groups') : array('group_name', 'comment', 'group_users', 'user_perms');
+			$form_bits = ($_POST['item_sub_type'] == 'users') ? array('user_login', 'user_display_name', 'user_comment', 'user_email', 'user_auth_method', 'user_password', 'user_options', 'user_perms', 'user_module', 'user_groups') : array('group_name', 'comment', 'group_users', 'user_perms');
 		} else {
 			$form_bits = array('user_password');
 		}
@@ -110,7 +226,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 			if (currentUserCan('manage_users')) {
 				basicGet('fm_users', $id, 'user_', 'user_id');
 				if ($fmdb->num_rows) {
-					$form_bits = ($fmdb->last_result[0]->user_auth_type == 2) ? array('user_login', 'user_comment', 'user_email', 'user_perms', 'user_module', 'user_groups') : array('user_login', 'user_comment', 'user_email', 'user_options', 'user_perms', 'user_module', 'user_groups');
+					$form_bits = ($fmdb->last_result[0]->user_auth_type == 2) ? array('user_login', 'user_display_name', 'user_comment', 'user_email', 'user_perms', 'user_module', 'user_groups') : array('user_login', 'user_comment', 'user_email', 'user_options', 'user_perms', 'user_module', 'user_groups');
 					if ($fmdb->last_result[0]->user_auth_type != 2) {
 						$form_bits[] = 'user_password';
 					}

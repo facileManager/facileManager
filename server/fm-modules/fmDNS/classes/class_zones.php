@@ -95,7 +95,7 @@ class fm_dns_zones {
 
 		if (!count($bulk_actions_list)) $bulk_actions_list = '';
 		$classes = (array_key_exists('attention', $_GET)) ? null : ' grey';
-		$eye_attention = $GLOBALS['zone_badge_counts'][$map] ? sprintf('<a href="#" class="tooltip-top mini-icon" data-tooltip="%s"><i class="fa fa-eye fa-lg eye-attention %s"></i></a>', __('Only view zones that need attention'), $classes) : null;
+		$eye_attention = $GLOBALS['zone_badge_counts'][$map] ? sprintf('<a class="tooltip-top mini-icon" data-tooltip="%s"><i class="fa fa-eye fa-lg eye-attention %s"></i></a>', __('Only view zones that need attention'), $classes) : null;
 		$addl_blocks = ($map != 'groups') ? array(@buildBulkActionMenu($bulk_actions_list, 'server_id_list'), $this->buildFilterMenu(), $eye_attention) : buildBulkActionMenu($bulk_actions_list);
 		$fmdb->num_rows = $num_rows;
 		echo displayPagination($page, $total_pages, $addl_blocks);
@@ -813,7 +813,7 @@ class fm_dns_zones {
 					$favorite_class = 'fa-star-o grey';
 					$favorite_tooltip = __('Mark as Favorite Zone');
 				}
-				$clone_names .= '<p class="subelement' . $clone_id . '"><span><a href="#" class="tooltip-bottom mini-icon" data-tooltip="' . $favorite_tooltip . '"><i class="fa ' . $favorite_class . ' zone-favorite" aria-hidden="true" rel="' . $clone_id . '"></i></a> <a href="' . $clone_array['clone_link'] . '" title="' . __('Edit zone records') . '">' . $clone_array['clone_name'] . 
+				$clone_names .= '<p class="subelement' . $clone_id . '"><span><a class="tooltip-bottom mini-icon" data-tooltip="' . $favorite_tooltip . '"><i class="fa ' . $favorite_class . ' zone-favorite" aria-hidden="true" rel="' . $clone_id . '"></i></a> <a href="' . $clone_array['clone_link'] . '" title="' . __('Edit zone records') . '">' . $clone_array['clone_name'] . 
 						'</a></span>' . $clone_array['clone_options'] . $clone_array['dnssec'] . $clone_array['dynamic'] . $clone_array['clone_edit'] . $clone_array['clone_delete'] . "</p>\n";
 				$clone_types .= '<p class="subelement' . $clone_id . '">' . __('clone') . '</p>' . "\n";
 				$clone_views .= '<p class="subelement' . $clone_id . '">' . $this->IDs2Name($clone_array['clone_views'], 'view') . "</p>\n";
@@ -849,8 +849,8 @@ class fm_dns_zones {
 				$edit_status = '<a href="preview.php" onclick="javascript:void window.open(\'preview.php?server_serial_no=-1&config=zone&domain_id=' . $row->domain_id . '\',\'1356124444538\',\'' . $__FM_CONFIG['default']['popup']['dimensions'] . ',toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0\');return false;">' . $__FM_CONFIG['icons']['preview'] . '</a>';
 			}
 			if (currentUserCan('manage_zones', $_SESSION['module']) && $zone_access_allowed) {
-				$edit_status .= '<a class="edit_form_link" name="' . $map . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
-				$edit_status .= '<a class="delete" href="#">' . $__FM_CONFIG['icons']['delete'] . '</a>' . "\n";
+				$edit_status .= '<a class="edit_form_link" name="' . $map . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+				$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>' . "\n";
 			}
 
 			$dynamic_zone = getNameFromID($row->domain_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_dynamic');
@@ -876,7 +876,7 @@ class fm_dns_zones {
 				basicGet('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'records', $row->domain_id, 'record_', 'domain_id', 'AND record_type="URL" AND record_name="@"');
 				if ($fmdb->num_rows) {
 					$domain_redirect_url = $fmdb->last_result[0]->record_value;
-					$icons[] = sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="fa fa-globe" aria-hidden="true"></i></a>', sprintf(__('This zone redirects to %s'), $domain_redirect_url));
+					$icons[] = sprintf('<a class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="fa fa-globe" aria-hidden="true"></i></a>', sprintf(__('This zone redirects to %s'), $domain_redirect_url));
 					if (!getOption('url_rr_web_servers', $_SESSION['user']['account_id'], $_SESSION['module'])) {
 						$response = __('There are no URL RR web servers defined in the Settings to support the URL resource records.');
 						$classes[] = 'attention';
@@ -889,20 +889,20 @@ class fm_dns_zones {
 				if ($fmdb->num_rows) {
 					$icons[] = sprintf('<div class="mini-icon tooltip-copy nowrap"><span><b>%s:</b><br /><textarea>' . trim($row->domain_dnssec_ds_rr) . '</textarea><p>%s</p></span><i class="fa fa-lock secure"></i></div>', __('Zone DS RRset'), __('Click to copy'), __('Zone is secured with DNSSEC'));
 				} else {
-					$icons[] = sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-lock insecure" aria-hidden="true"></i></a>', __('Zone is configured but not secured with DNSSEC'));
+					$icons[] = sprintf('<a class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-lock insecure" aria-hidden="true"></i></a>', __('Zone is configured but not secured with DNSSEC'));
 					$response = __('There are no DNSSEC keys defined for this zone.');
 					$classes[] = 'attention';
 				}
 				$icons[] = sprintf('<a href="config-keys.php?type=dnssec&domain_id[]=%d" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-key secure" aria-hidden="true"></i></a>', $row->domain_id, __('Manage zone DNSSEC keys'));
 			}
 			if ($dynamic_zone == 'yes') {
-				$icons[] = sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-share-alt" aria-hidden="true"></i></a>', __('Zone supports dynamic updates'));
+				$icons[] = sprintf('<a class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-share-alt" aria-hidden="true"></i></a>', __('Zone supports dynamic updates'));
 			}
 			if ($domain_template_id = getNameFromID($row->domain_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_template_id')) {
-				$icons[] = sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-picture-o" aria-hidden="true"></i></a>', sprintf(__('Based on %s'), getNameFromID($domain_template_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_name')));
+				$icons[] = sprintf('<a class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-picture-o" aria-hidden="true"></i></a>', sprintf(__('Based on %s'), getNameFromID($domain_template_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_name')));
 			}
 
-			$response = ($response) ? sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="fa fa-question-circle" aria-hidden="true"></i></a>', $response) : null;
+			$response = ($response) ? sprintf('<a class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="fa fa-question-circle" aria-hidden="true"></i></a>', $response) : null;
 
 			$class = 'class="' . implode(' ', $classes) . '"';
 			if (is_array($icons)) {
@@ -923,7 +923,7 @@ class fm_dns_zones {
 		<tr id="$row->domain_id" name="$row->domain_name" $class>
 			$checkbox
 			<td>$row->domain_id</td>
-			<td><a href="#" class="tooltip-bottom mini-icon" data-tooltip="{$favorite_tooltip}"><i class="fa {$favorite_class} zone-favorite" aria-hidden="true" rel="{$row->domain_id}"></i></a></td>
+			<td><a class="tooltip-bottom mini-icon" data-tooltip="{$favorite_tooltip}"><i class="fa {$favorite_class} zone-favorite" aria-hidden="true" rel="{$row->domain_id}"></i></a></td>
 			<td><b>$edit_name</b> $icons $add_new $response $clone_names</td>
 			<td>$row->domain_type
 				$clone_types</td>
@@ -956,13 +956,13 @@ HTML;
 			
 			if (currentUserCan('manage_zones', $_SESSION['module'])) {
 				$edit_status = '<td class="column-actions">';
-				$edit_status .= '<a class="edit_form_link" name="' . $map . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
-				$edit_status .= '<a class="status_form_link" href="#" rel="';
+				$edit_status .= '<a class="edit_form_link" name="' . $map . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+				$edit_status .= '<a class="status_form_link" rel="';
 				$edit_status .= ($row->group_status == 'active') ? 'disabled' : 'active';
 				$edit_status .= '">';
 				$edit_status .= ($row->group_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 				$edit_status .= '</a>';
-				$edit_status .= '<a href="#" name="' . $map . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status .= '<a name="' . $map . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				$edit_status .= '</td>';
 				$checkbox = '<input type="checkbox" name="bulk_list[]" value="' . $row->group_id .'" />';
 			} else {
@@ -1181,12 +1181,12 @@ HTML;
 			$addl_zone_options .= sprintf('<tr class="include-with-template" id="enable_dnssec" style="display: %s">
 			<th>%s</th>
 			<td>
-				<input type="checkbox" id="domain_dnssec" name="domain_dnssec" value="yes" %s /><label for="domain_dnssec"> %s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
+				<input type="checkbox" id="domain_dnssec" name="domain_dnssec" value="yes" %s /><label for="domain_dnssec"> %s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
 				<div id="dnssec_option" style="display: %s;">
 					<h4>%s</h4>
 					<label for="domain_dnssec_sig_expire">%s</label> <input type="text" id="domain_dnssec_sig_expire" name="domain_dnssec_sig_expire" value="%s" placeholder="%s" style="width: 5em;" onkeydown="return validateNumber(event)" /> 
-					<a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a><br />
-					<input type="checkbox" id="domain_dnssec_sign_inline" name="domain_dnssec_sign_inline" value="yes" %s /><label for="domain_dnssec_sign_inline"> %s</label> <a href="#" class="tooltip-left" data-tooltip="%s"><i class="fa fa-question-circle"></i></a><br />
+					<a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a><br />
+					<input type="checkbox" id="domain_dnssec_sign_inline" name="domain_dnssec_sign_inline" value="yes" %s /><label for="domain_dnssec_sign_inline"> %s</label> <a class="tooltip-left" data-tooltip="%s"><i class="fa fa-question-circle"></i></a><br />
 					<input type="checkbox" id="domain_dnssec_generate_ds" name="domain_dnssec_generate_ds" value="yes" %s /><label for="domain_dnssec_generate_ds"> %s</label>
 				</div>
 				<div id="dnssec_ds_option" style="display: %s;">
@@ -1206,75 +1206,82 @@ HTML;
 		
 		$return_form = (array_search('popup', $show) !== false) ? $popup_header . '<form name="manage" id="manage">' : null;
 		
-		$return_form .= sprintf('<input type="hidden" name="page" value="zones" />
+		$return_form .= sprintf('
+			<input type="hidden" name="page" value="zones" />
 			<input type="hidden" name="action" value="%s" />
 			<input type="hidden" name="domain_id" value="%d" />
-			<table class="form-table %s">
-				<tr class="include-with-template">
-					<th><label for="domain_name">%s</label></th>
-					<td><input type="text" id="domain_name" name="domain_name" size="40" value="%s" maxlength="%d" class="required" /></td>
-				</tr>
-				%s
-				%s
-				<tr class="include-with-template">
-					<th><label for="domain_view">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
-					<td>%s
-				</tr>
-				<tr>
-					<th><label for="domain_mapping">%s</label></th>
-					<td>%s</td>
-				</tr>
-				<tr>
-					<th><label for="domain_type">%s</label></th>
-					<td>
+			<div id="tabs" class="window-tall window-wide">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table %s">
+						<tr class="include-with-template">
+							<th><label for="domain_name">%s</label></th>
+							<td><input type="text" id="domain_name" name="domain_name" size="40" value="%s" maxlength="%d" class="required" /></td>
+						</tr>
 						%s
-						<div id="define_forwarders" style="display: %s">
-							<p>%s</p>
-							<input type="hidden" name="domain_required_servers[forwarders]" id="domain_required_servers" class="address_match_element required" data-placeholder="%s" value="%s" /><br />
-							( address_match_element )
-						</div>
-						<div id="define_masters" style="display: %s">
-							<input type="hidden" name="domain_required_servers[primaries]" id="domain_required_servers" class="address_match_element required" data-placeholder="%s" value="%s" /><br />
-							( address_match_element )
-						</div>
-						<div id="define_redirect_url" style="display: none">
-							<h4>%s <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle" aria-hidden="true"></i></a></h4>
-							<input type="text" id="domain_redirect_url" name="domain_redirect_url" size="40" value="" class="required" />
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<th><label for="domain_clone_domain_id">%s</label></th>
-					<td>
 						%s
-						<div id="clone_override" style="display: %s">
-							<p><input type="checkbox" id="domain_clone_dname_override" name="domain_clone_dname_override" value="yes" %s /><label for="domain_clone_dname_override"> %s</label></p>
-							<div id="clone_dname_options" style="display: %s">
-								<h4>%s</h4>
+						<tr class="include-with-template">
+							<th><label for="domain_view">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+							<td>%s
+						</tr>
+						<tr>
+							<th><label for="domain_mapping">%s</label></th>
+							<td>%s</td>
+						</tr>
+						<tr>
+							<th><label for="domain_type">%s</label></th>
+							<td>
 								%s
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<th><label for="domain_name_servers">%s</label></th>
-					<td>%s</td>
-				</tr>
-				<tr class="include-with-template">
-					<th><label for="domain_ttl">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
-					<td><input type="text" id="domain_ttl" name="domain_ttl" size="40" value="%s" maxlength="%d" onkeydown="return validateTimeFormat(event, this)" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="view_key_id">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
-					<td width="67&#37;">%s</td>
-				</tr>
-				%s
-				<tr class="include-with-template">
-					<th width="33&#37;" scope="row"><label for="domain_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="domain_comment" name="domain_comment" rows="4" cols="40">%s</textarea></td>
-				</tr>
-				%s
-			</table>',
+								<div id="define_forwarders" style="display: %s">
+									<p>%s</p>
+									<input type="hidden" name="domain_required_servers[forwarders]" id="domain_required_servers" class="address_match_element required" data-placeholder="%s" value="%s" /><br />
+									( address_match_element )
+								</div>
+								<div id="define_masters" style="display: %s">
+									<input type="hidden" name="domain_required_servers[primaries]" id="domain_required_servers" class="address_match_element required" data-placeholder="%s" value="%s" /><br />
+									( address_match_element )
+								</div>
+								<div id="define_redirect_url" style="display: none">
+									<h4>%s <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle" aria-hidden="true"></i></a></h4>
+									<input type="text" id="domain_redirect_url" name="domain_redirect_url" size="40" value="" class="required" />
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th><label for="domain_clone_domain_id">%s</label></th>
+							<td>
+								%s
+								<div id="clone_override" style="display: %s">
+									<p><input type="checkbox" id="domain_clone_dname_override" name="domain_clone_dname_override" value="yes" %s /><label for="domain_clone_dname_override"> %s</label></p>
+									<div id="clone_dname_options" style="display: %s">
+										<h4>%s</h4>
+										%s
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th><label for="domain_name_servers">%s</label></th>
+							<td>%s</td>
+						</tr>
+						<tr class="include-with-template">
+							<th><label for="domain_ttl">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+							<td><input type="text" id="domain_ttl" name="domain_ttl" size="40" value="%s" maxlength="%d" onkeydown="return validateTimeFormat(event, this)" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="view_key_id">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+							<td width="67&#37;">%s</td>
+						</tr>
+						%s
+						<tr class="include-with-template">
+							<th width="33&#37;" scope="row"><label for="domain_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="domain_comment" name="domain_comment" rows="4" cols="40">%s</textarea></td>
+						</tr>
+						%s
+					</table>
+					</div>
+				</div>
+			</div>',
 				$action, $domain_id, $classes,
 				__('Zone Name'), $domain_name, $domain_name_length,
 				$select_template, $template_name,
@@ -1383,7 +1390,7 @@ HTML;
 				/** Delete permitted? */
 				if (currentUserCan(array('manage_zones'), $_SESSION['module'], array(0, $domain_id)) &&
 					currentUserCan(array('access_specific_zones'), $_SESSION['module'], array(0, $domain_id))) {
-					$return[$clone_id]['clone_edit'] = sprintf('<a class="subelement_edit tooltip-bottom mini-icon" name="' . $clone_results[$i]->domain_mapping . '" href="#" id="' . $clone_id . '" data-tooltip="%s">' . $__FM_CONFIG['icons']['edit'] . '</a>', _('Edit'));
+					$return[$clone_id]['clone_edit'] = sprintf('<a class="subelement_edit tooltip-bottom mini-icon" name="' . $clone_results[$i]->domain_mapping . '" id="' . $clone_id . '" data-tooltip="%s">' . $__FM_CONFIG['icons']['edit'] . '</a>', _('Edit'));
 					$return[$clone_id]['clone_delete'] = str_replace('__ID__', $clone_id, $__FM_CONFIG['module']['icons']['sub_delete']);
 				} else {
 					$return[$clone_id]['clone_delete'] = $return[$clone_id]['clone_edit'] = null;
@@ -1403,10 +1410,10 @@ HTML;
 				$return[$clone_id]['clone_servers'] = $clone_results[$i]->domain_name_servers;
 
 				/** Dynamic updates support */
-				$return[$clone_id]['dynamic'] = (getNameFromID($clone_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_dynamic') == 'yes') ? sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-share-alt" aria-hidden="true"></i></a>', __('Zone supports dynamic updates')) : null;
+				$return[$clone_id]['dynamic'] = (getNameFromID($clone_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_dynamic') == 'yes') ? sprintf('<a class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-share-alt" aria-hidden="true"></i></a>', __('Zone supports dynamic updates')) : null;
 				
 				/** DNSSEC support */
-				$return[$clone_id]['dnssec'] = (getNameFromID($clone_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_dnssec') == 'yes') ? sprintf('<a href="#" class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-lock secure" aria-hidden="true"></i></a>', __('Zone is secured with DNSSEC')) : null;
+				$return[$clone_id]['dnssec'] = (getNameFromID($clone_id, 'fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_dnssec') == 'yes') ? sprintf('<a class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="mini-icon fa fa-lock secure" aria-hidden="true"></i></a>', __('Zone is secured with DNSSEC')) : null;
 
 				/** Clone comment */
 				$return[$clone_id]['clone_comment'] = ($clone_results[$i]->domain_comment) ? $clone_results[$i]->domain_comment : '&nbsp;';

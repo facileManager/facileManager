@@ -126,8 +126,12 @@ function printPasswordResetForm($message = null) {
 function checkForgottonPasswordKey($key, $fm_login) {
 	global $fmdb, $__FM_CONFIG;
 	
-	$time = date("U", strtotime($__FM_CONFIG['clean']['time'] . ' ago'));
-	$query = "SELECT * FROM `fm_pwd_resets` WHERE `pwd_id`='$key' AND `pwd_login`=(SELECT `user_id` FROM `fm_users` WHERE `user_login`='$fm_login' AND `user_status`!='deleted') AND `pwd_timestamp`>='$time'";
+	/** Get password reset expirey */
+	$password_reset_expiry = getOption('password_reset_expiry');
+	if (!$password_reset_expiry) $password_reset_expiry = $__FM_CONFIG['default']['password_reset_expiry'];
+	
+	$time = date("U", strtotime($password_reset_expiry . ' ago'));
+	$query = "SELECT * FROM `fm_temp_auth_keys` WHERE `pwd_id`='$key' AND `pwd_login`=(SELECT `user_id` FROM `fm_users` WHERE `user_login`='$fm_login' AND `user_status`!='deleted') AND `pwd_timestamp`>='$time'";
 	$fmdb->get_results($query);
 	
 	if ($fmdb->num_rows) return true;

@@ -241,13 +241,13 @@ class fm_dns_controls {
 		
 		if (currentUserCan('manage_servers', $_SESSION['module'])) {
 			$edit_status = '<td class="column-actions">';
-			$edit_status .= '<a class="edit_form_link" name="' . $type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
-			$edit_status .= '<a class="status_form_link" href="#" rel="';
+			$edit_status .= '<a class="edit_form_link" name="' . $type . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="status_form_link" rel="';
 			$edit_status .= ($row->control_status == 'active') ? 'disabled' : 'active';
 			$edit_status .= '">';
 			$edit_status .= ($row->control_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 			$edit_status .= '</a>';
-			$edit_status .= '<a href="#" name="' . $type . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+			$edit_status .= '<a name="' . $type . '" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 			$edit_status .= '</td>';
 			$checkbox = '<input type="checkbox" name="bulk_list[]" value="' . $row->control_id .'" />';
 		} else {
@@ -318,28 +318,34 @@ HTML;
 			<input type="hidden" name="server_serial_no" value="%s" />
 			<input type="hidden" name="control_keys" value="" />
 			<input type="hidden" name="control_type" value="%s" />
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="control_ip">%s</label></th>
-					<td width="67&#37;"><input name="control_ip" id="control_ip" type="text" value="%s" size="40" placeholder="127.0.0.1" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="control_port">%s</label></th>
-					<td width="67&#37;"><input name="control_port" id="control_port" type="text" value="%s" size="40" placeholder="953" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="control_predefined">%s</label></th>
-					<td width="67&#37;">
-						<input type="hidden" name="control_addresses" id="address_match_element" data-placeholder="%s" value="%s" class="required" /><br />
-						( address_match_element )
-					</td>
-				</tr>
-				%s
-				<tr>
-					<th width="33&#37;" scope="row"><label for="control_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="control_comment" name="control_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="control_ip">%s</label></th>
+							<td width="67&#37;"><input name="control_ip" id="control_ip" type="text" value="%s" size="40" placeholder="127.0.0.1" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="control_port">%s</label></th>
+							<td width="67&#37;"><input name="control_port" id="control_port" type="text" value="%s" size="40" placeholder="953" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="control_predefined">%s</label></th>
+							<td width="67&#37;">
+								<input type="hidden" name="control_addresses" id="address_match_element" data-placeholder="%s" value="%s" class="required" /><br />
+								( address_match_element )
+							</td>
+						</tr>
+						%s
+						<tr>
+							<th width="33&#37;" scope="row"><label for="control_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="control_comment" name="control_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

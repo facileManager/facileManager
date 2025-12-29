@@ -31,7 +31,7 @@ class fm_module_time {
 		$num_rows = $fmdb->num_rows;
 		$results = $fmdb->last_result;
 
-		if (currentUserCan('manage_servers', $_SESSION['module'])) {
+		if (currentUserCan('manage_time', $_SESSION['module'])) {
 			$bulk_actions_list = array(_('Delete'));
 		}
 
@@ -199,14 +199,14 @@ class fm_module_time {
 		$edit_status = sprintf('<span rel="t%s">%s</span>', $row->time_id, $__FM_CONFIG['module']['icons']['search']);
 		
 		if (currentUserCan('manage_time', $_SESSION['module'])) {
-			$edit_status .= '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
-			$edit_status .= '<a class="status_form_link" href="#" rel="';
+			$edit_status .= '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="status_form_link" rel="';
 			$edit_status .= ($row->time_status == 'active') ? 'disabled' : 'active';
 			$edit_status .= '">';
 			$edit_status .= ($row->time_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 			$edit_status .= '</a>';
 			if (!isItemInPolicy($row->time_id, 'time')) {
-				$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				$checkbox = '<td><input type="checkbox" name="bulk_list[]" value="' . $row->time_id .'" /></td>';
 			} else {
 				$checkbox = '<td></td>';
@@ -294,7 +294,7 @@ HTML;
 		$time_zone_form = '<h4>' . _('Timezone') . '</h4>' . buildSelect('time_zone', 'time_zone', enumMYSQLSelect('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'time', 'time_zone'), $time_zone);
 
 		$checked = ($time_contiguous) ? 'checked' : null;
-		$time_options = sprintf('<input name="time_contiguous" id="time_contiguous" value="yes" type="checkbox" %s /><label for="time_contiguous">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a><br />',
+		$time_options = sprintf('<input name="time_contiguous" id="time_contiguous" value="yes" type="checkbox" %s /><label for="time_contiguous">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a><br />',
 			$checked, __('Use contiguous time'), __('When end time is smaller than start time, match this as a single time period instead of distinct intervals.')
 			);
 		
@@ -311,53 +311,59 @@ HTML;
 			<input type="hidden" name="time_weekdays_not" value="" />
 			<input type="hidden" name="time_monthdays_not" value="" />
 			<input type="hidden" name="time_contiguous" value="no" />
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="time_name">%s</label></th>
-					<td width="67&#37;"><input name="time_name" id="time_name" type="text" value="%s" size="40" maxlength="%d" class="required" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="time_start_date">%s</label></th>
-					<td width="67&#37;"><input name="time_start_date" id="time_start_date" type="date" value="%s" size="40" class="datepicker" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="time_start_time">%s</label></th>
-					<td width="67&#37;">%s</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="time_end_date">%s</label></th>
-					<td width="67&#37;"><input name="time_end_date" id="time_end_date" type="date" value="%s" size="40" class="datepicker" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="time_end_time">%s</label></th>
-					<td width="67&#37;">%s</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row">%s</th>
-					<td width="67&#37;" style="white-space: nowrap;">
-						%s<br />
-						<input name="time_weekdays_not" id="time_weekdays_not" value="!" type="checkbox" %s /><label for="time_weekdays_not">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
-					</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row">%s</th>
-					<td width="67&#37;" style="white-space: nowrap;">
-						%s<br />
-						<input name="time_monthdays_not" id="time_monthdays_not" value="!" type="checkbox" %s /><label for="time_monthdays_not">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
-					</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row">%s</th>
-					<td width="67&#37;">
-						%s
-						%s
-					</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="time_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="time_comment" name="time_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="time_name">%s</label></th>
+							<td width="67&#37;"><input name="time_name" id="time_name" type="text" value="%s" size="40" maxlength="%d" class="required" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="time_start_date">%s</label></th>
+							<td width="67&#37;"><input name="time_start_date" id="time_start_date" type="date" value="%s" size="40" class="datepicker" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="time_start_time">%s</label></th>
+							<td width="67&#37;">%s</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="time_end_date">%s</label></th>
+							<td width="67&#37;"><input name="time_end_date" id="time_end_date" type="date" value="%s" size="40" class="datepicker" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="time_end_time">%s</label></th>
+							<td width="67&#37;">%s</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row">%s</th>
+							<td width="67&#37;" style="white-space: nowrap;">
+								%s<br />
+								<input name="time_weekdays_not" id="time_weekdays_not" value="!" type="checkbox" %s /><label for="time_weekdays_not">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
+							</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row">%s</th>
+							<td width="67&#37;" style="white-space: nowrap;">
+								%s<br />
+								<input name="time_monthdays_not" id="time_monthdays_not" value="!" type="checkbox" %s /><label for="time_monthdays_not">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>
+							</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row">%s</th>
+							<td width="67&#37;">
+								%s
+								%s
+							</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="time_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="time_comment" name="time_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

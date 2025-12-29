@@ -89,7 +89,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 
 	$sendto = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_email');
 	if (!$sendto) {
-		printf('<p>%s</p>', _('Unable to send email -- this user account does not have an email address defined.'));
+		printf('<p>%s</p>', _('Unable to send e-mail -- this user account does not have an e-mail address defined.'));
 	} else {
 		include(ABSPATH . 'fm-includes' . DIRECTORY_SEPARATOR . 'version.php');
 
@@ -299,6 +299,11 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 			}
 			exit(_('Error: Malformed request.'));
 	}
+/** Handle API key edits */
+} elseif (is_array($_POST) && array_key_exists('action', $_POST) && $_POST['action'] == 'edit_api_key') {
+	include_once(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_users.php');
+
+	exit($fm_users->saveAPIKey($_POST));
 /** Handle everything else */
 } elseif (isset($_SESSION['module']) && $_SESSION['module'] != $fm_name) {
 	$include_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_SESSION['module'] . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'processPost.php';

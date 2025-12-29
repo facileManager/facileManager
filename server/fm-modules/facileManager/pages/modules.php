@@ -141,7 +141,7 @@ if (count($modules)) {
 			$module_version = $__FM_CONFIG[$module_name]['version'];
 			include(ABSPATH . 'fm-includes/version.php');
 			if (version_compare($fm_version, $__FM_CONFIG[$module_name]['required_fm_version'], '>=')) {
-				$status_options .= sprintf('<a href="#" id="module_install" name="%s" />%s</a>', $module_name, _('Install Now'));
+				$status_options .= sprintf('<a id="module_install" name="%s" />%s</a>', $module_name, _('Install Now'));
 			} else {
 				$status_options .= sprintf(_('%s v%s or later is required.'), $fm_name, $__FM_CONFIG[$module_name]['required_fm_version']);
 			}
@@ -178,7 +178,7 @@ HTML;
 
 /** Set maintenance mode toggle */
 $maintenance_mode = getOption('maintenance_mode');
-$maintenance_mode_toggle = '<a class="toggle-maintenance-mode" href="#" rel="';
+$maintenance_mode_toggle = '<a class="toggle-maintenance-mode" rel="';
 $maintenance_mode_toggle .= ($maintenance_mode) ? 'disabled' : 'active';
 $maintenance_mode_toggle .= '">';
 $maintenance_mode_toggle .= ($maintenance_mode) ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];

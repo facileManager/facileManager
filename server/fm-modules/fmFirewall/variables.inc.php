@@ -31,7 +31,7 @@ if (!@is_array($__FM_CONFIG)) $__FM_CONFIG = array();
 
 /** Module Version */
 $__FM_CONFIG['fmFirewall'] = array(
-		'version'							=> '3.3.0',
+		'version'							=> '3.4.0',
 		'client_version'					=> '3.3.0',
 		'description'						=> __('Managing software firewalls should not be difficult. Manage one or more software firewall servers (iptables, ipfw, ipf, pf) through a web interface rather than configuration files individually.', 'fmFirewall'),
 		'prefix'							=> 'fw_',
@@ -48,7 +48,7 @@ if (isset($__FM_CONFIG['module']['path'])) {
 	$__FM_CONFIG['module']['icons']['action']['reject']		= sprintf('<span class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="fa fa-times __action__" aria-hidden="true"></i></span>', __('Reject the packet'));
 	$__FM_CONFIG['module']['icons']['action']['log']		= sprintf('<span class="tooltip-bottom mini-icon" data-tooltip="%s"><i class="fa fa-file-text-o __action__" aria-hidden="true"></i></span>', __('Log the packet'));
 	$__FM_CONFIG['module']['icons']['negated']				= sprintf('<span class="tooltip-bottom" data-tooltip="%s"><i class="fa fa-exclamation-circle block" aria-hidden="true"></i></span>', __('Negated'));
-	$__FM_CONFIG['module']['icons']['search']				= sprintf('<a href="#" class="global-search"><i class="fa fa-search preview" alt="%1$s" title="%1$s" aria-hidden="true"></i></a>', __('Global Search'));
+	$__FM_CONFIG['module']['icons']['search']				= sprintf('<a class="global-search"><i class="fa fa-search preview" alt="%1$s" title="%1$s" aria-hidden="true"></i></a>', __('Global Search'));
 }
 
 $__FM_CONFIG['icons'] = @array_merge((array) $__FM_CONFIG['module']['icons'], (array) $__FM_CONFIG['icons']);

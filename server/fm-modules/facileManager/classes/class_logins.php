@@ -55,22 +55,23 @@ class fm_login {
 
 		echo displayPreAppForm(_('Login'), 'login_form',
 			sprintf('
+					<div class="message">%s</div>
 					<div class="input-wrapper">
 						<i class="fa fa-user" aria-hidden="true"></i>
-						<input type="text" size="25" name="username" id="username" placeholder="%s" />
+						<input type="text" name="username" id="username" placeholder="%s" />
 					</div>
 					<div class="input-wrapper">
 						<i class="fa fa-key" aria-hidden="true"></i>
-						<input type="password" size="25" name="password" id="password" placeholder="%s" />
 						<i id="show_password" class="fa fa-eye eye-attention" title="%s" aria-hidden="true"></i>
+						<input type="password" name="password" id="password" placeholder="%s" />
 					</div>
 					<div class="button-wrapper"><a name="submit" id="loginbtn" class="button"><i class="fa fa-sign-in" aria-hidden="true"></i> %s</a></div>
 					<div>%s</div>
 				</div>
 				<div id="form_messaging">
 					<div class="terms-accept">%s</div>
-					<div id="message"></div>
-', _('Username'), _('Password'), _('Show'), _('Login'), $forgot_link, $terms_accept),
+					<div id="message" class="message"></div>
+', _('Enter your username and password to sign in.'), _('Username'), _('Show'), _('Password'), _('Login'), $forgot_link, $terms_accept),
 			nl2br($login_message), 'terms', 'loginform', $_SERVER['REQUEST_URI'], $terms_display);
 		
 		printFooter();
@@ -98,6 +99,7 @@ class fm_login {
 		
 		echo displayPreAppForm(_('Reset Password'), 'login_form',
 		sprintf('
+				<div class="message">%s</div>
 				<input type="hidden" name="reset_pwd" value="1" />
 				<div class="input-wrapper">
 					<i class="fa fa-user" aria-hidden="true"></i>
@@ -105,8 +107,8 @@ class fm_login {
 				</div>
 				<div class="button-wrapper"><a name="submit" id="forgotbtn" class="button"><i class="fa fa-send" aria-hidden="true"></i> %s</a></div>
 				<p id="forgotton_link"><a href="%s">&larr; %s</a></p>
-				<div id="message">%s</div>
-	', _('Username'),
+				<div id="message" class="message">%s</div>
+	', _('Enter your username for a password reset link to be sent to the address associated with your account.'), _('Username'),
 				_('Submit'), $GLOBALS['RELPATH'], _('Login form'), $message), null, null, 'loginform', $_SERVER['PHP_SELF'] . '?forgot_password', );
 	}
 	
@@ -138,7 +140,7 @@ class fm_login {
 		$fm_login = $user_info['user_id'];
 		$uniqhash = genRandomString(mt_rand(30, 50));
 		
-		$query = "INSERT INTO fm_pwd_resets VALUES ('$uniqhash', '$fm_login', " . time() . ")";
+		$query = "INSERT INTO fm_temp_auth_keys VALUES ('$uniqhash', '$fm_login', " . time() . ")";
 		$fmdb->query($query);
 		
 		if (!$fmdb->rows_affected) return false;
@@ -149,7 +151,7 @@ class fm_login {
 			if ($mail_enable) {
 				$result = $this->mailPwdResetLink($fm_login, $uniqhash);
 				if ($result !== true) {
-					$query = "DELETE FROM fm_pwd_resets WHERE pwd_id='$uniqhash' AND pwd_login='$fm_login'";
+					$query = "DELETE FROM fm_temp_auth_keys WHERE pwd_id='$uniqhash' AND pwd_login='$fm_login'";
 					$fmdb->query($query);
 
 					return $result;
@@ -259,6 +261,8 @@ class fm_login {
 		$fm_db_version = getOption('fm_db_version');
 		$auth_method = ($fm_db_version >= 18) ? getOption('auth_method') : true;
 		if ($auth_method) {
+			$successful_auth = false;
+
 			/** Use Built-in Auth when Default Auth Method is LDAP but user is defined with 'facileManager/Built-in' */
 			$result = $fmdb->query("SELECT * FROM `fm_users` WHERE `user_login` = '$user_login' and `user_auth_type`=1 and `user_status`='active'");
 			if (isset($fmdb->last_result) && is_array($fmdb->last_result) && $fmdb->last_result[0]->user_login == $user_login) {
@@ -292,31 +296,46 @@ class fm_login {
 						}
 					}
 					
-					/** Enforce password change? */
-					if ($fm_db_version >= 15) {
-						if ($user->user_force_pwd_change == 'yes') {
-							$pwd_reset_query = "SELECT * FROM `fm_pwd_resets` WHERE `pwd_login`={$user->user_id} ORDER BY `pwd_timestamp` LIMIT 1";
-							$fmdb->get_results($pwd_reset_query);
-							if ($fmdb->num_rows) {
-								$reset = $fmdb->last_result[0];
-								return array($reset->pwd_id, $user_login);
-							}
-						}
-					}
-			
-					$this->setSession($user);
-
-					return true;
+					$successful_auth = $user;
 				}
 			/** LDAP Authentication */
 			} else {
-				return $this->doLDAPAuth($user_login, $_POST['password']);
+				$successful_auth = $this->doLDAPAuth($user_login, $_POST['password']);
 			}
+
+			if ($successful_auth === false) {
+				return false;
+			}
+
+			$this->setSession($successful_auth);
+			
+			/** Process 2FA if equipped */
+			if ($fm_db_version >= 62) {
+				if (getOption('require_2fa') || ($successful_auth->user_2fa_method && $this->validate2FAMethod($successful_auth->user_2fa_method))) {
+					@session_start();
+					$_SESSION['user']['2fa_status'] = 'pending';
+					$_SESSION['user']['uri'] = $_SERVER['REQUEST_URI'];
+					return array('type' => '2fa', 'content' => $successful_auth);
+				}
+			}
+
+			/** Enforce password change? */
+			if ($auth_method == 1 && $fm_db_version >= 15) {
+				$reset_check = $this->isResettingPassword($successful_auth);
+				if ($reset_check !== false) {
+					return $reset_check;
+				}
+			}
+
+			/** Logged in */
+			@session_start();
+			$_SESSION['user']['logged_in'] = true;
+
+			return true;
 		}
 		
 		return false;
 	}
-	
 	
 	/**
 	 * Update the session in the db
@@ -390,21 +409,25 @@ class fm_login {
 	}
 	
 	/**
-	 * Builds the user password reset link email
+	 * Builds the user password reset link e-mail
 	 *
 	 * @since 1.0
 	 * @package facileManager
 	 *
-	 * @param array $user_info User information to build the email from
+	 * @param array $user_info User information to build the e-mail from
 	 * @param string $uniq_hash Unique password reset hash
 	 * @param boolean $build_html Whether or not to build a html version
-	 * @param string $title HTML Email title
+	 * @param string $title HTML E-mail title
 	 * @param string $from_address Displayed sent from address
 	 * @return string
 	 */
 	function buildPwdResetEmail($user_info, $uniq_hash, $build_html = true, $title = null, $from_address = null) {
 		global $fm_name, $__FM_CONFIG;
 		
+		/** Get password reset expirey */
+		$password_reset_expiry = getOption('password_reset_expiry');
+		if (!$password_reset_expiry) $password_reset_expiry = $__FM_CONFIG['default']['password_reset_expiry'];
+
 		if ($build_html) {
 			$branding_logo = getBrandLogo();
 			if ($GLOBALS['RELPATH'] != '/') {
@@ -432,7 +455,7 @@ class fm_login {
 <p>If you don't want to reset your password, then you can ignore this message.</p>
 <p>To reset your password, click the following link:<br />
 <a href="{$GLOBALS['FM_URL']}password_reset.php?key=$uniq_hash&login={$user_info['user_login']}">{$GLOBALS['FM_URL']}password_reset.php?key=$uniq_hash&login={$user_info['user_login']}</a></p>
-<p>This link expires in {$__FM_CONFIG['clean']['time']}.</p>
+<p>This link expires in {$password_reset_expiry}.</p>
 </div>
 </div>
 <p style="font-size: 10px; color: #888; text-align: center;">$fm_name | $from_address</p>
@@ -453,12 +476,12 @@ To reset your password, click the following link:
 This link expires in %s.',
 		$user_info['user_login'], $fm_name,
 		"{$GLOBALS['FM_URL']}password_reset.php?key=$uniq_hash&login={$user_info['user_login']}",
-		$__FM_CONFIG['clean']['time']);
+		$password_reset_expiry);
 		}
 		
 		return $body;
 	}
-	
+
 	/**
 	 * Sets the session variables for the authenticated user
 	 *
@@ -473,9 +496,11 @@ This link expires in %s.',
 		
 		@session_start();
 		session_regenerate_id(true);
-		$_SESSION['user']['logged_in'] = true;
 		$_SESSION['user']['id'] = $user->user_id;
 		$_SESSION['user']['name'] = $user->user_login;
+		if (property_exists($user, 'user_display_name')) {
+			$_SESSION['user']['display_name'] = $user->user_display_name;
+		}
 		$_SESSION['user']['last_login'] = $user->user_last_login;
 		$_SESSION['user']['account_id'] = $user->account_id;
 		$_SESSION['user']['theme'] = $user->user_theme;
@@ -504,7 +529,7 @@ This link expires in %s.',
 	 * @param string $password Username to authenticate with
 	 * @return boolean|string
 	 */
-	function doLDAPAuth($username, $password) {
+	private function doLDAPAuth($username, $password) {
 		global $__FM_CONFIG, $fmdb;
 
 		/** Get LDAP variables */
@@ -603,11 +628,9 @@ This link expires in %s.',
 					}
 				}
 				
-				$this->setSession($fmdb->last_result[0]);
-
 				$this->closeLDAPConnect($ldap_connect);
 				
-				return true;
+				return $fmdb->last_result[0];
 			}
 			
 			/** Close LDAP connection */
@@ -754,7 +777,541 @@ This link expires in %s.',
 
 		return true;
 	}
-	
+
+
+	/**
+	 * Check if the user is resetting their password
+	 * 
+	 * @since 6.0.0
+	 * @package facileManager
+	 * 
+	 * @param object $user User object
+	 * @return boolean|array
+	 */
+	private function isResettingPassword($user) {
+		global $fmdb, $user_login;
+
+		if ($user->user_force_pwd_change == 'yes') {
+			$pwd_reset_query = "SELECT * FROM `fm_temp_auth_keys` WHERE `pwd_login`={$user->user_id} ORDER BY `pwd_timestamp` LIMIT 1";
+			$fmdb->get_results($pwd_reset_query);
+			if ($fmdb->num_rows) {
+				$reset = $fmdb->last_result[0];
+				return array('type' => 'reset', 'content' => array($reset->pwd_id, $user_login));
+			}
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * Display 2FA form.
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param string $form_type Type of 2FA form to display (verify/recovery)
+	 * @return void
+	 */
+	function print2FAForm($form_type = 'verify') {
+		if ($form_type == 'recovery') {
+			$this->print2FARecoveryForm();
+			return;
+		}
+
+		/** Get user 2FA method */
+		$user_2fa_method = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_method');
+
+		// Ensure $user_2fa_method is valid
+		$user_2fa_method = $this->validate2FAMethod($user_2fa_method);
+
+		// Set user_2fa_method to e-mail if not set
+		if (!$user_2fa_method && getOption('require_2fa')) {
+			$user_2fa_method = 'email';
+		}
+
+		$more_2fa_options = '';
+		$instructions = _('Enter the code from your two-factor authentication app below.');
+		if ($user_2fa_method == 'email') {
+			$more_2fa_options = '<div class="button-wrapper"><a name="submit" id="resend_otp" class="button grey">' . _('Resend code') . '</a></div>';
+			$instructions = _('Enter the code sent to your e-mail address below.');
+		}
+
+		$more_2fa_options .= '<div class="button-wrapper"><a href="recovery/" id="recover_otpbtn" class="button grey alert">' . _('2FA recovery code') . '</a></div>';
+
+		$title = _('Two-Factor Authentication');
+		printHeader($title, 'login');
+		
+		echo displayPreAppForm($title, 'login_form',
+		sprintf('
+				<div class="message">%s</div>
+				<input type="hidden" name="verify_otp" id="verify_otp" value="verify" />
+				<div class="input-wrapper">
+					<input type="text" name="app_otp" id="app_otp" placeholder="XXXXXX" autocomplete="off" maxlength="6" />
+				</div>
+				<div class="button-wrapper"><a name="submit" id="verify_otpbtn" class="button"><i class="fa fa-check" aria-hidden="true"></i> %s</a></div>
+				<p id="forgotton_link"><a href="%s">&larr; %s</a></p>
+				<div id="message" class="more-options">%s <i class="fa fa-chevron-down" aria-hidden="true"></i></div>
+				<div id="more_options">%s</div>
+				',
+				$instructions, _('Verify'), $GLOBALS['RELPATH'], _('Login form'), _('More options'), $more_2fa_options), null, null, '2fa_form');
+	}
+
+
+	/**
+	 * Display 2FA recovery form.
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @return void
+	 */
+	private function print2FARecoveryForm() {
+		$instructions = _('Enter your two-factor authentication recovery code below.');
+
+		$title = _('Two-Factor Recovery');
+		printHeader($title, 'login');
+		
+		echo displayPreAppForm($title, 'login_form',
+		sprintf('
+				<div class="message">%s</div>
+				<input type="hidden" name="verify_otp" id="verify_otp" value="recovery" />
+				<div class="input-wrapper">
+					<input type="text" name="app_otp" id="app_otp" placeholder="XXXX XXXX XXXX" autocomplete="off" maxlength="14" />
+				</div>
+				<div class="button-wrapper"><a name="submit" id="verify_otpbtn" class="button"><i class="fa fa-check" aria-hidden="true"></i> %s</a></div>
+				<p id="forgotton_link"><a href="%s">&larr; %s</a></p>
+				',
+				$instructions, _('Verify'), $GLOBALS['RELPATH'], _('Login form')), null, null, '2fa_form');
+	}
+
+
+	/**
+	 * Processes the 2FA authentication
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param string $code 2FA code
+	 * @param string $process_type Form process type (verify/recovery)
+	 * @return boolean
+	 */
+	function process2FAForm($code, $process_type) {
+		// Process recovery code
+		if ($process_type == 'recovery') {
+			// PHP hashing
+			if (!password_verify(str_replace(' ', '', $code), getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_recovery_code'))) {
+				return false;
+			}
+
+			// Add log entry
+			addLogEntry(_('Two-Factor authentication recovery code used to log in.'));
+
+			// Invalidate recovery code
+			$this->generate2FARecoveryCode('reset');
+
+			// Email the user about recovery code usage
+			$this->mail2FARecoveryCodeUsed($_SESSION['user']['id']);
+		} else {
+			// Get user 2FA method
+			$user_2fa_method = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_method');
+
+			// Ensure $user_2fa_method is valid
+			$user_2fa_method = $this->validate2FAMethod($user_2fa_method);
+
+			// Set user_2fa_method to e-mail if not set
+			if (!$user_2fa_method && getOption('require_2fa')) {
+				$user_2fa_method = 'email';
+			}
+
+			switch ($user_2fa_method) {
+				case 'app':
+					// Verify TOTP 2FA Auth App
+					if ($this->process2FAAuthAppMethod($code) === false) {
+						return false;
+					}
+					break;
+				case 'email':
+					// Verify TOTP 2FA E-mail
+					if ($this->process2FAEmailMethod($code) === false) {
+						return false;
+					}
+					break;
+				default:
+					return false;
+			}
+		}
+
+		// Set user as logged in
+		@session_start();
+		$_SESSION['user']['logged_in'] = true;
+		unset($_SESSION['user']['2fa_status']);
+
+		return true;
+	}
+
+
+	/**
+	 * Validates the 2FA authentication method
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param string $user_2fa_method User configured 2FA method
+	 * @return null|string
+	 */
+	function validate2FAMethod($user_2fa_method) {
+		global $__FM_CONFIG;
+
+		if (in_array($user_2fa_method, array_column($__FM_CONFIG['options']['2fa_methods'], 1), true)) {
+			return $user_2fa_method;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Processes the 2FA authentication e-mail
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param string $code 2FA code
+	 * @return boolean
+	 */
+	function process2FAEmailMethod($code) {
+		global $__FM_CONFIG, $fmdb;
+
+		// Get password reset expirey
+		$otp_expiry = getOption('otp_expiry');
+		if (!$otp_expiry) $otp_expiry = $__FM_CONFIG['default']['password_reset_expiry'];
+
+		// Verify E-mail TOTP 2FA
+		$time = date("U", strtotime($otp_expiry . ' ago'));
+		$query = "SELECT * FROM `fm_temp_auth_keys` WHERE `pwd_id` LIKE '$%' AND `pwd_login`={$_SESSION['user']['id']} AND `pwd_timestamp`>='$time' ORDER BY `pwd_timestamp` DESC LIMIT 1";
+		$fmdb->get_results($query);
+
+		// No results
+		if (!$fmdb->num_rows) {
+			sleep(1);
+			return false;
+		}
+
+		// Verify code
+		$otp_entry = $fmdb->last_result[0];
+		if (!password_verify($code, $otp_entry->pwd_id)) {
+			sleep(1);
+			return false;
+		}
+
+		// Delete used code
+		$fmdb->query("DELETE FROM `fm_temp_auth_keys` WHERE `pwd_id` LIKE '$%' AND `pwd_login`={$_SESSION['user']['id']}");
+
+		return true;
+	}
+
+
+	/**
+	 * Processes the 2FA authentication app
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param string $code 2FA code
+	 * @param string $secret 2FA secret (optional)
+	 * @return boolean
+	 */
+	function process2FAAuthAppMethod($code, $secret = null) {
+		// Get user 2FA secret
+		if (!$secret) {
+			$secret = getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_2fa_secret');
+		}
+
+		// No results
+		if (!$secret) {
+			sleep(1);
+			return false;
+		}
+		
+		// Verify TOTP code
+		$tfa = new RobThree\Auth\TwoFactorAuth(new RobThree\Auth\Providers\Qr\BaconQrCodeProvider());
+		if (!$tfa->verifyCode($secret, $code) === true) {
+			sleep(1);
+			return false;
+		}
+
+		return true;
+	}
+
+
+	/**
+	 * Generates a random OTP code
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param string $action Action for the OTP
+	 * @return string
+	 */
+	function generateOTP($action = 'generate') {
+		global $__FM_CONFIG, $fmdb;
+
+		// Get password reset expirey
+		$otp_expiry = getOption('otp_expiry');
+		if (!$otp_expiry) $otp_expiry = $__FM_CONFIG['default']['password_reset_expiry'];
+
+		$timestamp = ($action == 'generate') ? strtotime($otp_expiry . ' ago') : time();
+
+		/** Delete old OTP codes */
+		$fmdb->query("DELETE FROM `fm_temp_auth_keys` WHERE `pwd_timestamp`<'" . date("U", $timestamp) . "'");
+
+		/** Make sure there isn't already a code for the user */
+		$query = "SELECT * FROM `fm_temp_auth_keys` WHERE `pwd_login`={$_SESSION['user']['id']} AND `pwd_id` LIKE '$%'";
+		$fmdb->get_results($query);
+		if ($fmdb->num_rows) {
+			return false;
+		}
+
+		/** Generate 6 digit OTP */
+		$otp = '';
+		for ($i = 0; $i < 6; $i++) {
+			$otp .= mt_rand(0, 9);
+		}
+		return $otp;
+	}
+
+
+	/**
+	 * Mail the user OTP code
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param string $userid UserID to send the mail to
+	 * @param string $otp Unique password reset hash
+	 * @return boolean|string
+	 */
+	function mail2FAOTP($userid, $otp) {
+		global $fm_name;
+		
+		$user_info = getUserInfo($userid);
+		if (isEmailAddressValid($user_info['user_email']) === false) {
+			sleep(1);
+			return true;
+		}
+		
+		$subject = sprintf(_('%s OTP'), $fm_name);
+		$from = getOption('mail_from');
+		
+		return sendEmail($user_info['user_email'], $subject, $this->buildOTPEmail($user_info, $otp, true, $subject, $from), $this->buildOTPEmail($user_info, $otp, false));
+	}
+
+
+	/**
+	 * Builds the user OTP e-mail
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param array $user_info User information to build the e-mail from
+	 * @param string $otp Unique password reset hash
+	 * @param boolean $build_html Whether or not to build a html version
+	 * @param string $title HTML E-mail title
+	 * @param string $from_address Displayed sent from address
+	 * @return string
+	 */
+	function buildOTPEmail($user_info, $otp, $build_html = true, $title = null, $from_address = null) {
+		global $fm_name, $__FM_CONFIG;
+		
+		// Get password reset expirey
+		$otp_expiry = getOption('otp_expiry');
+		if (!$otp_expiry) $otp_expiry = $__FM_CONFIG['default']['password_reset_expiry'];
+
+		if ($build_html) {
+			$branding_logo = getBrandLogo();
+			if ($GLOBALS['RELPATH'] != '/') {
+				$branding_logo = str_replace($GLOBALS['RELPATH'], '', $branding_logo);
+			}
+			$branding_logo = $GLOBALS['FM_URL'] . str_replace('//', '/', $branding_logo);
+			
+			$body = <<<BODY
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" style="background-color: #eeeeee;">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>$title</title>
+</head>
+<body style="background-color: #eeeeee; font: 13px 'Lucida Grande', 'Lucida Sans Unicode', Tahoma, Verdana, sans-serif; margin: 1em auto; min-width: 600px; max-width: 600px; padding: 20px; padding-bottom: 50px; -webkit-text-size-adjust: none;">
+<div style="margin-bottom: -8px;">
+<img src="$branding_logo" style="padding-left: 17px;" />
+<span style="font-size: 16pt; font-weight: bold; position: relative; top: -16px; margin-left: 10px;">$fm_name</span>
+</div>
+<div id="shadow" style="-moz-border-radius: 0% 0% 100% 100% / 0% 0% 8px 8px; -webkit-border-radius: 0% 0% 100% 100% / 0% 0% 8px 8px; border-radius: 0% 0% 100% 100% / 0% 0% 8px 8px; -moz-box-shadow: rgba(0,0,0,.30) 0 2px 3px !important; -webkit-box-shadow: rgba(0,0,0,.30) 0 2px 3px !important; box-shadow: rgba(0,0,0,.30) 0 2px 3px !important;">
+<div id="container" style="background-color: #fff; min-height: 200px; margin-top: 1em; padding: 0 1.5em .5em; border: 1px solid #fff; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: inset 0 2px 1px rgba(255,255,255,.97) !important; -moz-box-shadow: inset 0 2px 1px rgba(255,255,255,.97) !important; box-shadow: inset 0 2px 1px rgba(255,255,255,.97) !important;">
+<p>Hi {$user_info['user_login']},</p>
+<p>You (or somebody else) has requested a one-time passcode to login to $fm_name.</p>
+<h2>$otp</h2>
+<p>This code expires in {$otp_expiry}.</p>
+</div>
+</div>
+<p style="font-size: 10px; color: #888; text-align: center;">$fm_name | $from_address</p>
+</body>
+</html>
+BODY;
+		} else {
+			$body = sprintf('Hi %s,
+
+You (or somebody else) has requested a one-time passcode to login to %s.
+
+%s
+
+This code expires in %s.',
+		$user_info['user_login'], $fm_name,
+		$otp,
+		$otp_expiry);
+		}
+		
+		return $body;
+	}
+
+
+	/**
+	 * Generates a random recovery code
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param string $action Action on code generation (optional)
+	 * @return string
+	 */
+	function generate2FARecoveryCode($action = 'generate') {
+		global $fmdb;
+		
+		$recovery_code = '';
+		$log_message = sprintf("Updated user '%s':\n", $_SESSION['user']['name']);
+
+		if ($action == 'generate') {
+			// Generate 12 character code (A-Z, 0-9) and add a space after every 4 chars
+			$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+			$length = 12;
+			$max = strlen($chars) - 1;
+			for ($i = 0; $i < $length; $i++) {
+				$recovery_code .= $chars[random_int(0, $max)]; // random_int for cryptographic randomness
+			}
+			$sql_recovery_code = "'" . password_hash($recovery_code, PASSWORD_DEFAULT) . "'";
+
+			// Log the recovery code generation
+			$log_message .= formatLogKeyData('user_', '2FA Recovery Code', 'Generated new');
+
+		} elseif ($action == 'reset') {
+			$log_message .= formatLogKeyData('user_', '2FA', 'Reset Configuration');
+
+			// Reset 2FA settings for user
+			$fmdb->query("UPDATE `fm_users` SET `user_2fa_method`='0', `user_2fa_secret`=NULL, `user_2fa_recovery_code`=NULL WHERE `user_id`=" . $_SESSION['user']['id']);
+			if ($fmdb->rows_affected) {
+				addLogEntry($log_message);
+				return true;
+			}
+			return false;
+		}
+
+		// Add to the database
+		$fmdb->query("UPDATE `fm_users` SET `user_2fa_recovery_code`=" . $sql_recovery_code . " WHERE `user_id`=" . $_SESSION['user']['id']);
+
+		if ($fmdb->rows_affected) {
+			addLogEntry($log_message);
+			return trim(chunk_split($recovery_code, 4, ' ')); // e.g. "ABCD 1234 EFGH"
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * Mail the user regarding a used 2FA recovery code
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param string $userid UserID to send the mail to
+	 * @return boolean|string
+	 */
+	function mail2FARecoveryCodeUsed($userid) {
+		global $fm_name;
+		
+		$user_info = getUserInfo($userid);
+		if (isEmailAddressValid($user_info['user_email']) === false) {
+			sleep(1);
+			return true;
+		}
+		
+		$subject = sprintf(_('%s Recovery Code Used'), $fm_name);
+		$from = getOption('mail_from');
+		
+		return sendEmail($user_info['user_email'], $subject, $this->build2FARecoveryEmail($user_info, true, $subject, $from), $this->build2FARecoveryEmail($user_info, false));
+	}
+
+
+	/**
+	 * Builds the user 2FA recovery e-mail
+	 *
+	 * @since 6.0.0
+	 * @package facileManager
+	 *
+	 * @param array $user_info User information to build the e-mail from
+	 * @param boolean $build_html Whether or not to build a html version
+	 * @param string $title HTML E-mail title
+	 * @param string $from_address Displayed sent from address
+	 * @return string
+	 */
+	function build2FARecoveryEmail($user_info, $build_html = true, $title = null, $from_address = null) {
+		global $fm_name;
+		
+		if ($build_html) {
+			$branding_logo = getBrandLogo();
+			if ($GLOBALS['RELPATH'] != '/') {
+				$branding_logo = str_replace($GLOBALS['RELPATH'], '', $branding_logo);
+			}
+			$branding_logo = $GLOBALS['FM_URL'] . str_replace('//', '/', $branding_logo);
+			
+			$body = <<<BODY
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" style="background-color: #eeeeee;">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>$title</title>
+</head>
+<body style="background-color: #eeeeee; font: 13px 'Lucida Grande', 'Lucida Sans Unicode', Tahoma, Verdana, sans-serif; margin: 1em auto; min-width: 600px; max-width: 600px; padding: 20px; padding-bottom: 50px; -webkit-text-size-adjust: none;">
+<div style="margin-bottom: -8px;">
+<img src="$branding_logo" style="padding-left: 17px;" />
+<span style="font-size: 16pt; font-weight: bold; position: relative; top: -16px; margin-left: 10px;">$fm_name</span>
+</div>
+<div id="shadow" style="-moz-border-radius: 0% 0% 100% 100% / 0% 0% 8px 8px; -webkit-border-radius: 0% 0% 100% 100% / 0% 0% 8px 8px; border-radius: 0% 0% 100% 100% / 0% 0% 8px 8px; -moz-box-shadow: rgba(0,0,0,.30) 0 2px 3px !important; -webkit-box-shadow: rgba(0,0,0,.30) 0 2px 3px !important; box-shadow: rgba(0,0,0,.30) 0 2px 3px !important;">
+<div id="container" style="background-color: #fff; min-height: 200px; margin-top: 1em; padding: 0 1.5em .5em; border: 1px solid #fff; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: inset 0 2px 1px rgba(255,255,255,.97) !important; -moz-box-shadow: inset 0 2px 1px rgba(255,255,255,.97) !important; box-shadow: inset 0 2px 1px rgba(255,255,255,.97) !important;">
+<p>Hi {$user_info['user_login']},</p>
+<p>Someone has signed into $fm_name using the two-factor authentication recovery code associated with this account.</p>
+<p>As a result, your current 2FA configuration has been reset. You will need to reconfigure your two-factor authentication settings the next time you login.</p>
+</div>
+</div>
+<p style="font-size: 10px; color: #888; text-align: center;">$fm_name | $from_address</p>
+</body>
+</html>
+BODY;
+		} else {
+			$body = sprintf('Hi %s,
+
+Someone has signed into %s using the two-factor authentication recovery code associated with this account.
+
+As a result, your current 2FA configuration has been reset. You will need to reconfigure your two-factor authentication settings the next time you login.',
+		$user_info['user_login'], $fm_name);
+		}
+		
+		return $body;
+	}
+
+
 }
 
 if (!isset($fm_login))

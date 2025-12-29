@@ -242,14 +242,14 @@ class fm_dns_acls {
 		$checkbox = null;
 		if (currentUserCan('manage_servers', $_SESSION['module'])) {
 			$edit_status = '<td class="column-actions">';
-			$edit_status .= '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 			if (!getConfigAssoc($row->acl_id, 'acl')) {
-				$edit_status .= '<a class="status_form_link" href="#" rel="';
+				$edit_status .= '<a class="status_form_link" rel="';
 				$edit_status .= ($row->acl_status == 'active') ? 'disabled' : 'active';
 				$edit_status .= '">';
 				$edit_status .= ($row->acl_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 				$edit_status .= '</a>';
-				$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				$checkbox = '<input type="checkbox" name="bulk_list[]" value="' . $row->acl_id .'" />';
 			}
 			$edit_status .= '</td>';
@@ -348,10 +348,10 @@ HTML;
 
 		$acl_note = ($action == 'add') ? sprintf('<tr>
 		<th width="33&#37;" scope="row"></th>
-		<td width="67&#37;"><span><a href="#" id="acl_bulk_add">%s</a></span></td>
+		<td width="67&#37;"><span><a id="acl_bulk_add">%s</a></span></td>
 	</tr>
 	<tr class="bulkshow" style="display: none">
-	<th width="33&#37;" scope="row"><label for="acl_bulk">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+	<th width="33&#37;" scope="row"><label for="acl_bulk">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
 	<td width="67&#37;"><textarea id="acl_bulk" name="acl_bulk" rows="4" cols="26"></textarea></td>
 </tr>
 ', __('Configure multiple addresses in bulk') . ' &raquo;', __('Matched Address List'), __('On each line enter an address and comment delimited by a comma or semi-colon.')) : null;
@@ -364,18 +364,24 @@ HTML;
 		<input type="hidden" name="acl_id" value="%d" />
 		<input type="hidden" name="acl_parent_id" value="%d" />
 		<input type="hidden" name="server_serial_no" value="%s" />
-		<table class="form-table">
-			<tr>
-				<th width="33&#37;" scope="row"><label for="acl_name">%s</label></th>
-				<td width="67&#37;">%s</td>
-			</tr>
-			%s
-			%s
-			<tr class="bulkhide">
-				<th width="33&#37;" scope="row"><label for="acl_comment">%s</label></th>
-				<td width="67&#37;"><textarea id="acl_comment" name="acl_comment" rows="4" cols="26">%s</textarea></td>
-			</tr>
-		</table>
+		<div id="tabs">
+			<div id="tab">
+				<div id="tab-content">
+				<table class="form-table">
+					<tr>
+						<th width="33&#37;" scope="row"><label for="acl_name">%s</label></th>
+						<td width="67&#37;">%s</td>
+					</tr>
+					%s
+					%s
+					<tr class="bulkhide">
+						<th width="33&#37;" scope="row"><label for="acl_comment">%s</label></th>
+						<td width="67&#37;"><textarea id="acl_comment" name="acl_comment" rows="4" cols="26">%s</textarea></td>
+					</tr>
+				</table>
+				</div>
+			</div>
+		</div>
 	%s
 	</form>
 	<script>
@@ -626,7 +632,7 @@ HTML;
 					
 					/** Delete permitted? */
 					if (currentUserCan(array('manage_servers'), $_SESSION['module'])) {
-						$return[$element_id]['element_edit'] = '<a class="subelement_edit tooltip-bottom mini-icon" name="acl" href="#" id="' . $element_id . '" data-tooltip="' . _('Edit') . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+						$return[$element_id]['element_edit'] = '<a class="subelement_edit tooltip-bottom mini-icon" name="acl" id="' . $element_id . '" data-tooltip="' . _('Edit') . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 						$return[$element_id]['element_delete'] = ' ' . str_replace('__ID__', $element_id, $__FM_CONFIG['module']['icons']['sub_delete']);
 					} else {
 						$return[$element_id]['element_delete'] = $return[$element_id]['element_edit'] = null;

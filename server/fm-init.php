@@ -62,9 +62,7 @@ if (isset($path_parts['path']) && strpos($path_parts['path'], '/api/') !== false
 if (file_exists(ABSPATH . 'config.inc.php')) {
 	/** Ensure session variables are not manually set */
 	if (isset($_POST['_SESSION']) || isset($_GET['_SESSION']) || isset($_REQUEST['_SESSION'])) {
-		unset($_POST['_SESSION']);
-		unset($_GET['_SESSION']);
-		unset($_REQUEST['_SESSION']);
+		unset($_POST['_SESSION'], $_GET['_SESSION'], $_REQUEST['_SESSION']);
 		header('Location: ' . $GLOBALS['RELPATH']);
 		exit;
 	}
@@ -79,6 +77,11 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 		exit;
 	}
 	
+	/** Include Composer autoload */
+	if (file_exists(dirname(ABSPATH) . '/vendor/autoload.php')) {
+		include(dirname(ABSPATH) . '/vendor/autoload.php');
+	}
+
 	/** Load language */
 	include_once(ABSPATH . 'fm-includes/i18n.php');
 	
@@ -93,6 +96,7 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 	
 	if (!defined('INSTALL') && !defined('CLIENT') && !defined('FM_NO_CHECKS') && !$invoke_api) {
 		$fmdb = new fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host']);
+		include(ABSPATH . 'fm-modules/' . $fm_name . '/variables.inc.php');
 
 		/** Trim and sanitize inputs */
 		if (array_key_exists('uri_params', $_POST) && !is_array($_POST['uri_params']) && json_validate($_POST['uri_params'])) {
@@ -135,7 +139,7 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 			if (count($_POST)) {
 				$result = $fm_login->processUserPwdResetForm($_POST['user_login']);
 				if ($result === true) {
-					$message = sprintf('<p class="success"><i class="fa fa-check fa-lg ok"></i> %s</p>', _('Your password reset email has been sent to the address on file.'));
+					$message = sprintf('<p class="success"><i class="fa fa-check fa-lg ok"></i> %s</p>', _('Your password reset e-mail has been sent to the address on file.'));
 				} elseif ($result === false) {
 					$message = $result;
 				} else {
@@ -152,6 +156,23 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 			exit;
 		}
 		
+		if (array_key_exists('otp_2fa', $_POST)) return;
+		/** Process 2FA */
+		if (!$is_logged_in
+			&& ($path_parts['basename'] == 'two-factor'
+			|| ($path_parts['basename'] == 'recovery' && substr($path_parts['dirname'], -10) == 'two-factor'))
+			) {
+			/** Send 404 if we don't have a session */
+			if (!isset($_SESSION['user']) || (isset($_SESSION['user']['2fa_status']) && $_SESSION['user']['2fa_status'] != 'pending')) {
+				throwHTTPError(404);
+				exit;
+			}
+
+			$fm_login->print2FAForm($path_parts['basename']);
+			
+			exit;
+		}
+		
 		/** Process authentication */
 		if (!$is_logged_in && is_array($_POST) && count($_POST)) {
 			$user_login = $_POST['username'];
@@ -163,12 +184,15 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 				if ($is_maintanance_mode) {
 					$maintenance_message = sprintf(_('%s is currently undergoing maintenance. Please try again later.'), $fm_name);
 				}
-				$is_upgrade_available = isUpgradeAvailable();
 				if ($logged_in === false) {
 					echo (array_key_exists('username', $_POST) && $_POST['username']) ? 'failed' : 'force_logout';
 				} elseif (is_array($logged_in)) {
-					list($reset_key, $user_login) = $logged_in;
-					echo "password_reset.php?key=$reset_key&login=$user_login";
+					if ($logged_in['type'] == '2fa') {
+						echo $GLOBALS['RELPATH'] . 'two-factor/';
+					} else {
+						list($reset_key, $user_login) = $logged_in['content'];
+						echo "password_reset.php?key=$reset_key&login=$user_login";
+					}
 				} elseif ($logged_in !== true) {
 					printf('<p class="failed">%s</p>', $logged_in);
 				} elseif (isUpgradeAvailable()) {
@@ -219,7 +243,6 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 		}
 		
 		/** Include module variables */
-		include(ABSPATH . 'fm-modules/' . $fm_name . '/variables.inc.php');
 		if (isset($_SESSION['module'])) include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/variables.inc.php');
 
 		/** Handle module change request */

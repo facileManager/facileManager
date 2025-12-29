@@ -312,13 +312,13 @@ class fm_module_templates {
 		$bars_title = __('Click and drag to reorder');
 		
 		if (currentUserCan('manage_policies', $_SESSION['module'])) {
-			$edit_status = '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
-//			$edit_status .= '<a class="status_form_link" href="#" rel="';
+			$edit_status = '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+//			$edit_status .= '<a class="status_form_link" rel="';
 //			$edit_status .= ($row->policy_status == 'active') ? 'disabled' : 'active';
 //			$edit_status .= '">';
 //			$edit_status .= ($row->policy_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 //			$edit_status .= '</a>';
-			$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+			$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 			$edit_status = '<td class="column-actions">' . $edit_status . '</td>';
 			$checkbox = '<td><input type="checkbox" name="bulk_list[]" value="' . $row->policy_id .'" /></td>';
 			$grab_bars = ($num_rows > 1) ? '<td><i class="fa fa-bars mini-icon" title="' . $bars_title . '"></i></td>' : null;
@@ -437,16 +437,16 @@ HTML;
 						%s
 					</td>
 					<td>
-						<p><a href="JavaScript:void(0);" id="button-add" class="button"><i class="fa fa-chevron-right"></i></a></p>
-						<p><a href="JavaScript:void(0);" id="button-remove" class="button"><i class="fa fa-chevron-left"></i></a></p>
+						<p><a id="button-add" class="button"><i class="fa fa-chevron-right"></i></a></p>
+						<p><a id="button-remove" class="button"><i class="fa fa-chevron-left"></i></a></p>
 					</td>
 					<td>
 						<span id="stack-label">%s</span>
 						%s
 					</td>
 					<td>
-						<p><a href="JavaScript:void(0);" id="button-up" class="button"><i class="fa fa-chevron-up"></i></a></p>
-						<p><a href="JavaScript:void(0);" id="button-down" class="button"><i class="fa fa-chevron-down"></i></a></p>
+						<p><a id="button-up" class="button"><i class="fa fa-chevron-up"></i></a></p>
+						<p><a id="button-down" class="button"><i class="fa fa-chevron-down"></i></a></p>
 					</td>
 				</tr>
 			</table>

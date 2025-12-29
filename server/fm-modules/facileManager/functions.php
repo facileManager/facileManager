@@ -303,7 +303,7 @@ function printHeader($subtitle = 'auto', $css = 'facileManager', $menu = 'menu')
 		$module_js
 	</head>
 <body>
-<a href="#" id="scroll-to-top" class=""></a>
+<a id="scroll-to-top" class=""></a>
 $head
 HTML;
 }
@@ -385,7 +385,7 @@ function getTopHeader() {
 	$module_menu = <<<HTML
 		<div id="menu_mainitems" class="module-menu">
 		<ul>
-			<li class="has-sub"><a href="#"><i class="fa fa-bars fa-lg menu-icon" aria-hidden="true"></i></a>
+			<li class="has-sub"><a><i class="fa fa-bars fa-lg menu-icon" aria-hidden="true"></i></a>
 				<ul class="sub-right">
 					<li><a href="https://docs.facileManager.com" target="_blank"><span class="menu-icon"><i class="fa fa-life-ring" aria-hidden="true"></i></span><span>$help</span></span> <span class="menu-icon mini-icon grey"><i class="fa fa-external-link" aria-hidden="true"></i></a></li>
 					<li><a href="https://github.com/facileManager/facileManager/issues" target="_blank"><span class="menu-icon"><i class="fa fa-github" aria-hidden="true"></i></span><span>$github_issues</span> <span class="menu-icon mini-icon grey"><i class="fa fa-external-link" aria-hidden="true"></i></span></a></li>
@@ -405,10 +405,10 @@ HTML;
 	}
 
 	if (defined('FM_INCLUDE_SEARCH') && FM_INCLUDE_SEARCH === true) {
-		$sections['right'][] = sprintf('<div class="flex-apart"><a class="search" href="#" title="%s"><i class="fa fa-search fa-lg"></i></a>%s</div>', _('Search this page'), displaySearchForm());
+		$sections['right'][] = sprintf('<div class="flex-apart"><a class="search" title="%s"><i class="fa fa-search fa-lg"></i></a>%s</div>', _('Search this page'), displaySearchForm());
 	}
 
-	$sections['right'][] = sprintf('<a class="process_all_updates tooltip-bottom" href="#" data-tooltip="%s"><i class="fa fa-refresh fa-lg"></i></a><span class="update_count"></span>', _('Process all available updates now'));
+	$sections['right'][] = sprintf('<a class="process_all_updates tooltip-bottom" data-tooltip="%s"><i class="fa fa-refresh fa-lg"></i></a><span class="update_count"></span>', _('Process all available updates now'));
 
 	$return_parts = '';
 	foreach ($sections as $class => $section_array) {
@@ -553,10 +553,11 @@ HTML;
 	$auth_method = getOption('auth_method');
 	if ($auth_method) {
 		$star = currentUserCan('do_everything') ? $__FM_CONFIG['icons']['star'] . ' ' : null;
-		$profile_link = ($auth_method) ? sprintf('<div><a class="account_settings" id="%s" href="#"><i class="fa fa-user-circle-o" aria-hidden="true"></i>%s</a></div>' . "\n", $_SESSION['user']['id'], _('Edit Profile')) : null;
+		$profile_link = ($auth_method) ? sprintf('<div><a class="account_settings" id="%s"><i class="fa fa-user-circle-o" aria-hidden="true"></i>%s</a></div>' . "\n", $_SESSION['user']['id'], _('Edit Profile')) : null;
 		$logout = _('Logout');
+		$name = (!empty($_SESSION['user']['display_name'])) ? $_SESSION['user']['display_name'] : $_SESSION['user']['name'];
 		$account_info = <<<HTML
-			<div><span>{$star}{$_SESSION['user']['name']}</span></div>
+			<div><span>{$star}{$name}</span></div>
 			<div id="account_info_actions" class="flex-apart">
 				$profile_link
 				<div><a href="{$GLOBALS['RELPATH']}?logout"><i class="fa fa-sign-out" aria-hidden="true"></i>$logout</a></div>
@@ -1727,7 +1728,7 @@ function displayProgress($step, $result, $process = 'noisy', $error = null) {
 		}
 		$output = '<i class="fa fa-times fa-lg fail"></i>';
 		if ($error) {
-			$output .= ' <a href="#" class="error-message tooltip-right" data-tooltip="' . $error . '"><i class="fa fa-question-circle fa-lg"></i></a>';
+			$output .= ' <a class="error-message tooltip-right" data-tooltip="' . $error . '"><i class="fa fa-question-circle fa-lg"></i></a>';
 		}
 		$status = 'failed';
 	}
@@ -1750,12 +1751,12 @@ HTML;
 
 
 /**
- * Checks if an email address is valid
+ * Checks if an e-mail address is valid
  *
  * @since 1.0
  * @package facileManager
  *
- * @param string $address Email address to validate
+ * @param string $address E-mail address to validate
  * @return boolean
  */
 function isEmailAddressValid($address){
@@ -2075,7 +2076,7 @@ function printPageHeader($message = null, $title = null, $allowed_to_add = false
 		$class, $style, $message, $title,
 		($allowed_to_add) ? sprintf('<div>%s</div>', displayAddNew($name, $rel)) : null,
 		($allowed_to_add && $addl_buttons) ? sprintf('<div>%s</div>', $addl_buttons) : null,
-		(isset($comment)) ? sprintf('<a href="#" class="tooltip-right" data-tooltip="%s"><i class="fa fa-exclamation-triangle fa-lg notice grey" aria-hidden="true"></i></a>', $comment) : null,
+		(isset($comment)) ? sprintf('<a class="tooltip-right" data-tooltip="%s"><i class="fa fa-exclamation-triangle fa-lg notice grey" aria-hidden="true"></i></a>', $comment) : null,
 		implode("\n", $addl_title_blocks)
 	);
 }
@@ -2183,8 +2184,8 @@ function resetPassword($fm_login, $user_password) {
 		$fmdb->query($query);
 
 		if ($fmdb->rows_affected) {
-			/** Remove entry from fm_pwd_resets table */
-			$query = "DELETE FROM `fm_pwd_resets` WHERE `pwd_login`='$fm_login_id'";
+			/** Remove entry from fm_temp_auth_keys table */
+			$query = "DELETE FROM `fm_temp_auth_keys` WHERE `pwd_login`='$fm_login_id'";
 			$fmdb->query($query);
 
 			return true;
@@ -2866,15 +2867,13 @@ HTML;
 			if ($link !== null) {
 				$cancel = '<a href="' . $link . '" class="button" id="' . $id . '">' . $text . '</a>';
 			} else {
-				$cancel = '<input type="button" value="' . $text . '" class="button ';
-				$cancel .= count($buttons) > 1 ? 'left' : null;
-				$cancel .= '" id="' . $id . '" />';
+				$cancel = '<input type="button" value="' . $text . '" class="button" id="' . $id . '" />';
 			}
 		} else $cancel = null;
 		
 		return <<<HTML
 		</div>
-		<div class="popup-footer">
+		<div class="popup-footer flex flex-apart flex-reverse">
 			$submit
 			$cancel
 		</div>
@@ -3029,8 +3028,7 @@ function countArrayDimensions($array) {
  * @return string
  */
 function displayAddNew($name = null, $rel = null, $title = null, $style = 'default', $id = 'plus', $position = 'top') {
-	global $__FM_CONFIG;
-	
+	$tooltip = null;
 	if (empty($title)) $title = _('Add New');
 	$contents = ($style == 'default') ? $title : null;
 	
@@ -3039,10 +3037,10 @@ function displayAddNew($name = null, $rel = null, $title = null, $style = 'defau
 	
 	$image = '<i class="mini-icon ' . $style . '">' . $contents . '</i>';
 	if ($style != 'default') {
-		$title = 'class="tooltip-' . $position . ' mini-icon" data-tooltip="' . $title . '"';
+		$tooltip = 'class="tooltip-' . $position . ' mini-icon" data-tooltip="' . $title . '"';
 	}
 	
-	return sprintf('<a id="%s" href="#" %s%s%s>%s</a>', $id, $title, $name, $rel, $image);
+	return sprintf('<a id="%s" %s%s%s>%s</a>', $id, $tooltip, $name, $rel, $image);
 }
 
 
@@ -3544,12 +3542,12 @@ function clearUpdateDir() {
  * @since 3.0
  * @package facileManager
  *
- * @param string $sendto Email address to send to
- * @param string $subject Email subject
- * @param string $body Email body
- * @param string $altbody Email alternate body (plaintext)
+ * @param string $sendto E-mail address to send to
+ * @param string $subject E-mail subject
+ * @param string $body E-mail body
+ * @param string $altbody E-mail alternate body (plaintext)
  * @param string|array $from From name and address
- * @param array $images Images to embed in the email
+ * @param array $images Images to embed in the e-mail
  * @return boolean|string
  */
 function sendEmail($sendto, $subject, $body, $altbody = null, $from = null, $images = null, $options = array(), $output_format = 'hidden') {
@@ -3557,7 +3555,7 @@ function sendEmail($sendto, $subject, $body, $altbody = null, $from = null, $ima
 
 	$phpmailer_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'PHPMailer' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'PHPMailer.php';
 	if (!file_exists($phpmailer_file)) {
-		return _('Unable to send email - PHPMailer class is missing.');
+		return _('Unable to send e-mail - PHPMailer class is missing.');
 	}
 
 	extract($options);
@@ -3736,7 +3734,7 @@ function formatError($message, $option = null) {
 	$addl_text = null;
 	
 	if ($option == 'sql') {
-		$addl_text = ($fmdb->last_error) ? sprintf(' [<a class="more" href="#">%s</a>]', _('more')) . $fmdb->last_error : null;
+		$addl_text = ($fmdb->last_error) ? sprintf(' [<a class="more">%s</a>]', _('more')) . $fmdb->last_error : null;
 		$message = displayResponseClose($message . $addl_text);
 	}
 	

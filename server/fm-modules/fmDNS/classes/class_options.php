@@ -236,13 +236,13 @@ class fm_module_options {
 		if ($perms) {
 			$edit_uri = (strpos($_SERVER['REQUEST_URI'], '?')) ? $_SERVER['REQUEST_URI'] . '&' : $_SERVER['REQUEST_URI'] . '?';
 			$edit_status = '<td class="column-actions">';
-			$edit_status .= '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
-			$edit_status .= '<a class="status_form_link" href="#" rel="';
+			$edit_status .= '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="status_form_link" rel="';
 			$edit_status .= ($row->cfg_status == 'active') ? 'disabled' : 'active';
 			$edit_status .= '">';
 			$edit_status .= ($row->cfg_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 			$edit_status .= '</a>';
-			$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+			$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 			$edit_status .= '</td>';
 			$checkbox = '<input type="checkbox" name="bulk_list[]" value="' . $row->cfg_id .'" />';
 		} else {
@@ -337,18 +337,24 @@ HTML;
 			<input type="hidden" name="%s" value="%s" />
 			%s
 			%s
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="cfg_name">%s</label></th>
-					<td width="67&#37;">%s</td>
-				</tr>
-				<tr class="value_placeholder">
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="cfg_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="cfg_comment" name="cfg_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="cfg_name">%s</label></th>
+							<td width="67&#37;">%s</td>
+						</tr>
+						<tr class="value_placeholder">
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="cfg_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="cfg_comment" name="cfg_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-30 17:26-0600\n"
+"POT-Creation-Date: 2025-12-26 11:47-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -248,7 +248,7 @@ msgid "There are no leases found on this server."
 msgstr ""
 
 #: server/fm-modules/fmDHCP/classes/class_leases.php:109
-#: server/fm-modules/fmDHCP/classes/class_servers.php:408
+#: server/fm-modules/fmDHCP/classes/class_servers.php:414
 msgid "IP Address"
 msgstr ""
 
@@ -648,22 +648,22 @@ msgstr ""
 msgid "Edit Option"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_options.php:353
+#: server/fm-modules/fmDHCP/classes/class_options.php:359
 msgid "Option Name"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_options.php:520
+#: server/fm-modules/fmDHCP/classes/class_options.php:526
 #, php-format
 msgid "%s is an invalid number."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_options.php:523
+#: server/fm-modules/fmDHCP/classes/class_options.php:529
 #, php-format
 msgid "%s is an invalid port number."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_options.php:533
-#: server/fm-modules/fmDHCP/classes/class_options.php:538
+#: server/fm-modules/fmDHCP/classes/class_options.php:539
+#: server/fm-modules/fmDHCP/classes/class_options.php:544
 #, php-format
 msgid "%s is an invalid IP address."
 msgstr ""
@@ -772,7 +772,7 @@ msgid "Version"
 msgstr ""
 
 #: server/fm-modules/fmDHCP/classes/class_servers.php:76
-#: server/fm-modules/fmDHCP/classes/class_servers.php:410
+#: server/fm-modules/fmDHCP/classes/class_servers.php:416
 msgid "Config File"
 msgstr ""
 
@@ -781,7 +781,7 @@ msgid "Added server with the following"
 msgstr ""
 
 #: server/fm-modules/fmDHCP/classes/class_servers.php:136
-#: server/fm-modules/fmDHCP/classes/class_servers.php:430
+#: server/fm-modules/fmDHCP/classes/class_servers.php:436
 msgid "No server name defined."
 msgstr ""
 
@@ -835,36 +835,36 @@ msgstr ""
 msgid "The client installer can automatically generate this entry."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_servers.php:407
+#: server/fm-modules/fmDHCP/classes/class_servers.php:413
 msgid "Server Name"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_servers.php:408
+#: server/fm-modules/fmDHCP/classes/class_servers.php:414
 msgid ""
 "Enter the IP address of the server if the name is not resolvable. This is "
 "used when configuring failover peers."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_servers.php:409
+#: server/fm-modules/fmDHCP/classes/class_servers.php:415
 msgid "Update Method"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_servers.php:434
+#: server/fm-modules/fmDHCP/classes/class_servers.php:440
 #, php-format
 msgid "Server name is too long (maximum %d character)."
 msgid_plural "Server name is too long (maximum %d characters)."
 msgstr[0] ""
 msgstr[1] ""
 
-#: server/fm-modules/fmDHCP/classes/class_servers.php:437
+#: server/fm-modules/fmDHCP/classes/class_servers.php:443
 msgid "Server address must be a valid IP address."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_servers.php:441
+#: server/fm-modules/fmDHCP/classes/class_servers.php:447
 msgid "This server name already exists."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_servers.php:451
+#: server/fm-modules/fmDHCP/classes/class_servers.php:457
 msgid "Server update port must be a valid TCP port."
 msgstr ""
 

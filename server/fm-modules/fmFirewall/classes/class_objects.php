@@ -194,9 +194,9 @@ class fm_module_objects {
 		$edit_status = sprintf('<span rel="o%s">%s</span>', $row->object_id, $__FM_CONFIG['module']['icons']['search']);
 		
 		if (currentUserCan('manage_objects', $_SESSION['module'])) {
-			$edit_status .= '<a class="edit_form_link" name="' . $row->object_type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="edit_form_link" name="' . $row->object_type . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 			if (!isItemInPolicy($row->object_id, 'object')) {
-				$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				$checkbox = '<td><input type="checkbox" name="bulk_list[]" value="' . $row->object_id .'" /></td>';
 			} else {
 				$checkbox = '<td></td>';
@@ -256,30 +256,36 @@ HTML;
 			<input type="hidden" name="page" value="objects" />
 			<input type="hidden" name="action" value="%s" />
 			<input type="hidden" name="object_id" value="%s" />
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="object_name">%s</label></th>
-					<td width="67&#37;"><input name="object_name" id="object_name" type="text" value="%s" size="40" placeholder="http" maxlength="%s" class="required" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="object_type">%s</label></th>
-					<td width="67&#37;">
-						%s
-					</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="object_address">%s</label></th>
-					<td width="67&#37;"><input name="object_address" id="object_address" type="text" value="%s" size="40" placeholder="127.0.0.1" maxlength="%s" class="required" /></td>
-				</tr>
-				<tr id="netmask_option" %s>
-					<th width="33&#37;" scope="row"><label for="object_mask">%s</label></th>
-					<td width="67&#37;"><input name="object_mask" id="object_mask" type="text" value="%s" size="40" placeholder="255.255.255.0" maxlength="%s" class="required" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="object_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="object_comment" name="object_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="object_name">%s</label></th>
+							<td width="67&#37;"><input name="object_name" id="object_name" type="text" value="%s" size="40" placeholder="http" maxlength="%s" class="required" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="object_type">%s</label></th>
+							<td width="67&#37;">
+								%s
+							</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="object_address">%s</label></th>
+							<td width="67&#37;"><input name="object_address" id="object_address" type="text" value="%s" size="40" placeholder="127.0.0.1" maxlength="%s" class="required" /></td>
+						</tr>
+						<tr id="netmask_option" %s>
+							<th width="33&#37;" scope="row"><label for="object_mask">%s</label></th>
+							<td width="67&#37;"><input name="object_mask" id="object_mask" type="text" value="%s" size="40" placeholder="255.255.255.0" maxlength="%s" class="required" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="object_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="object_comment" name="object_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

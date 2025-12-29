@@ -110,6 +110,8 @@
 
 	--eye-attention-unselected: light-dark(#888, #e4e4e4);
 	--eye-attention-selected: var(--menu-select-highlight);
+
+	--menu-side-width: 17em;
 }
 
 /* Disable theme mode selector for browsers that don't support light-dark() */
@@ -320,6 +322,44 @@ div.header-container {
     justify-content: space-between;
     align-items: center;
 }
+.flex-reverse {
+	flex-direction: row-reverse;
+}
+
+.qr-code-container img {
+	margin: 0 1em 1em 0;
+	border-radius: 5px;
+}
+.qr-code-container p {
+	margin-top: 0;
+}
+#tfa_app_setup_form #app_otp {
+	text-align: center;
+	font-size: 14pt;
+	letter-spacing: 5px;
+	width: 10.4em;
+	padding-right: unset;
+}
+.recovery-code-display {
+	font-family: monospace;
+	font-weight: bold;
+	font-size: larger;
+	color: var(--primary-body-text);
+}
+#message {
+	display: none;
+    max-height: 310px;
+    overflow-y: scroll;
+    margin: 1em 0 0;
+    color: light-dark(#7c7c7c, #c1c1c1);
+}
+#message.success {
+	margin-top: 0;
+	display: block;
+}
+#message.failed {
+    color: light-dark(#b95757, #e67e7e);
+}
 
 .top-banner {
 	padding: 10px;
@@ -400,12 +440,13 @@ div.header-container {
 #menuback {
 	position: relative;
 	background-color: var(--menu-bg);
-	flex: 0 17em;
+	flex: 0 var(--menu-side-width);
 	font-size: 10pt;
 	z-index: 3;
 	flex-direction: column;
 	color: var(--menu-text);
 	height: calc(100vh - 49px);
+	width: var(--menu-side-width);
 }
 #menuback li:hover > a {
 	color: var(--menu-text);
@@ -456,6 +497,8 @@ div.header-container {
 #account_info > div:first-child span {
 	width: 100%;
 	padding: 0 10px;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 #account_info i {
 	padding-right: 5px;
@@ -669,7 +712,7 @@ div.header-container {
 }
 #menu_mainitems.drop-right ul li > ul {
 	top: 0;
-	left: 17em;
+	left: var(--menu-side-width);
 	border-radius: 0 5px 5px 0;
 	box-shadow: rgba(10,10,10,0.4) 5px 15px 40px -5px;
 }
@@ -813,7 +856,7 @@ h4 {
 	font-weight: 400;
 }
 
-.display_results td:first-child, th:first-child {
+.display_results td:first-child, th:not(:is(div.choices *)):first-child {
 	padding-left: 2em;
 	white-space: nowrap;
 }
@@ -991,7 +1034,7 @@ h4 {
 	font-weight: bold;
 }
 
-thead {
+thead:not(:is(div.choices *)) {
 	background: var(--table-header-bg);
 	color: var(--table-header-text);
 	font-size: 13px;
@@ -1016,7 +1059,7 @@ thead {
 .form-table th {
 	font-size: 14px;
 	text-align: left;
-	padding: 6px 10px 10px 0;
+	padding: 8px 10px 8px 0;
 	border-bottom: 8px solid transparent;
 	width: 140px;
 	vertical-align: top;
@@ -1134,11 +1177,6 @@ i.text_icon {
 	vertical-align: middle;
 }
 
-#fm_user_profile .form-table td #form_username {
-	position: relative;
-	top: -2px;
-}
-
 #setting-row > div {
 	display: inline-block;
 	vertical-align: top;
@@ -1239,7 +1277,8 @@ i.text_icon {
 }
 
 #response,
-#popup_response {
+#popup_response,
+.popup-note {
 	text-align: center;
 	color: #000;
 	font-size: 10pt;
@@ -1256,24 +1295,29 @@ i.text_icon {
 	box-shadow: 0 4px 10px -1px light-dark(#ccc, #1b1b1b);
 	z-index: 2;
 }
-#response {
+#response,
+.popup-note {
 	margin-top: -14px;
 	width: 75%;
 	margin-left: 12.5%;
 }
-#response p {
+#response p,
+.popup-note p {
 	margin: 0;
 	padding: 3px 10px;
 }
-#response p:first-child {
+#response p:first-child,
+.popup-note p:first-child {
 	padding-top: 6px;
 	padding-bottom: 3px;
 }
-#response p:last-child {
+#response p:last-child,
+.popup-note p:last-child {
 	padding-top: 3px;
 	padding-bottom: 6px;
 }
-#response p:only-child {
+#response p:only-child,
+.popup-note p:only-child {
 	padding-top: 6px;
 	padding-bottom: 6px;
 }
@@ -1303,18 +1347,18 @@ i.text_icon {
 #response_close i {
 	background-color: #FFFBCC;
 }
-#tabs #response {
+#tabs #response,
+#tabs .popup-note {
 	width: 90%;
-	margin-top: unset;
-	margin-left: auto;
-	margin-right: auto;
+	margin: auto;
 }
 
-#popup_response {
+#popup_response,
+.popup-note {
 	position: absolute;
 	top: 44px;
 	width: 70%;
-	margin-left: 11%;
+	margin-left: 12%;
 	min-height: 2.3em;
 	padding: 0 1em;
 }
@@ -1325,6 +1369,9 @@ i.text_icon {
 	display: none;
 	overflow: auto;
 }
+.popup-note {
+	position: unset;
+}
 
 .replace {
 	display:none;
@@ -1333,6 +1380,7 @@ i.text_icon {
 a {
 	color: var(--primary-link-text);
 	text-decoration: none;
+	cursor: pointer;
 }
 a:not(.mini-icon) i.fa-question-circle,
 span:not(.mini-icon) i.fa-question-circle {
@@ -1412,11 +1460,9 @@ a.delete:hover i {
 .manage_form_contents {
 	z-index: 1003;
 	position: relative;
-	top: -5%;
 	margin: auto;
 	opacity: 1.0;
 	min-width: 500px;
-	max-width: 80%;
 	background-color: var(--form-popup-bg);
 	border: 1px solid #1e1e1e;
 	-webkit-border-radius: 6px;
@@ -1450,7 +1496,7 @@ a.delete:hover i {
 .manage_form_container_flex {
 	display: flex;
 	position: absolute;
-	width: 100%;
+	width: calc(100% + var(--menu-side-width));
 	height: 100%;
 	z-index: 1002;
 }
@@ -1526,9 +1572,9 @@ a.delete:hover i {
 
 .popup-contents {
 	max-height: 480px;
-	overflow-y: auto;
 	padding: 0 2em;
 	background: var(--form-popup-bg);
+	overflow: auto;
 }
 .popup-contents p.complete {
 	padding: 0 10px;
@@ -1716,10 +1762,6 @@ i.popout {
 	font-family: "Open Sans",sans-serif;
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
-}
-
-#form_username span {
-	margin-top: -5px;
 }
 
 #fm_mailing_options, #fm_proxy_options,
@@ -2153,21 +2195,38 @@ a.subelement_edit img {
 	background-image: url('../../facileManager/images/redshield64.png');
 	background-repeat: no-repeat;
 }
+#config_check.no-image {
+	background-image: none;
+	min-height: unset;
+	padding: 10px;
+}
 #config_check pre {
 	margin-left: 6.5em;
 	padding: 0;
 	font-size: 9pt;
 }
 
+.line-number {
+	text-align: right;
+	color: #ccc;
+	padding-right: 10px;
+}
+
+.line-number a {
+	color: red;
+}
+
 #tabs {
 	position: relative;
-	min-height: 300px;
+	height: 300px;
+	max-height: calc(100vh - 15em);
+	width: 36em;
 	clear: both;
-	margin: 25px 0;
 }
 #tab {
 	float: left;
 	padding: 0 3px;
+	margin: 25px 0;
 }
 #tab [type=radio] {
 	display: none;
@@ -2194,14 +2253,35 @@ a.subelement_edit img {
 	margin-top: 0px;
 }
 
-#tab-content {
+#tab-content, .tab-content {
 	position: absolute;
 	left: 0;
 	width: 100%;
-	height: 100%;
+	height: calc(100% - 53px);
+	overflow-y: scroll;
 	background: var(--form-popup-bg);
 	border-top: 1px solid var(--page-title-line);
 	margin-top: 9px;
+}
+
+#tabs.window-tall {
+	height: 35em;
+}
+#tabs.window-wide {
+	min-width: 45em;
+}
+
+#tabs > #tab:only-child [type=radio] ~ label {
+	display: none;
+}
+
+#tabs > #tab:only-child,
+#tabs > #tab:only-child > #tab-content {
+	border: none;
+	margin-top: unset;
+}
+#tabs > #tab:only-child > #tab-content {
+	height: 100%;
 }
 
 .overflow {

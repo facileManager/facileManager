@@ -217,17 +217,17 @@ class fm_dns_keys {
 		
 		if (currentUserCan('manage_servers', $_SESSION['module'])) {
 			$edit_status = '<td class="column-actions">';
-			$edit_status .= '<a class="edit_form_link" name="' . $row->key_type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="edit_form_link" name="' . $row->key_type . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 			if (!getConfigAssoc($row->key_id, 'key')) {
 				if ($row->key_status != 'revoked') {
-					$edit_status .= '<a class="status_form_link" href="#" rel="';
+					$edit_status .= '<a class="status_form_link" rel="';
 					$edit_status .= ($row->key_status == 'active') ? 'disabled' : 'active';
 					$edit_status .= '">';
 					$edit_status .= ($row->key_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 					$edit_status .= '</a>';
 				}
 				if ($row->key_signing == 'no' || $row->key_status == 'revoked') {
-					$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+					$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 					$checkbox = '<input type="checkbox" name="bulk_list[]" value="' . $row->key_id .'" />';
 				}
 			}
@@ -251,7 +251,7 @@ class fm_dns_keys {
 		
 		$comments = nl2br($row->key_comment);
 		$star = ($row->key_signing == 'yes' && $row->key_status != 'revoked') ? sprintf('<i class="fa fa-star star" alt="%1$s" title="%1$s" aria-hidden="true"></i>', _('The zone is signed with this key')) : null;
-		$star = ($row->key_status == 'revoked') ? sprintf('<a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>', __('This key has been revoked.')) : $star;
+		$star = ($row->key_status == 'revoked') ? sprintf('<a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>', __('This key has been revoked.')) : $star;
 		$class = 'class="' . implode(' ', $classes) . '"';
 
 		echo <<<HTML
@@ -352,7 +352,7 @@ HTML;
 				</tr>
 				<tr>
 					<th width="33&#37;" scope="row"></th>
-					<td width="67&#37;"><span><a href="#" id="dnssec_key_addl_options">%s</a></span></td>
+					<td width="67&#37;"><span><a id="dnssec_key_addl_options">%s</a></span></td>
 				</tr>
 				<tr class="dnssec-key-addl-options">
 					<th width="33&#37;" scope="row"><label for="key_subtype">%s</label></th>
@@ -423,13 +423,19 @@ HTML;
 			<input type="hidden" name="key_id" value="%d" />
 			<input type="hidden" name="key_type" value="%s" />
 			<input type="hidden" name="key_signing" value="no" />
-			<table class="form-table">
-				%s
-				<tr>
-					<th width="33&#37;" scope="row"><label for="key_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="key_comment" name="key_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						%s
+						<tr>
+							<th width="33&#37;" scope="row"><label for="key_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="key_comment" name="key_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>',
 				$popup_header,

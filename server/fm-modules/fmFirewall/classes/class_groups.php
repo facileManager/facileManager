@@ -209,9 +209,9 @@ class fm_module_groups {
 		$permission = ($row->group_type == 'service') ? 'manage_services' : 'manage_objects';
 		
 		if (currentUserCan($permission, $_SESSION['module'])) {
-			$edit_status .= '<a class="edit_form_link" name="' . $row->group_type . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="edit_form_link" name="' . $row->group_type . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 			if (!isItemInPolicy($row->group_id, 'group')) {
-				$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				$checkbox = '<td><input type="checkbox" name="bulk_list[]" value="' . $row->group_id .'" /></td>';
 			} else {
 				$checkbox = '<td></td>';
@@ -268,22 +268,28 @@ HTML;
 			<input type="hidden" name="action" value="%s" />
 			<input type="hidden" name="group_id" value="%d" />
 			<input type="hidden" name="group_type" value="%s" />
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="group_name">%s</label></th>
-					<td width="67&#37;"><input name="group_name" id="group_name" type="text" value="%s" size="40" placeholder="http" maxlength="%d" class="required" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="group_items">%s</label></th>
-					<td width="67&#37;">
-						%s
-					</td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="group_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="group_comment" name="group_comment" rows="4" cols="30">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="group_name">%s</label></th>
+							<td width="67&#37;"><input name="group_name" id="group_name" type="text" value="%s" size="40" placeholder="http" maxlength="%d" class="required" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="group_items">%s</label></th>
+							<td width="67&#37;">
+								%s
+							</td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="group_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="group_comment" name="group_comment" rows="4" cols="30">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>

@@ -479,14 +479,14 @@ class fm_module_logging {
 		$edit_name = ($row->cfg_parent) ? '&nbsp;&nbsp;&nbsp;' : null;
 		if (currentUserCan('manage_servers', $_SESSION['module'])) {
 			$edit_status = '<td class="column-actions">';
-			$edit_status .= '<a class="edit_form_link" name="' . $channel_category . '" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="edit_form_link" name="' . $channel_category . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 			if ($channel_category != 'channel' || !count($this->getAssocCategories($row->cfg_id))) {
-				$edit_status .= '<a class="status_form_link" href="#" rel="';
+				$edit_status .= '<a class="status_form_link" rel="';
 				$edit_status .= ($row->cfg_status == 'active') ? 'disabled' : 'active';
 				$edit_status .= '">';
 				$edit_status .= ($row->cfg_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 				$edit_status .= '</a>';
-				$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				$checkbox = '<input type="checkbox" name="bulk_list[]" value="' . $row->cfg_id .'" />';
 			}
 			$edit_status .= '</td>';
@@ -584,44 +584,51 @@ FORM;
 				$syslogshow = 'none';
 			}
 	
-			$return_form .= sprintf('<table class="form-table">
-					<tr>
-						<th width="33&#37;" scope="row"><label for="cfg_name">%s</label></th>
-						<td width="67&#37;"><input name="cfg_name" id="cfg_name" type="text" value="%s" size="40" class="required" /></td>
-					</tr>
-					<tr>
-						<th width="33&#37;" scope="row"><label for="cfg_destination">%s</label></th>
-						<td width="67&#37;">
-							%s
-							<div id="destination_option" style="display: %s">
-								<input type="text" name="cfg_file_path[]" value="%s" placeholder="/path/to/file" /><br />
-								versions %s <input type="number" name="cfg_file_path[]" value="%s" style="width: 5em;" onkeydown="return validateNumber(event)" /> 
-								%s
-							</div>
-							<div id="syslog_options" style="display: %s">%s</div></td>
-					</tr>
-					</span>
-					<tr>
-						<th width="33&#37;" scope="row"><label for="cfg_severity">%s</label></th>
-						<td width="67&#37;">%s</td>
-					</tr>
-					<tr>
-						<th width="33&#37;" scope="row"><label for="print-category">%s</label></th>
-						<td width="67&#37;">%s</td>
-					</tr>
-					<tr>
-						<th width="33&#37;" scope="row"><label for="print-severity">%s</label></th>
-						<td width="67&#37;">%s</td>
-					</tr>
-					<tr>
-						<th width="33&#37;" scope="row"><label for="print-time">%s</label></th>
-						<td width="67&#37;">%s</td>
-					</tr>
-					<tr>
-						<th width="33&#37;" scope="row"><label for="cfg_comment">%s</label></th>
-						<td width="67&#37;"><textarea id="cfg_comment" name="cfg_comment" rows="4" cols="30">%s</textarea></td>
-					</tr>
-				</table>
+			$return_form .= sprintf('
+				<div id="tabs" class="window-tall">
+					<div id="tab">
+						<div id="tab-content">
+						<table class="form-table">
+							<tr>
+								<th width="33&#37;" scope="row"><label for="cfg_name">%s</label></th>
+								<td width="67&#37;"><input name="cfg_name" id="cfg_name" type="text" value="%s" size="40" class="required" /></td>
+							</tr>
+							<tr>
+								<th width="33&#37;" scope="row"><label for="cfg_destination">%s</label></th>
+								<td width="67&#37;">
+									%s
+									<div id="destination_option" style="display: %s">
+										<input type="text" name="cfg_file_path[]" value="%s" placeholder="/path/to/file" /><br />
+										versions %s <input type="number" name="cfg_file_path[]" value="%s" style="width: 5em;" onkeydown="return validateNumber(event)" /> 
+										%s
+									</div>
+									<div id="syslog_options" style="display: %s">%s</div></td>
+							</tr>
+							</span>
+							<tr>
+								<th width="33&#37;" scope="row"><label for="cfg_severity">%s</label></th>
+								<td width="67&#37;">%s</td>
+							</tr>
+							<tr>
+								<th width="33&#37;" scope="row"><label for="print-category">%s</label></th>
+								<td width="67&#37;">%s</td>
+							</tr>
+							<tr>
+								<th width="33&#37;" scope="row"><label for="print-severity">%s</label></th>
+								<td width="67&#37;">%s</td>
+							</tr>
+							<tr>
+								<th width="33&#37;" scope="row"><label for="print-time">%s</label></th>
+								<td width="67&#37;">%s</td>
+							</tr>
+							<tr>
+								<th width="33&#37;" scope="row"><label for="cfg_comment">%s</label></th>
+								<td width="67&#37;"><textarea id="cfg_comment" name="cfg_comment" rows="4" cols="30">%s</textarea></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
 				%s
 			</form>
 		<script>
@@ -646,20 +653,27 @@ FORM;
 			$cfg_name = buildSelect('cfg_name', 'cfg_name', $this->availableCategories($cfg_data), $cfg_data);
 			$cfg_data = buildSelect('cfg_data', 'cfg_data', $this->availableChannels(), $this->getAssocChannels($cfg_id), 4, null, true);
 	
-			$return_form .= sprintf('<table class="form-table">
-					<tr>
-						<th width="33&#37;" scope="row"><label for="cfg_name">%s</label></th>
-						<td width="67&#37;">%s</td>
-					</tr>
-					<tr>
-						<th width="33&#37;" scope="row"><label for="cfg_data">%s</label></th>
-						<td width="67&#37;">%s</td>
-					</tr>
-					<tr>
-						<th width="33&#37;" scope="row"><label for="cfg_comment">%s</label></th>
-						<td width="67&#37;"><textarea id="cfg_comment" name="cfg_comment" rows="4" cols="30">%s</textarea></td>
-					</tr>
-				</table>
+			$return_form .= sprintf('
+				<div id="tabs">
+					<div id="tab">
+						<div id="tab-content">
+						<table class="form-table">
+								<tr>
+									<th width="33&#37;" scope="row"><label for="cfg_name">%s</label></th>
+									<td width="67&#37;">%s</td>
+								</tr>
+								<tr>
+									<th width="33&#37;" scope="row"><label for="cfg_data">%s</label></th>
+									<td width="67&#37;">%s</td>
+								</tr>
+								<tr>
+									<th width="33&#37;" scope="row"><label for="cfg_comment">%s</label></th>
+									<td width="67&#37;"><textarea id="cfg_comment" name="cfg_comment" rows="4" cols="30">%s</textarea></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
 				%s
 			</form>
 		<script>

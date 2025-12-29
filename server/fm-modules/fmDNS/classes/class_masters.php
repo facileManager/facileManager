@@ -256,14 +256,14 @@ class fm_dns_masters {
 		
 		if (currentUserCan('manage_servers', $_SESSION['module'])) {
 			$edit_status = '<td class="column-actions">';
-			$edit_status .= '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 			if (!getConfigAssoc($row->master_id, 'primary')) {
-				$edit_status .= '<a class="status_form_link" href="#" rel="';
+				$edit_status .= '<a class="status_form_link" rel="';
 				$edit_status .= ($row->master_status == 'active') ? 'disabled' : 'active';
 				$edit_status .= '">';
 				$edit_status .= ($row->master_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 				$edit_status .= '</a>';
-				$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+				$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 				$checkbox = '<input type="checkbox" name="bulk_list[]" value="' . $row->master_id .'" />';
 			}
 			$edit_status .= '</td>';
@@ -339,24 +339,30 @@ HTML;
 			<input type="hidden" name="action" value="%s" />
 			<input type="hidden" name="master_id" value="%d" />
 			<input type="hidden" name="server_serial_no" value="%s" />
-			<table class="form-table">
-				<tr>
-					<th width="33&#37;" scope="row"><label for="master_name">%s</label></th>
-					<td width="67&#37;"><input name="master_name" id="master_name" type="text" value="%s" size="40" placeholder="%s" maxlength="%d" class="required" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="master_port">%s</label></th>
-					<td width="67&#37;"><input name="master_port" id="master_port" type="text" value="%s" maxlength="5" style="width: 5em;" onkeydown="return validateNumber(event)" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="master_dscp">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
-					<td width="67&#37;"><input name="master_dscp" id="master_dscp" type="text" value="%s" maxlength="2" style="width: 5em;" onkeydown="return validateNumber(event)" /></td>
-				</tr>
-				<tr>
-					<th width="33&#37;" scope="row"><label for="master_comment">%s</label></th>
-					<td width="67&#37;"><textarea id="master_comment" name="master_comment" rows="4" cols="26">%s</textarea></td>
-				</tr>
-			</table>
+			<div id="tabs">
+				<div id="tab">
+					<div id="tab-content">
+					<table class="form-table">
+						<tr>
+							<th width="33&#37;" scope="row"><label for="master_name">%s</label></th>
+							<td width="67&#37;"><input name="master_name" id="master_name" type="text" value="%s" size="40" placeholder="%s" maxlength="%d" class="required" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="master_port">%s</label></th>
+							<td width="67&#37;"><input name="master_port" id="master_port" type="text" value="%s" maxlength="5" style="width: 5em;" onkeydown="return validateNumber(event)" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="master_dscp">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+							<td width="67&#37;"><input name="master_dscp" id="master_dscp" type="text" value="%s" maxlength="2" style="width: 5em;" onkeydown="return validateNumber(event)" /></td>
+						</tr>
+						<tr>
+							<th width="33&#37;" scope="row"><label for="master_comment">%s</label></th>
+							<td width="67&#37;"><textarea id="master_comment" name="master_comment" rows="4" cols="26">%s</textarea></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
 		%s
 		</form>
 		<script>
@@ -398,7 +404,7 @@ HTML;
 					<td width="67&#37;">%s</td>
 				</tr>
 				<tr>
-					<th width="33&#37;" scope="row"><label for="master_addresses">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+					<th width="33&#37;" scope="row"><label for="master_addresses">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
 					<td width="67&#37;"><input type="hidden" id="master_addresses" name="master_addresses" class="address_match_element required" value="%s" /></td>
 				</tr>
 				<tr>
@@ -410,7 +416,7 @@ HTML;
 					<td width="67&#37;">%s</td>
 				</tr>
 				<tr>
-					<th width="33&#37;" scope="row"><label for="master_tls_id">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+					<th width="33&#37;" scope="row"><label for="master_tls_id">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
 					<td width="67&#37;">%s</td>
 				</tr>
 				<tr>
@@ -564,7 +570,7 @@ HTML;
 				
 				/** Delete permitted? */
 				if (currentUserCan(array('manage_servers'), $_SESSION['module'])) {
-					$return[$element_id]['element_edit'] = '<a class="subelement_edit tooltip-bottom mini-icon" name="master" href="#" id="' . $element_id . '" data-tooltip="' . _('Edit') . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+					$return[$element_id]['element_edit'] = '<a class="subelement_edit tooltip-bottom mini-icon" name="master" id="' . $element_id . '" data-tooltip="' . _('Edit') . '">' . $__FM_CONFIG['icons']['edit'] . '</a>';
 					$return[$element_id]['element_delete'] = ' ' . str_replace('__ID__', $element_id, $__FM_CONFIG['module']['icons']['sub_delete']);
 				} else {
 					$return[$element_id]['element_delete'] = $return[$element_id]['element_edit'] = null;

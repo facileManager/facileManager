@@ -183,6 +183,23 @@ function deleteDeprecatedFiles($files_to_delete) {
 	}
 }
 
+/**
+ * Checks if a table exists.
+ *
+ * @since 6.0.0
+ * @package facileManager
+ * @subpackage Upgrader
+ * 
+ * @param string $table The table containing the column
+ */
+function tableExists($table) {
+	global $fmdb, $__FM_CONFIG;
+
+	$fmdb->query("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='{$__FM_CONFIG['db']['name']}' AND TABLE_NAME='$table'");
+
+	return $fmdb->num_rows;
+}
+
 
 function fmUpgrade_100($database) {
 	global $fmdb;
@@ -949,7 +966,7 @@ function fmUpgrade_500b1($database) {
 	
 	$queries = [];
 	if ($success) {
-		if (!columnExists("fm_users", 'user_theme')) {
+		if (!columnExists('fm_users', 'user_theme')) {
 			$queries[] = "ALTER TABLE `fm_users` ADD `user_theme` VARCHAR(255) NULL DEFAULT NULL AFTER `user_default_module`";
 		}
 		
@@ -978,7 +995,7 @@ function fmUpgrade_510($database) {
 	$queries = [];
 	if ($success) {
 		$queries[] = "UPDATE `fm_options` SET `option_value` = REPLACE(option_value, '<username>', '{username}') WHERE `option_name`='ldap_dn'";
-		if (!columnExists("fm_users", 'user_theme_mode')) {
+		if (!columnExists('fm_users', 'user_theme_mode')) {
 			$queries[] = "ALTER TABLE `fm_users` ADD `user_theme_mode` enum('Light','Dark','System') NULL DEFAULT 'System' AFTER `user_theme`";
 		}
 		
@@ -1113,6 +1130,7 @@ function fmUpgrade_540b1($database) {
 	return $success;
 }
 
+
 /** fM v5.4.4 **/
 function fmUpgrade_544($database) {
 	global $fmdb;
@@ -1122,7 +1140,9 @@ function fmUpgrade_544($database) {
 	
 	$queries = [];
 	if ($success) {
-		$queries[] = "ALTER TABLE `fm_users` ADD `user_module_prefs` TEXT NULL DEFAULT NULL AFTER `user_caps`";
+		if (!columnExists('fm_users', 'user_module_prefs')) {
+			$queries[] = "ALTER TABLE `fm_users` ADD `user_module_prefs` TEXT NULL DEFAULT NULL AFTER `user_caps`";
+		}
 
 		/** Create table schema */
 		if (count($queries) && $queries[0]) {
@@ -1134,6 +1154,52 @@ function fmUpgrade_544($database) {
 	}
 
 	upgradeConfig('fm_db_version', 61, false);
+	
+	return $success;
+}
+
+
+/** fM v6.0.0 **/
+function fmUpgrade_600($database) {
+	global $fmdb;
+	
+	/** Prereq */
+	$success = ($GLOBALS['running_db_version'] < 61) ? fmUpgrade_544($database) : true;
+	
+	$queries = [];
+	if ($success) {
+		if (!columnExists('fm_users', 'user_2fa_method')) {
+			$queries[] = "ALTER TABLE `fm_users` ADD `user_2fa_method` ENUM('0', 'app', 'email') NOT NULL DEFAULT '0' AFTER `user_group`";
+		}
+		if (!columnExists('fm_users', 'user_2fa_secret')) {
+			$queries[] = "ALTER TABLE `fm_users` ADD `user_2fa_secret` VARCHAR(255) DEFAULT NULL AFTER `user_2fa_method`";
+		}
+		if (!columnExists('fm_users', 'user_2fa_recovery_code')) {
+			$queries[] = "ALTER TABLE `fm_users` ADD `user_2fa_recovery_code` VARCHAR(255) DEFAULT NULL AFTER `user_2fa_secret`";
+		}
+		if (!columnExists('fm_users', 'user_display_name')) {
+			$queries[] = "ALTER TABLE `fm_users` ADD `user_display_name` VARCHAR(255) NULL AFTER `user_password`";
+		}
+		if (!tableExists('fm_temp_auth_keys')) {
+			$queries[] = "RENAME TABLE `fm_pwd_resets` TO `fm_temp_auth_keys`";
+		}
+		if (!columnExists('fm_keys', 'key_name')) {
+			$queries[] = "ALTER TABLE `fm_keys` ADD `key_name` VARCHAR(255) NULL AFTER `user_id`";
+		}
+		if (!columnExists('fm_keys', 'key_comment')) {
+			$queries[] = "ALTER TABLE `fm_keys` ADD `key_comment` TEXT NULL AFTER `key_secret`";
+		}
+
+		/** Create table schema */
+		if (count($queries) && $queries[0]) {
+			foreach ($queries as $schema) {
+				$fmdb->query($schema);
+				if (!$fmdb->result || $fmdb->sql_errors) return false;
+			}
+		}
+	}
+
+	upgradeConfig('fm_db_version', 62, false);
 	
 	return $success;
 }

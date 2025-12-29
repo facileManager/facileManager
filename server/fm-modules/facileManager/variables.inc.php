@@ -57,7 +57,7 @@ $__FM_CONFIG['icons']['disable']		= sprintf('<i class="fa fa-toggle-on toggle" a
 $__FM_CONFIG['icons']['popout']			= sprintf('<i class="fa fa-external-link-square fa-lg popout" alt="%1$s" title="%1$s" aria-hidden="true"></i>', _('Popout'));
 $__FM_CONFIG['icons']['close']			= sprintf('<i class="fa fa-window-close fa-lg close" alt="%1$s" title="%1$s" aria-hidden="true"></i>', _('Close'));
 $__FM_CONFIG['icons']['pwd_change']		= sprintf('<i class="fa fa-user preview" alt="%1$s" title="%1$s" aria-hidden="true"></i>', _('Edit Profile'));
-$__FM_CONFIG['icons']['pwd_reset']		= sprintf('<i class="fa fa-unlock-alt" alt="%1$s" title="%1$s" aria-hidden="true"></i>', _('Send Password Reset Email'));
+$__FM_CONFIG['icons']['pwd_reset']		= sprintf('<i class="fa fa-unlock-alt" alt="%1$s" title="%1$s" aria-hidden="true"></i>', _('Send Password Reset E-mail'));
 $__FM_CONFIG['icons']['account']		= sprintf('<img src="fm-modules/%1$s/images/account24.png" border="0" alt="%2$s" title="%2$s" width="20" />', $fm_name, _('Account Settings'));
 $__FM_CONFIG['icons']['star']			= sprintf('<i class="fa fa-star star" alt="%1$s" title="%1$s" aria-hidden="true"></i>', _('Super Admin'));
 $__FM_CONFIG['icons']['template_user']	= sprintf('<i class="fa fa-user" alt="%1$s" title="%1$s" aria-hidden="true"></i>', _('Template Account'));
@@ -76,7 +76,6 @@ if (isset($_SESSION['module'])) {
 
 /** Cleanup options */
 $__FM_CONFIG['clean']['prefixes']	= array('fm_accounts' => 'account', 'fm_users' => 'user');
-$__FM_CONFIG['clean']['time']		= '15 minutes';
 
 /** Text string variables */
 $__FM_CONFIG['password_hint']['medium']		= array(_('Medium'), _('The password must be at least seven (7) characters long containing letters and numbers.'));
@@ -92,6 +91,15 @@ $__FM_CONFIG['limit']['records']	= array(20, 35, 50, 75, 100, 200);
 
 /** Options */
 $__FM_CONFIG['options']['auth_method']					= array(array(_('None'), 0), array(_('Built-in Authentication'), 1));
+$__FM_CONFIG['options']['2fa_methods']					= [];
+/** Add authenticator app 2FA option if library is installed */
+if (class_exists('RobThree\Auth\TwoFactorAuth') && class_exists('Imagick')) {
+	array_push($__FM_CONFIG['options']['2fa_methods'], array(_('Authenticator app'), 'app'));
+}
+/** Add e-mail 2FA option if mailing is enabled */
+if (getOption('mail_enable')) {
+	array_push($__FM_CONFIG['options']['2fa_methods'], array(_('E-mail'), 'email'));
+}
 $__FM_CONFIG['options']['ldap_version']					= array(array(_('Version 2'), 2), array(_('Version 3'), 3));
 $__FM_CONFIG['options']['ldap_encryption']				= array(_('None'), 'SSL', 'TLS');
 $__FM_CONFIG['options']['ldap_referrals']				= array(array(_('Disabled'), 0), array(_('Enabled'), 1));
@@ -106,8 +114,9 @@ $__FM_CONFIG['options']['syslog_facilities']			= array(array('auth', 32), array(
 if (function_exists('ldap_connect')) array_push($__FM_CONFIG['options']['auth_method'], array(_('LDAP Authentication'), 2));
 
 /** Defaults */
-$__FM_CONFIG['default']['theme']				= 'Ocean';
-$__FM_CONFIG['default']['popup']['dimensions'] 	= 'width=700,height=800';
+$__FM_CONFIG['default']['theme']                 = 'Ocean';
+$__FM_CONFIG['default']['popup']['dimensions']   = 'width=700,height=800';
+$__FM_CONFIG['default']['password_reset_expiry'] = '15 minutes';
 
 /** Webserver Runas */
 if (function_exists('posix_getpwuid')) {

@@ -379,13 +379,13 @@ class fm_dhcp_objects {
 		$checkbox = (currentUserCan(array('manage_servers', 'build_server_configs'), $_SESSION['module'])) ? '<td><input type="checkbox" name="bulk_list[]" value="' . $row->config_id .'" /></td>' : null;
 		
 		if (currentUserCan('manage_servers', $_SESSION['module'])) {
-			$edit_status = '<a class="edit_form_link" href="#">' . $__FM_CONFIG['icons']['edit'] . '</a>';
-			$edit_status .= '<a class="status_form_link" href="#" rel="';
+			$edit_status = '<a class="edit_form_link">' . $__FM_CONFIG['icons']['edit'] . '</a>';
+			$edit_status .= '<a class="status_form_link" rel="';
 			$edit_status .= ($row->config_status == 'active') ? 'disabled' : 'active';
 			$edit_status .= '">';
 			$edit_status .= ($row->config_status == 'active') ? $__FM_CONFIG['icons']['disable'] : $__FM_CONFIG['icons']['enable'];
 			$edit_status .= '</a>';
-			$edit_status .= '<a href="#" class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
+			$edit_status .= '<a class="delete">' . $__FM_CONFIG['icons']['delete'] . '</a>';
 			$icons[] = sprintf('<a href="config-options.php?item_id=%d" class="tooltip-bottom icons" data-tooltip="%s"><i class="icons fa fa-sliders" aria-hidden="true"></i></a>', $row->config_id, __('Configure Additional Options'));
 		}
 		
@@ -632,7 +632,7 @@ HTML;
 								<td width="67&#37;"><input name="domain-name-servers" id="domain-name-servers" type="text" value="%s" /></td>
 							</tr>
 							<tr>
-								<th width="33&#37;" scope="row"><label for="domain-search">%s</label> <a href="#" class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
+								<th width="33&#37;" scope="row"><label for="domain-search">%s</label> <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></th>
 								<td width="67&#37;"><input name="domain-search" id="domain-search" type="text" value="%s" /></td>
 							</tr>
 							<tr>

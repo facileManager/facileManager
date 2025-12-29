@@ -1,3 +1,10 @@
+7.4.0 (2025-12-26)
+==================
+* Server - [security] Users without module permission can no longer access this module.
+* Server - [improvement] Removed href="#" from non-navigational anchor tags.
+* Server - [improvement] Updated popup windows' CSS.
+* Server - [bug] Fixed ability to create zone options.
+
 7.3.0 (2025-11-03)
 ==================
 * Server - [improvement] Added ability to mark zones as favorites for quick access on the dashboard.

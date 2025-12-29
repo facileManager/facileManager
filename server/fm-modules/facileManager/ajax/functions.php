@@ -47,6 +47,8 @@ function returnError($addl_msg = null, $display = 'window') {
  *
  * @since 1.0
  * @package facileManager
+ * 
+ * @return mixed
  */
 function returnUnAuth($format = 'window') {
 	$msg = _('You do not have permission to make these changes.');

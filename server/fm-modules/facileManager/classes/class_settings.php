@@ -39,6 +39,20 @@ class fm_settings {
 		if (isset($_POST['api_token_support']) && $_POST['api_token_support'] == 1) {
 			$_POST['enforce_ssl'] = 1;
 		}
+
+		/** Convert password_reset_expiry[] into a single variable */
+		if (isset($_POST['password_reset_expiry']) && is_array($_POST['password_reset_expiry'])) {
+			$hours = (isset($_POST['password_reset_expiry']['hours'][$_SESSION['user']['account_id']]) && verifyNumber($_POST['password_reset_expiry']['hours'][$_SESSION['user']['account_id']], 0, 23, false)) ? $_POST['password_reset_expiry']['hours'][$_SESSION['user']['account_id']] : 0;
+			$minutes = (isset($_POST['password_reset_expiry']['minutes'][$_SESSION['user']['account_id']]) && verifyNumber($_POST['password_reset_expiry']['minutes'][$_SESSION['user']['account_id']], 0, 59, false)) ? $_POST['password_reset_expiry']['minutes'][$_SESSION['user']['account_id']] : 0;
+			$_POST['password_reset_expiry'] = "$hours hours $minutes minutes";
+		}
+		
+		/** Convert otp_expiry[] into a single variable */
+		if (isset($_POST['otp_expiry']) && is_array($_POST['otp_expiry'])) {
+			$hours = (isset($_POST['otp_expiry']['hours'][$_SESSION['user']['account_id']]) && verifyNumber($_POST['otp_expiry']['hours'][$_SESSION['user']['account_id']], 0, 23, false)) ? $_POST['otp_expiry']['hours'][$_SESSION['user']['account_id']] : 0;
+			$minutes = (isset($_POST['otp_expiry']['minutes'][$_SESSION['user']['account_id']]) && verifyNumber($_POST['otp_expiry']['minutes'][$_SESSION['user']['account_id']], 0, 59, false)) ? $_POST['otp_expiry']['minutes'][$_SESSION['user']['account_id']] : 0;
+			$_POST['otp_expiry'] = "$hours hours $minutes minutes";
+		}
 		
 		foreach ($_POST as $key => $data) {
 			if (!in_array($key, $exclude)) {
@@ -217,6 +231,17 @@ class fm_settings {
 		
 		$auth_message_option_style = ($auth_method) ? 'style="display: block;"' : null;
 		
+		/** Password reset expiry Section */
+		$password_reset_expiry = explode(' ', getOption('password_reset_expiry'));
+		if (count($password_reset_expiry) < 4) {
+			 /** Default to 15 minutes if not set */
+			$password_reset_expiry = array_merge(array(0, 'hours'), explode(' ', $__FM_CONFIG['default']['password_reset_expiry']));
+		}
+		$password_reset_expiry_list = [
+			'hours' => buildSelect('password_reset_expiry[hours][' . $_SESSION['user']['account_id'] . ']', 'password_reset_expiry_h', range(0, 23), $password_reset_expiry[0]),
+			'minutes' => buildSelect('password_reset_expiry[minutes][' . $_SESSION['user']['account_id'] . ']', 'password_reset_expiry_m', range(0, 59), $password_reset_expiry[2])
+		];
+
 		/** LDAP Section */
 		if ($auth_method == 2) {
 			 $auth_ldap_options_style = 'style="display: block;"';
@@ -253,6 +278,20 @@ class fm_settings {
 
 		/** Client Autoregistration Section */
 		$client_auto_register_checked = (getOption('client_auto_register')) ? 'checked' : null;
+
+		/** Require 2FA Section */
+		$require_2fa_checked = (getOption('require_2fa')) ? 'checked' : null;
+
+		/** OTP expiry Section */
+		$otp_expiry = explode(' ', getOption('otp_expiry'));
+		if (count($otp_expiry) < 4) {
+			 /** Default to 15 minutes if not set */
+			$otp_expiry = array_merge(array(0, 'hours'), explode(' ', $__FM_CONFIG['default']['password_reset_expiry']));
+		}
+		$otp_expiry_list = [
+			'hours' => buildSelect('otp_expiry[hours][' . $_SESSION['user']['account_id'] . ']', 'otp_expiry_h', range(0, 23), $otp_expiry[0]),
+			'minutes' => buildSelect('otp_expiry[minutes][' . $_SESSION['user']['account_id'] . ']', 'otp_expiry_m', range(0, 59), $otp_expiry[2])
+		];
 
 		/** SSL Section */
 		$enforce_ssl_checked = (getOption('enforce_ssl')) ? 'checked' : null;
@@ -354,6 +393,7 @@ class fm_settings {
 			<input type="hidden" name="login_message_accept" value="0" />
 			<input type="hidden" name="client_auto_register" value="0" />
 			<input type="hidden" name="api_token_support" value="0" />
+			<input type="hidden" name="require_2fa" value="0" />
 			<input type="hidden" name="enforce_ssl" value="0" />
 			<input type="hidden" name="mail_enable" value="0" />
 			<input type="hidden" name="mail_smtp_auth" value="0" />
@@ -382,6 +422,21 @@ class fm_settings {
 							</div>
 							<div class="choices">
 								' . $auth_fm_pw_strength_list . '
+							</div>
+						</div>
+						<div id="setting-row">
+							<div class="description">
+								<label for="password_reset_expiry_d">' . _('Password Reset Expiry') . '</label>
+								<p>' . _('Defines how long the password reset URL is valid for.') . '</p>
+							</div>
+							<div class="choices">
+								<table>
+								<thead><th>' . _('Hours') . '</th><th>' . _('Minutes') . '</th></thead>
+								<tr>
+									<td>' . $password_reset_expiry_list['hours'] . '</td>
+									<td>' . $password_reset_expiry_list['minutes'] . '</td>
+								</tr>
+								</table>
 							</div>
 						</div>
 					</div>
@@ -542,10 +597,34 @@ class fm_settings {
 					<div id="setting-row">
 						<div class="description">
 							<label for="api_token_support">' . _('Enable API Token Support') . '</label>
-							<p>' . _('Allow users to authenticate via API tokens. (https must be enforced)') . '</p>
+							<p>' . _('Allow users to authenticate via API tokens (https must be enforced).') . '</p>
 						</div>
 						<div class="choices">
 							<input name="api_token_support" id="api_token_support" type="checkbox" value="1" ' . $api_token_support_checked . ' /><label for="api_token_support">' . _('Enable API') . '</label>
+						</div>
+					</div>
+					<div id="setting-row">
+						<div class="description">
+							<label for="require_2fa">' . _('Require Two-Factor Authentication') . '</label>
+							<p>' . _('All users will be e-mailed a One Time Passcode that must be used during authentication (mailing must be enabled). Users may opt for alternative 2FA methods if available.') . '</p>
+						</div>
+						<div class="choices">
+							<input name="require_2fa" id="require_2fa" type="checkbox" value="1" ' . $require_2fa_checked . ' /><label for="require_2fa">' . _('Require 2FA') . '</label>
+						</div>
+					</div>
+					<div id="setting-row">
+						<div class="description">
+							<label for="otp_expiry_list_d">' . _('One-Time Passcode Expiry') . '</label>
+							<p>' . _('Defines how long the e-mailed One-Time Passcode is valid for.') . '</p>
+						</div>
+						<div class="choices">
+							<table>
+							<thead><th>' . _('Hours') . '</th><th>' . _('Minutes') . '</th></thead>
+							<tr>
+								<td>' . $otp_expiry_list['hours'] . '</td>
+								<td>' . $otp_expiry_list['minutes'] . '</td>
+							</tr>
+							</table>
 						</div>
 					</div>
 				</div>
@@ -573,7 +652,7 @@ class fm_settings {
 					<div id="setting-row">
 						<div class="description">
 							<label for="mail_enable">' . _('Enable Mailing') . '</label>
-							<p>' . sprintf(_('If this is unchecked, %s will never send an e-mail (including password reset links).'), $fm_name) . '</p>
+							<p>' . sprintf(_('If this is unchecked, %s will never send an e-mail (including password reset links and 2FA codes).'), $fm_name) . '</p>
 						</div>
 						<div class="choices">
 							<input name="mail_enable" id="mail_enable" type="checkbox" value="1" ' . $mail_enable_checked . ' /><label for="mail_enable">' . _('Enable Mailing') . '</label>

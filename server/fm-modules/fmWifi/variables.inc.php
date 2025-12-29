@@ -31,7 +31,7 @@ if (!@is_array($__FM_CONFIG)) $__FM_CONFIG = array();
 
 /** Module Version */
 $__FM_CONFIG['fmWifi'] = array(
-		'version'							=> '0.8.1',
+		'version'							=> '0.9.0',
 		'client_version'					=> '0.8.0',
 		'description'						=> __('Manage wifi access points with hostapd.', 'fmWifi'),
 		'prefix'							=> 'wifi_',
@@ -71,7 +71,7 @@ $__FM_CONFIG['fmWifi']['default']['options'] = @array(
 		'use_ebtables' => array(
 				'description' => array(__('Use ebtables'), 
 					str_replace('ebtables', '<a href="http://ebtables.netfilter.org/" target="_blank">ebtables</a>', __('Block clients with ebtables in addition to deny list. The ebtables package is required on the access point (AP) and the AP must be configured as a bridge.<p>This option is recommended for Raspbian systems.')) .
-					sprintf(' <a href="#" class="tooltip-right" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></p>', __('The ACL functionality of hostapd (macaddr_acl) does not seem to work with Raspbian. Therefore, the use of ebtables is recommended to deny clients.'))),
+					sprintf(' <a class="tooltip-right" data-tooltip="%s"><i class="fa fa-question-circle"></i></a></p>', __('The ACL functionality of hostapd (macaddr_acl) does not seem to work with Raspbian. Therefore, the use of ebtables is recommended to deny clients.'))),
 				'default_value' => 'yes',
 				'type' => 'checkbox')
 	);
