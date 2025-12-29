@@ -59,7 +59,7 @@ function processSetup() {
 		if ($db_selected) {
 			$tables = $fmdb->query('SHOW TABLES FROM `' . $dbname . '`;');
 			if ($fmdb->num_rows) {
-				exit(sprintf('ERROR: %s', _('Database already exists and contains one or more tables.<br />Please choose a different name.')));
+				exit(sprintf('ERROR: %s<br />%s', _('Database already exists and contains one or more tables.'), _('Please choose a different name.')));
 			}
 		}
 	}
