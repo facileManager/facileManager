@@ -428,7 +428,7 @@ CREATE TABLE IF NOT EXISTS `$database`.`fm_keys` (
   `key_id` int(11) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) NOT NULL DEFAULT '1',
   `user_id` int(11) NOT NULL,
-  `key_name` varchar(255) NULL
+  `key_name` varchar(255) NULL,
   `key_token` varchar(255) NOT NULL,
   `key_secret` varchar(255) NOT NULL,
   `key_comment` text NULL,
@@ -459,7 +459,7 @@ INSERTSQL;
 
 	$inserts[] = <<<INSERTSQL
 INSERT INTO `$database`.`fm_options` (`option_name`, `option_value`) 
-	SELECT 'mail_enable', '1' FROM DUAL
+	SELECT 'mail_enable', '0' FROM DUAL
 WHERE NOT EXISTS
 	(SELECT option_name FROM `$database`.`fm_options` WHERE option_name = 'mail_enable');
 INSERTSQL;
