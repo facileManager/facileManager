@@ -329,7 +329,7 @@ HTML;
 						</tr>
 						<tr>
 							<th width="33&#37;" scope="row"><label for="acl_mac">%s</label></th>
-							<td width="67&#37;"><input name="acl_mac" id="acl_mac" type="text" value="%s" size="40" maxlength="17" /></td>
+							<td width="67&#37;"><input name="acl_mac" id="acl_mac" type="text" value="%s" size="40" maxlength="17" class="required" /></td>
 						</tr>
 						<tr>
 							<th width="33&#37;" scope="row"><label for="acl_action">%s</label></th>
