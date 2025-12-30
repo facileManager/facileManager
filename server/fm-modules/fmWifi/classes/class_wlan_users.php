@@ -311,10 +311,10 @@ HTML;
 		$return_form = sprintf('
 		%s
 		<form name="manage" id="manage">
-		%s
-			<div id="tabs">
+			<div id="tabs" class="window-tall">
 				<div id="tab">
 					<div id="tab-content">
+					%s
 						<table class="form-table">
 							<tr>
 								<th width="33&#37;" scope="row"><label for="wlan_user_mac">%s</label></th>
