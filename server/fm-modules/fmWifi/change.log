@@ -1,6 +1,7 @@
 0.9.1 (2025-12-??)
 ==================
 * Server - [bug] Fixed WLAN User window formatting.
+* Server - [bug] Fixed WLAN User form submission.
 
 0.9.0 (2025-12-26)
 ==================
