@@ -241,7 +241,7 @@ class fm_module_tls {
 		}
 
 		/** Update config children */
-		$include = array_diff(array_keys($post), $include, array('cfg_id', 'action', 'account_id', 'view_id', 'tab-group-1', 'page', 'item_type'));
+		$include = array_diff(array_keys($post), $include, array('cfg_id', 'action', 'account_id', 'view_id', 'tab-group-1', 'page', 'item_type', 'uri_params'));
 		$sql_start = "UPDATE `fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}config` SET ";
 		
 		foreach ($include as $handler) {
