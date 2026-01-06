@@ -22,11 +22,8 @@
  +-------------------------------------------------------------------------+
 */
 
-$module_tools_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_SESSION['module'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_tools.php';
-if (file_exists($module_tools_file) && !class_exists('fm_module_tools')) {
-	include($module_tools_file);
-}
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_zones.php');
+$fm_module_tools = new facileManager\fmDNS\Tools();
+$fm_dns_zones = new facileManager\fmDNS\Zones();
 
 $selected_zone = 0;
 

@@ -87,12 +87,12 @@ foreach (scandir($shared_classes_dir) as $file) {
 function includeModuleFile($module = null, $file = '') {
 	global $fm_name;
 	if (!$module) $module = $fm_name;
-	
-	if (!file_exists(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . $file)) {
-		$module = (file_exists(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . 'shared' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . $file)) ? 'shared' : $fm_name;
+
+	if (!file_exists(ABSPATH . 'fm-modules/' . $module . '/pages/' . $file)) {
+		$module = (file_exists(ABSPATH . 'fm-modules/shared/pages/' . $file)) ? 'shared' : $fm_name;
 	}
 
-	return ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . $file;
+	return ABSPATH . 'fm-modules/' . $module . '/pages/' . $file;
 }
 
 /**
@@ -2095,7 +2095,7 @@ function printPageHeader($message = null, $title = null, $allowed_to_add = false
  * @return boolean
  */
 function setBuildUpdateConfigFlag($serial_no, $flag, $build_update, $__FM_CONFIG = null) {
-	global $fmdb;
+	global $fm_name, $fmdb, $fm_module_servers;
 	
 	if (!$__FM_CONFIG) global $__FM_CONFIG;
 	
@@ -2104,8 +2104,9 @@ function setBuildUpdateConfigFlag($serial_no, $flag, $build_update, $__FM_CONFIG
 	if (!empty($serial_no) && $serial_no[0] == 'g') {
 		global $fm_module_servers;
 
-		if (!class_exists('fm_module_servers')) {
-			include_once(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_servers.php');
+		if (!isset($fm_module_servers)) {
+			$class = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], 'Servers');
+			$fm_module_servers = new $class();
 		}
 		
 		$group_servers = $fm_module_servers->getGroupServers(substr($serial_no, 2));
@@ -4145,7 +4146,7 @@ function getServerName($id) {
  * @return array
  */
 function getThemes() {
-	$theme_css = dirname(__FILE__) . '/css/themes.css';
+	$theme_css = __DIR__ . '/css/themes.css';
 	$theme_contents = file_get_contents($theme_css);
 
 	$themes = array();

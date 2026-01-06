@@ -24,7 +24,7 @@
 define('AJAX', true);
 require_once('../../../fm-init.php');
 
-include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'functions.php');
+include(ABSPATH . 'fm-modules/' . $fm_name . '/ajax/functions.php');
 
 $global_form_field_excludes = array('submit', 'action', 'page', 'item_type', 'uri_params', 'is_ajax', 'dryrun',
 	'compress', 'AUTHKEY', 'SERIALNO', 'module_name', 'module_type', 'update_from_client', 'config');
@@ -33,7 +33,7 @@ $global_form_field_excludes = array('submit', 'action', 'page', 'item_type', 'ur
 if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_type'] == 'fm_settings') {
 	if (!currentUserCan('manage_settings')) returnUnAuth('response-close');
 
-	include_once(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_settings.php');
+	 $fm_settings = new facileManager\Settings();
 	
 	if (isset($_POST['gen_ssh']) && $_POST['gen_ssh'] == true) {
 		$save_result = $fm_settings->generateSSHKeyPair();
@@ -50,7 +50,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 } elseif (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_type'] == 'module_settings') {
 	if (!currentUserCan('manage_settings', $_SESSION['module'])) returnUnAuth('response-close');
 
-	include_once(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . 'shared' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_settings.php');
+	$fm_module_settings = new facileManager\shared\Settings();
 	$save_result = $fm_module_settings->save();
 	echo ($save_result !== true) ? displayResponseClose($save_result) : sprintf("<p>%s</p>\n", _('These settings have been saved.'));
 
@@ -58,7 +58,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 } elseif (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_type'] == 'fm_software_update_check') {
 	if (!currentUserCan('manage_settings')) returnUnAuth('window');
 
-	include(ABSPATH . 'fm-includes' . DIRECTORY_SEPARATOR . 'version.php');
+	include(ABSPATH . 'fm-includes/version.php');
 	$fm_new_version_available = isNewVersionAvailable($fm_name, $fm_version, 'force');
 	$module_new_version_available = false;
 
@@ -91,7 +91,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 	if (!$sendto) {
 		printf('<p>%s</p>', _('Unable to send e-mail -- this user account does not have an e-mail address defined.'));
 	} else {
-		include(ABSPATH . 'fm-includes' . DIRECTORY_SEPARATOR . 'version.php');
+		include(ABSPATH . 'fm-includes/version.php');
 
 		echo '<p>';
 		/** Send test mail */
@@ -140,9 +140,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 				returnUnAuth();
 			}
 			
-			include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_tools.php');
-
-			$bulk_class = $fm_tools;
+			$bulk_class = new facileManager\Tools();
 			$bulk_function = 'manageModule';
 			$page = _('Modules');
 			
@@ -154,10 +152,8 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 				returnUnAuth();
 			}
 			
-			if (!class_exists('fm_module_servers')) {
-				include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_servers.php');
-			}
-			$bulk_class = $fm_module_servers;
+			$class = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], 'Servers');
+			$bulk_class = new $class();
 			$bulk_function = 'doClientUpgrade';
 			$page = _('Servers');
 			break;
@@ -168,10 +164,8 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 				returnUnAuth();
 			}
 			
-			if (!class_exists('fm_module_servers')) {
-				include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_servers.php');
-			}
-			$bulk_class = $fm_module_servers;
+			$class = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], 'Servers');
+			$bulk_class = new $class();
 			$bulk_function = 'doBulkServerBuild';
 			$page = _('Servers');
 			break;
@@ -200,9 +194,8 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 		basicGetList('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'servers', 'server_id', 'server_', 'AND server_status="active" AND server_installed="yes"');
 		$server_count = $fmdb->num_rows;
 		$server_results = $fmdb->last_result;
-		if (!class_exists('fm_module_servers')) {
-			include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_servers.php');
-		}
+		$class = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], 'Servers');
+		$fm_module_servers = new $class();
 		for ($i=0; $i<$server_count; $i++) {
 			if (isset($server_results[$i]->server_client_version) && $server_results[$i]->server_client_version != getOption('client_version', 0, $_SESSION['module'])) {
 				$result .= $fm_module_servers->doClientUpgrade($server_results[$i]->server_serial_no);
@@ -215,7 +208,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 	}
 	
 	/** Module mass updates */
-	$include_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_SESSION['module'] . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'processPost.php';
+	$include_file = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/ajax/processPost.php';
 	if (file_exists($include_file)) {
 		include($include_file);
 	}
@@ -233,14 +226,14 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 } elseif (is_array($_POST) && array_key_exists('type', $_POST) && in_array($_POST['type'], array('users', 'groups'))) {
 	/** Handle user password change */
 	if (array_key_exists('action', $_POST) && (array_key_exists('user_id', $_POST) || array_key_exists('group_id', $_POST))) {
-		include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_users.php');
+		$fm_users = new facileManager\Users();
 		$function = $_POST['action'] . 'User';
 		$response = $fm_users->$function($_POST);
 
 		echo ($response !== true) ? $response : 'Success';
 	}
 } elseif (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_type'] == 'users') {
-	include_once(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_users.php');
+	$fm_users = new facileManager\Users();
 
 	/** Handle form validation */
 	if (array_key_exists('action', $_POST) && $_POST['action'] == 'validate-input') {
@@ -301,12 +294,12 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 	}
 /** Handle API key edits */
 } elseif (is_array($_POST) && array_key_exists('action', $_POST) && $_POST['action'] == 'edit_api_key') {
-	include_once(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_users.php');
+	$fm_users = new facileManager\Users();
 
 	exit($fm_users->saveAPIKey($_POST));
 /** Handle everything else */
 } elseif (isset($_SESSION['module']) && $_SESSION['module'] != $fm_name) {
-	$include_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_SESSION['module'] . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'processPost.php';
+	$include_file = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/ajax/processPost.php';
 	if (file_exists($include_file)) {
 		include($include_file);
 	}

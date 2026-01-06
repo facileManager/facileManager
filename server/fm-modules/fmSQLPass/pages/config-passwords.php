@@ -28,8 +28,7 @@ if (!currentUserCan(array('manage_passwords', 'view_all'), $_SESSION['module']))
 printHeader();
 @printMenu();
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_passwords.php');
-include(ABSPATH . 'fm-modules/facileManager/classes/class_users.php');
+$fm_sqlpass_passwords = new \facileManager\fmSQLPass\Passwords();
 
 echo printPageHeader((string) $response);
 

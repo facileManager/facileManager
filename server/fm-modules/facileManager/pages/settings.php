@@ -23,7 +23,7 @@
 
 if (!currentUserCan('manage_settings')) unAuth();
 
-include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_settings.php');
+$fm_settings = new facileManager\Settings();
 
 printHeader();
 @printMenu();

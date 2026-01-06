@@ -25,9 +25,9 @@
 if (!defined('AJAX')) define('AJAX', true);
 require_once('../../../fm-init.php');
 
-include_once(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'functions.php');
+include_once(ABSPATH . 'fm-modules/' . $fm_name . '/ajax/functions.php');
 
-include_once(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_records.php');
+$fm_dns_records = new facileManager\fmDNS\Records();
 
 /** Make sure it's a valid request */
 if (!is_array($_POST) || !array_key_exists('action', $_POST)) {

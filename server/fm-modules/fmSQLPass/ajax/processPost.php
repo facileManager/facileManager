@@ -25,11 +25,11 @@
 if (!defined('AJAX')) define('AJAX', true);
 require_once('../../../fm-init.php');
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_groups.php');
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_servers.php');
+$fm_sqlpass_groups = new \facileManager\fmSQLPass\Groups();
+$fm_module_servers = new \facileManager\fmSQLPass\Servers();
 
 if (!function_exists('returnUnAuth')) {
-	include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'functions.php');
+	include(ABSPATH . 'fm-modules/' . $fm_name . '/ajax/functions.php');
 }
 
 $unpriv_message = _('You do not have sufficient privileges.');
@@ -41,7 +41,7 @@ if (isset($_POST['page']) && !isset($_POST['item_type'])) {
 if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_type'] == 'set_mysql_password') {
 	if (!currentUserCan('manage_passwords', $_SESSION['module'])) returnUnAuth(true);
 
-	include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_SESSION['module'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_passwords.php');
+	$fm_sqlpass_passwords = new \facileManager\fmSQLPass\Passwords();
 	if ($_POST['verbose']) echo buildPopup('header', _('Password Change Results')) . '<pre>';
 	echo $fm_sqlpass_passwords->setPassword();
 	if ($_POST['verbose']) echo '</pre>' . buildPopup('footer', _('OK'), array('cancel_button' => 'cancel'));
@@ -55,7 +55,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 
 	$field = $prefix . 'id';
 	$type_map = null;
-	$id = ($_POST['item_id']) ? $_POST['item_id'] : $_POST[$prefix . 'id'];
+	$id = isset($_POST['item_id']) ? $_POST['item_id'] : $_POST[$prefix . 'id'];
 	$type = isset($_POST['item_sub_type']) ? $_POST['item_sub_type'] : null;
 
 	/* Determine which class we need to deal with */
@@ -67,6 +67,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 			$post_class = $fm_module_servers;
 			break;
 	}
+	var_dump($post_class);
 
 	switch ($_POST['action']) {
 		case 'add':

@@ -28,10 +28,6 @@ if (is_array($_POST) && array_key_exists('action', $_POST) && $_POST['action'] =
 	return;
 }
 
-foreach (glob(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_*.php') as $filename) {
-    include_once($filename);
-}
-
 $unpriv_message = __('You do not have sufficient privileges.');
 /** Array based on permissions in capabilities.inc.php */
 $checks_array = @array('servers' => 'manage_servers',
@@ -85,7 +81,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 	/* Determine which class we need to deal with */
 	switch($_POST['item_type']) {
 		case 'servers':
-			$post_class = $fm_module_servers;
+			$post_class = new \facileManager\fmDHCP\Servers();
 			$object = __('server');
 			break;
 		case 'host':
@@ -97,7 +93,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 		case 'peer':
 		case 'peers':
 			$item = rtrim($_POST['item_type'], 's') . 's';
-			$class_name = "fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}$item";
+			$class_name = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], ucfirst($item));
 			$post_class = new $class_name();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'config_';
@@ -110,8 +106,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 		case 'subnets':
 		case 'shared':
 			$item = rtrim($_POST['item_type'], 's') . 's';
-			$class_name = "fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}networks";
-			$post_class = new $class_name();
+			$post_class = new \facileManager\fmDHCP\Networks();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'config_';
 			$type = $_POST['item_type'];
@@ -120,7 +115,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 			$field_data = $prefix . 'data';
 			break;
 		case 'options':
-			$post_class = $fm_module_options;
+			$post_class = new \facileManager\fmDHCP\Options();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'config_';
 			$field = 'config_id';
@@ -131,7 +126,8 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 			if (!$id) $id = $_POST[$field];
 			break;
 		default:
-			$post_class = ${"fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}{$_POST['item_type']}"};
+			$class_name = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], ucfirst($_POST['item_type']));
+			$post_class = new $class_name();
 			$object = substr($item_type, 0, -1);
 	}
 

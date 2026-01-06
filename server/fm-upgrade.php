@@ -27,14 +27,14 @@
  *
  */
 
-/** Define ABSPATH as this files directory */
-define('ABSPATH', dirname(__FILE__) . '/');
+include_once(__DIR__ . '/fm-includes/functions.php');
+setConstant('ABSPATH', __DIR__ . '/');
 
 /** Set installation variable */
 define('UPGRADE', true);
 
 /** Enforce authentication */
-require_once(ABSPATH . 'fm-modules/facileManager/classes/class_logins.php');
+$fm_login = new facileManager\Login();
 
 require_once('fm-init.php');
 ini_set('display_errors', false);
@@ -48,7 +48,6 @@ if (!$fm_login->isLoggedIn() || (!currentUserCan(array('do_everything', 'manage_
 }
 
 /** Ensure we meet the requirements */
-require_once(ABSPATH . 'fm-includes/init.php');
 require_once(ABSPATH . 'fm-includes/version.php');
 if ($app_compat = checkAppVersions(false)) {
 	bailOut($app_compat);
@@ -57,9 +56,7 @@ if ($app_compat = checkAppVersions(false)) {
 $step = (isset($_GET['step']) && $_GET['step'] <= 2 && $_GET['step'] >= 0) ? $_GET['step'] : 0;
 
 if (array_key_exists('backup', $_GET)) {
-	if (!class_exists('fm_tools')) {
-		include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . 'facileManager' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_tools.php');
-	}
+	$fm_tools = new facileManager\Tools();
 	$response = $fm_tools->backupDatabase();
 	if (!$response) {
 		header('Location: ' . $GLOBALS['basename']);
@@ -94,8 +91,7 @@ switch ($step) {
 		require_once(ABSPATH . 'fm-modules/facileManager/upgrade.php');
 
 		include(ABSPATH . 'config.inc.php');
-		include_once(ABSPATH . 'fm-includes/fm-db.php');
-		$fmdb = new fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host']);
+		$fmdb = new facileManager\Fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host']);
 
 		fmUpgrade($__FM_CONFIG['db']['name']);
 		break;

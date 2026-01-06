@@ -23,14 +23,10 @@
 $type = 'peers';
 
 if (!isset($fm_dhcp_item)) {
-	if (!class_exists('fm_dhcp_peers')) {
-		include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_peers.php');
-	}
-
-	$fm_dhcp_item = new fm_dhcp_peers();
+	$fm_dhcp_item = new \facileManager\fmDHCP\Peers();
 }
 
 /** Ensure user can use this page */
 $required_permission[] = 'manage_peers';
 
-include(dirname(__FILE__) . '/objects.php');
+include(__DIR__ . '/objects.php');

@@ -24,4 +24,4 @@
 
 $template_type = 'soa';
 
-include(dirname(__FILE__) . '/templates.php');
+include(__DIR__ . '/templates.php');

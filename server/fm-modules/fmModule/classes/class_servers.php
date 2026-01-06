@@ -20,9 +20,9 @@
  +-------------------------------------------------------------------------+
 */
 
-require_once(ABSPATH . 'fm-modules/shared/classes/class_servers.php');
+namespace facileManager\fmModule;
 
-class fm_module_servers extends fm_shared_module_servers {
+class Servers extends \facileManager\shared\Servers {
 	
 	/**
 	 * Displays the server list
@@ -440,6 +440,3 @@ HTML;
 	}
 	
 }
-
-if (!isset($fm_module_servers))
-	$fm_module_servers = new fm_module_servers();

@@ -23,11 +23,6 @@
 if (!defined('AJAX')) define('AJAX', true);
 require_once('../../../fm-init.php');
 
-$class_dir = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/';
-foreach (scandir($class_dir) as $class_file) {
-	if (in_array($class_file, array('.', '..'))) continue;
-	include_once($class_dir . $class_file);
-}
 if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST) && currentUserCan('manage_servers', $_SESSION['module'])) {
 	$cfg_data = isset($_POST['option_value']) ? $_POST['option_value'] : '';
 	$server_serial_no = isset($_POST['server_serial_no']) ? $_POST['server_serial_no'] : 0;
@@ -60,6 +55,7 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST) && cu
 					%s', __('Option Value'), str_replace(array('"', "'"), '', $cfg_data), $result[0]->def_type);
 		} else {
 			/** Build array of possible values */
+			$fm_module_options = new \facileManager\fmDHCP\Options();
 			$dropdown = $fm_module_options->populateDefTypeDropdown($result[0]->def_type, $cfg_data);
 			printf('<th width="33&#37;" scope="row"><label for="config_data">%s</label></th>
 					<td width="67&#37;">%s', __('Option Value'), $dropdown);
@@ -73,7 +69,7 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST) && cu
 	echo $update_count;
 	exit;
 } elseif (is_array($_POST) && array_key_exists('get_leases', $_POST) && currentUserCan(array('manage_leases', 'view_all'), $_SESSION['module'])) {
-	include_once(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_leases.php');
+	$fm_dhcp_leases = new \facileManager\fmDHCP\Leases();
 	$server_data = $fm_dhcp_leases->getServerLeases($_POST['server_serial_no']);
 	
 	/** Add popup header and footer if missing */
@@ -123,13 +119,13 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 	/* Determine which class we need to deal with */
 	switch($_POST['item_type']) {
 		case 'servers':
-			$post_class = $fm_module_servers;
+			$post_class = new \facileManager\fmDHCP\Servers();
 			break;
 		case 'hosts':
 		case 'groups':
 		case 'pools':
 		case 'peers':
-			$class_name = "fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}{$_POST['item_type']}";
+			$class_name = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], ucfirst($_POST['item_type']));
 			$post_class = new $class_name();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'config_';
@@ -139,8 +135,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 			break;
 		case 'subnets':
 		case 'shared':
-			$class_name = "fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}networks";
-			$post_class = new $class_name();
+			$post_class = new \facileManager\fmDHCP\Networks();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'config_';
 			$field = 'config_id';
@@ -148,7 +143,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 			$type_map = $_POST['item_type'];
 			break;
 		case 'options':
-			$post_class = $fm_module_options;
+			$post_class = new \facileManager\fmDHCP\Options();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'config_';
 			$field = 'config_id';
@@ -157,7 +152,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 			$type_map = @isset($_POST['request_uri']['option_type']) ? $_POST['request_uri']['option_type'] : 'global';
 			break;
 		case 'leases':
-			$post_class = $fm_dhcp_leases;
+			$post_class = new \facileManager\fmDHCP\Leases();
 			break;
 	}
 	

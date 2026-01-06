@@ -43,7 +43,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan('run_tools')) {
 					break;
 				}
 				if (!empty($_POST['domain_name_servers'])) {
-					include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_servers.php');
+					$fm_module_servers = new facileManager\fmDNS\Servers();
 					
 					/** All servers */
 					if (in_array('0', $_POST['domain_name_servers'])) {

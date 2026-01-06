@@ -23,14 +23,14 @@
 if (array_key_exists('action', $_POST)) {
 	/** Include any additional module-specific build config actions */
 	if ($_POST['action'] == 'status') {
-		if (!class_exists('fm_module_servers')) {
-			include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_servers.php');
+		if (!isset($fm_module_servers)) {
+			$fm_module_servers = new \facileManager\fmWifi\Servers();
 		}
 		$data = $fm_module_servers->getServerInfo($_POST['SERIALNO']);
 	}	
 	if ($_POST['action'] == 'status-upload') {
-		if (!class_exists('fm_wifi_wlans')) {
-			include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_wlans.php');
+		if (!isset($fm_wifi_wlans)) {
+			$fm_wifi_wlans = new \facileManager\fmWifi\Wlans();
 		}
 		$fm_wifi_wlans->updateWLANInfo($_POST['SERIALNO']);
 		exit;

@@ -25,10 +25,6 @@
 if (!defined('AJAX')) define('AJAX', true);
 require_once('../../../fm-init.php');
 
-foreach (glob(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_*.php') as $filename) {
-    include_once($filename);
-}
-
 /** Handle mass updates */
 if (is_array($_POST) && array_key_exists('action', $_POST) && $_POST['action'] == 'process-all-updates') {
 	$result .= processBulkDomainIDs(getZoneReloads('ids'));
@@ -110,7 +106,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 	/* Determine which class we need to deal with */
 	switch($item_type) {
 		case 'servers':
-			$post_class = $fm_module_servers;
+			$post_class = new facileManager\fmDNS\Servers();
 			$object = __('server');
 			if ((isset($_POST['page']) && $_POST['page'] == 'groups') || (isset($_POST['url_var_type']) && $_POST['url_var_type'] == 'groups')) {
 				$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'server_groups';
@@ -120,19 +116,19 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 			$server_serial_no = $type;
 			break;
 		case 'options':
-			$post_class = $fm_module_options;
+			$post_class = new facileManager\fmDNS\Options();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'cfg_';
 			$object = __('option');
 			break;
 		case 'domains':
-			$post_class = $fm_dns_zones;
+			$post_class = new facileManager\fmDNS\Zones();
 			$object = __('domain group');
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domain_groups';
 			$prefix = 'group_';
 			break;
 		case 'logging':
-			$post_class = $fm_module_logging;
+			$post_class = new facileManager\fmDNS\Logging();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'cfg_';
 			$type = isset($_POST['log_type']) ? $_POST['log_type'] : 'channel';
@@ -151,7 +147,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 			$type = $item_type . 's';
 			break;
 		case 'zones':
-			$post_class = $fm_dns_zones;
+			$post_class = new facileManager\fmDNS\Zones();
 			$server_serial_no = $item_type;
 			$type = $item_type . 's';
 			break;
@@ -159,14 +155,16 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 		case 'http':
 		case 'tls':
 		case 'dnssec-policy':
-			$post_class = (in_array($item_type, array('dnssec-policy'))) ? $fm_module_dnssec : ${'fm_module_' . $item_type};
+			$class_name = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], ucfirst($item_type));
+			$post_class = (in_array($item_type, array('dnssec-policy'))) ? new facileManager\fmDNS\Dnssec() : new $class_name();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'cfg_';
 			$type = $object = $item_type;
 			$field_data = $prefix . 'data';
 			break;
 		default:
-			$post_class = ${"fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}{$item_type}"};
+			$class_name = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], ucfirst($item_type));
+			$post_class = new $class_name();
 			$object = substr($item_type, 0, -1);
 	}
 	

@@ -25,7 +25,9 @@ if (!getOption('auth_method')) unAuth();
 /** Don't display keys if the setting is disabled */
 if (!count($__FM_CONFIG['users']['avail_types'])) unAuth();
 
-include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . 'facileManager' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_users.php');
+if (!isset($fm_users)) {
+	$fm_users = new facileManager\Users();
+}
 
 $action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : 'add';
 

@@ -20,9 +20,9 @@
  +-------------------------------------------------------------------------+
 */
 
-$module_tools_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_SESSION['module'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_tools.php';
-if (file_exists($module_tools_file) && !class_exists('fm_module_tools')) {
-	include($module_tools_file);
+$module_tools_file = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/Tools.php';
+if (file_exists($module_tools_file)) {
+	$fm_module_tools = new facileManager\fmModule\Tools();
 }
 
 $button = null;

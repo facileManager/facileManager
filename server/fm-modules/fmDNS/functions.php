@@ -193,8 +193,8 @@ function buildModuleToolbar() {
 		$icon = (getNameFromID($_REQUEST['domain_id'], 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_dnssec') == 'yes') ? sprintf('<span><i class="mini-icon fa fa-lock" title="%s" aria-hidden="true"></i></span>', __('Zone is secured with DNSSEC')) : null;
 		$pending_changes = sprintf('<a class="tooltip-bottom" data-tooltip="%s"><i class="fa fa-circle" aria-hidden="true"></i></a>', __('Pending unsaved changes exist'));
 
-		if (!class_exists('fm_dns_zones')) {
-			include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_zones.php');
+		if (!isset($fm_dns_zones)) {
+			$fm_dns_zones = new facileManager\fmDNS\Zones();
 		}
 		$domain_menu = sprintf('
 			%s:<span>%s</span>%s<span class="pending-changes">%s</span><br />%s:<span>%s</span>
@@ -223,7 +223,7 @@ function buildModuleToolbar() {
 }
 
 function moduleAddServer($action) {
-	include(ABSPATH . 'fm-modules/' . $_POST['module_name'] . '/classes/class_servers.php');
+	$fm_module_servers = new facileManager\fmDNS\Servers();
 	
 	$action .= 'Server';
 	return $fm_module_servers->$action($_POST);
@@ -544,7 +544,7 @@ function getZoneServers($domain_id, $server_types = array('masters')) {
 		$domain_name_servers = getNameFromID($domain_id, 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_name_servers');
 		if ($domain_name_servers !== false) {
 			if (!isset($fm_dns_zones)) {
-				include_once(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_zones.php');
+				$fm_dns_zones = new facileManager\fmDNS\Zones();
 			}
 			$name_servers = $fm_dns_zones->getNameServers($domain_name_servers, $server_types);
 			
@@ -584,8 +584,9 @@ function setDefaultOverrideOptions() {
 	}
 	
 	if (is_array($config)) {
-		if (!isset($fm_module_options)) include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_options.php');
-		
+		if (!isset($fm_module_options)) {
+			$fm_module_options = new facileManager\fmDNS\Options();
+		}
 		foreach ($config as $config_data) {
 			$fm_module_options->add($config_data);
 		}
@@ -1271,8 +1272,8 @@ function autoCreatePTRZone($new_zones, $fwd_domain_id) {
 		}
 
 		global $fm_dns_zones;
-		if (!class_exists('fm_dns_zones')) {
-			include_once(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_zones.php');
+		if (!isset($fm_dns_zones)) {
+			$fm_dns_zones = new facileManager\fmDNS\Zones();
 		}
 		$retval = $fm_dns_zones->add($ptr_array);
 

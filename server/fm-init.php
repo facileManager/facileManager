@@ -32,8 +32,11 @@
  * @package facileManager
  */
 
-/** Define ABSPATH as this files directory */
-if (!defined('ABSPATH')) define('ABSPATH', dirname(__FILE__) . '/');
+use facileManager\Tools;
+
+include_once('fm-includes/functions.php');
+setConstant('ABSPATH', __DIR__ . '/');
+
 if (!defined('AJAX')) {
 	$GLOBALS['RELPATH'] = rtrim(dirname($_SERVER['PHP_SELF']), '/') . '/';
 } else {
@@ -76,18 +79,10 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 		header('Location: ' . $GLOBALS['RELPATH'] . 'fm-install.php');
 		exit;
 	}
-	
-	/** Include Composer autoload */
-	if (file_exists(dirname(ABSPATH) . '/vendor/autoload.php')) {
-		include(dirname(ABSPATH) . '/vendor/autoload.php');
-	}
 
 	/** Load language */
 	include_once(ABSPATH . 'fm-includes/i18n.php');
 	
-	/** Load fmdb class */
-	require_once(ABSPATH . 'fm-includes/fm-db.php');
-
 	$GLOBALS['URI'] = convertURIToArray();
 
 	if (!$invoke_api) {
@@ -95,7 +90,7 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 	}
 	
 	if (!defined('INSTALL') && !defined('CLIENT') && !defined('FM_NO_CHECKS') && !$invoke_api) {
-		$fmdb = new fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host']);
+		$fmdb = new facileManager\Fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host']);
 		include(ABSPATH . 'fm-modules/' . $fm_name . '/variables.inc.php');
 
 		/** Trim and sanitize inputs */
@@ -119,10 +114,9 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 			}
 		}
 		
-		require_once(ABSPATH . 'fm-modules/facileManager/classes/class_logins.php');
+		$fm_login = new facileManager\Login();
 
 		if (!$is_logged_in = $fm_login->isLoggedIn()) {
-			require_once(ABSPATH . 'fm-includes/init.php');
 			checkAppVersions();
 		}
 			
@@ -263,7 +257,7 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 					// Deactivate module if fM version less than required
 					require(ABSPATH . 'fm-includes/version.php');
 					if (version_compare($fm_version, $__FM_CONFIG[$_SESSION['module']]['required_fm_version'], '<')) {
-						include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_tools.php');
+						$fm_tools = new facileManager\Tools();
 						if ($fm_tools->manageModule(sanitize($_SESSION['module']), 'deactivate')) {
 							addLogEntry(sprintf(_('%s was deactivated'), $_SESSION['module']), $fm_name);
 						}
@@ -324,7 +318,7 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 		/** Build the user menu */
 		include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . 'facileManager' . DIRECTORY_SEPARATOR . 'menu.php');
 	} elseif (defined('CLIENT')) {
-		$fmdb = new fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host']);
+		$fmdb = new facileManager\Fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host']);
 
 		/** Trim and sanitize inputs */
 		$_POST = cleanAndTrimInputs($_POST);

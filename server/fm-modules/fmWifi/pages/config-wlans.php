@@ -21,9 +21,7 @@
 */
 
 if (!isset($fm_wifi_wlans)) {
-	if (!class_exists('fm_wifi_wlans')) {
-		include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_wlans.php');
-	}
+	$fm_wifi_wlans = new \facileManager\fmWifi\Wlans();
 }
 
 /** Ensure user can use this page */

@@ -27,15 +27,15 @@
  *
  */
 
-/** Define ABSPATH as this files directory */
-define('ABSPATH', dirname(__FILE__) . '/');
+include_once(__DIR__ . '/fm-includes/functions.php');
+setConstant('ABSPATH', __DIR__ . '/');
 
 /** Set installation variable */
-define('INSTALL', true);
+setConstant('INSTALL', true);
 $GLOBALS['RELPATH'] = rtrim(dirname($_SERVER['PHP_SELF']), '/') . '/';
 
 /** Check if authenticated */
-require_once(ABSPATH . 'fm-modules/facileManager/classes/class_logins.php');
+$fm_login = new facileManager\Login();
 
 if ($fm_login->isLoggedIn() || (isset($_SESSION) && array_key_exists('user', $_SESSION))) {
 	$fm_login->logout();
@@ -44,7 +44,7 @@ if ($fm_login->isLoggedIn() || (isset($_SESSION) && array_key_exists('user', $_S
 }
 
 /** Ensure we meet the requirements */
-require_once(ABSPATH . 'fm-includes/init.php');
+require_once(ABSPATH . 'fm-modules/facileManager/functions.php');
 require_once(ABSPATH . 'fm-includes/version.php');
 if ($app_compat = checkAppVersions(false)) {
 	bailOut($app_compat);
@@ -76,8 +76,7 @@ switch ($step) {
 		require_once(ABSPATH . 'fm-modules/facileManager/install.php');
 		
 		@include(ABSPATH . 'config.inc.php');
-		include_once(ABSPATH . 'fm-includes/fm-db.php');
-		$fmdb = new fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host'], 'connect only');
+		$fmdb = new facileManager\Fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host'], 'connect only');
 		
 		$mysql_server_version = ($fmdb->use_mysqli) ? $fmdb->dbh->server_info : mysql_get_server_info();
 		if (version_compare($mysql_server_version, $required_mysql_version, '<')) {
@@ -116,8 +115,7 @@ switch ($step) {
 		}
 		
 		include(ABSPATH . 'config.inc.php');
-		include_once(ABSPATH . 'fm-includes/fm-db.php');
-		$fmdb = new fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host'], 'connect only');
+		$fmdb = new facileManager\Fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host'], 'connect only');
 		
 		/** Make sure the super-admin account doesn't already exist */
 		if (!checkAccountCreation($__FM_CONFIG['db']['name'])) {

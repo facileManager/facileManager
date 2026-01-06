@@ -26,7 +26,9 @@ $required_permission[] = 'manage_wlans';
 /** Ensure user can use this page */
 if (!currentUserCan(array_merge($required_permission, array('view_all')), $_SESSION['module'])) unAuth();
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_options.php');
+if (!isset($fm_module_options)) {
+	$fm_module_options = new \facileManager\fmWifi\Options();
+}
 
 $option_type = (isset($_GET['type'])) ? sanitize(ucfirst($_GET['type'])) : 'Global';
 $display_option_type = $option_type;

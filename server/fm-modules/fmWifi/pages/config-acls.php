@@ -21,9 +21,7 @@
 */
 
 if (!isset($fm_wifi_acls)) {
-	if (!class_exists('fm_wifi_acls')) {
-		include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_acls.php');
-	}
+	$fm_wifi_acls = new \facileManager\fmWifi\Acls();
 }
 
 /** Ensure user can use this page */

@@ -24,7 +24,7 @@ function upgradefmFirewallSchema($running_version) {
 	global $fmdb;
 	
 	/** Include module variables */
-	@include(dirname(__FILE__) . '/variables.inc.php');
+	@include(__DIR__ . '/variables.inc.php');
 	
 	/** Get current version */
 	if (!$running_version) {

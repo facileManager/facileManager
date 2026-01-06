@@ -37,7 +37,7 @@ if (isset($_POST) && count($_POST)) {
 
 	extract($_POST);
 	// require_once('../../../fm-init.php');
-	require_once(ABSPATH . 'fm-includes/init.php');
+	require_once(ABSPATH . 'fm-includes/functions.php');
 	require_once(ABSPATH . 'fm-modules/facileManager/install.php');
 
 	switch ($task) {
@@ -47,8 +47,7 @@ if (isset($_POST) && count($_POST)) {
 		case 'install_create_account':
 			if (file_exists(ABSPATH . 'config.inc.php') && file_get_contents(ABSPATH . 'config.inc.php')) {
 				include(ABSPATH . 'config.inc.php');
-				include_once(ABSPATH . 'fm-includes/fm-db.php');
-				$fmdb = new fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host'], 'connect only');
+				$fmdb = new facileManager\Fmdb($__FM_CONFIG['db']['user'], $__FM_CONFIG['db']['pass'], $__FM_CONFIG['db']['name'], $__FM_CONFIG['db']['host'], 'connect only');
 				
 				/** Make sure the super-admin account doesn't already exist */
 				if (!checkAccountCreation($__FM_CONFIG['db']['name'])) {

@@ -48,7 +48,7 @@ if ($valid === false) {
 	$server_serial_no = $original_server_serial_no = null;
 }
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_policies.php');
+$fm_module_policies = new \facileManager\fmFirewall\Policies();
 
 printHeader();
 @printMenu();

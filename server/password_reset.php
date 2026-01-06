@@ -52,7 +52,7 @@ if (count($_POST)) {
 			$message_text = ($result === false) ? _('Your password failed to get updated.') : $result;
 			$message = sprintf('<p class="failed">%s</p>', $message_text);
 		} else {
-			require_once(ABSPATH . 'fm-modules/facileManager/classes/class_logins.php');
+			$fm_login = new facileManager\Login();
 			$fm_login->checkPassword($login, $user_password);
 			
 			addLogEntry(_('Changed password'), $fm_name);
@@ -76,7 +76,7 @@ function printPasswordResetForm($message = null) {
 
 	printHeader(_('Password Reset'), 'login');
 	
-	if (class_exists('fmdb')) $strength = getOption('auth_fm_pw_strength');
+	$strength = getOption('auth_fm_pw_strength');
 	if ($strength) $GLOBALS['PWD_STRENGTH'] = $strength;
 	$left_content = '
 		<div id="message">' . $message . '</div>

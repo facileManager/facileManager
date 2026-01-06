@@ -24,7 +24,7 @@ if (!currentUserCan(array('manage_objects', 'view_all'), $_SESSION['module'])) u
 
 define('FM_INCLUDE_SEARCH', true);
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_groups.php');
+$fm_module_groups = new \facileManager\fmFirewall\Groups();
 
 printHeader();
 @printMenu();

@@ -24,7 +24,7 @@ function upgradefmDHCPSchema($module_name) {
 	global $fmdb;
 	
 	/** Include module variables */
-	@include(dirname(__FILE__) . '/variables.inc.php');
+	@include(__DIR__ . '/variables.inc.php');
 	
 	/** Get current version */
 	$running_version = getOption('version', 0, 'fmDHCP');
@@ -283,7 +283,7 @@ function upgradefmDHCP_0110b1($__FM_CONFIG, $running_version) {
 
 	/** Delete unused files */
 	deleteDeprecatedFiles(array(
-		dirname(__FILE__) . '/pages/config-peers.php'
+		__DIR__ . '/pages/config-peers.php'
 	));
 	
 	/** Handle updating table with module version **/

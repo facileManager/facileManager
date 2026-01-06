@@ -23,14 +23,10 @@
 $type = 'pools';
 
 if (!isset($fm_dhcp_item)) {
-	if (!class_exists('fm_dhcp_pools')) {
-		include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_pools.php');
-	}
-
-	$fm_dhcp_item = new fm_dhcp_pools();
+	$fm_dhcp_item = new \facileManager\fmDHCP\Pools();
 }
 
 /** Ensure user can use this page */
 $required_permission[] = 'manage_pools';
 
-include(dirname(__FILE__) . '/objects.php');
+include(__DIR__ . '/objects.php');

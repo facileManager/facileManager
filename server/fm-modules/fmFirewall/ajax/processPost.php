@@ -28,12 +28,6 @@ if (is_array($_POST) && array_key_exists('action', $_POST) && $_POST['action'] =
 	return;
 }
 
-$class_dir = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/';
-foreach (scandir($class_dir) as $class_file) {
-	if (in_array($class_file, array('.', '..'))) continue;
-	include($class_dir . $class_file);
-}
-
 $unpriv_message = __('You do not have sufficient privileges.');
 $checks_array = @array('servers' => 'manage_servers',
 					'services' => 'manage_services',
@@ -66,37 +60,37 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 	/* Determine which class we need to deal with */
 	switch($_POST['item_type']) {
 		case 'servers':
-			$post_class = $fm_module_servers;
+			$post_class = new \facileManager\fmFirewall\Servers();
 			$object = __('firewall');
 			break;
 		case 'services':
-			$post_class = $fm_module_services;
+			$post_class = new \facileManager\fmFirewall\Services();
 			$object = __('service');
 			break;
 		case 'objects':
-			$post_class = $fm_module_objects;
+			$post_class = new \facileManager\fmFirewall\Objects();
 			$object = __('object');
 			break;
 		case 'groups':
-			$post_class = $fm_module_groups;
+			$post_class = new \facileManager\fmFirewall\Groups();
 			$object = __('group');
 			break;
 		case 'time':
-			$post_class = $fm_module_time;
+			$post_class = new \facileManager\fmFirewall\Time();
 			$prefix = 'time_';
 			$field = $prefix . 'id';
 			$item_type .= ' ';
 			$object = __('time restriction');
 			break;
 		case 'policies':
-			$post_class = $fm_module_policies;
+			$post_class = new \facileManager\fmFirewall\Policies();
 			$prefix = 'policy_';
 			$field = $prefix . 'id';
 			$item_type = 'policys';
 			$object = __('policy');
 			break;
 		case 'policy':
-			$post_class = $fm_module_templates;
+			$post_class = new \facileManager\fmFirewall\Templates();
 			$prefix = 'policy_';
 			$field = $prefix . 'id';
 			$type_map = $_POST['item_type'];

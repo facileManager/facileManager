@@ -25,9 +25,16 @@
 if (!defined('CLIENT')) define('CLIENT', true);
 
 require_once('fm-init.php');
-include(ABSPATH . 'fm-modules/facileManager/classes/class_accounts.php');
-include(ABSPATH . 'fm-modules/' . $_POST['module_name'] . '/classes/class_buildconf.php');
-include(ABSPATH . 'fm-modules/' . $_POST['module_name'] . '/classes/class_servers.php');
+if (!isset($fm_accounts)) {
+	$fm_accounts = new facileManager\Accounts();
+}
+$class_name = '\\facileManager\\' . $_SESSION['module'] . '\\Buildconf';
+$fm_module_buildconf = new $class_name();
+
+$class_name = '\\facileManager\\' . $_SESSION['module'] . '\\Servers';
+$fm_module_servers = new $class_name();
+
+unset($class_name);
 
 /** Validate daemon version */
 if (array_key_exists('action', $_POST) && $_POST['action'] == 'version_check') {
@@ -63,7 +70,7 @@ if (array_key_exists('action', $_POST)) {
 	}
 	
 	/** Include actions from module */
-	$module_buildconf_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_POST['module_name'] . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'buildconf.inc.php';
+	$module_buildconf_file = ABSPATH . 'fm-modules/' . $_POST['module_name'] . '/pages/buildconf.inc.php';
 	if (file_exists($module_buildconf_file)) {
 		include($module_buildconf_file);
 	}

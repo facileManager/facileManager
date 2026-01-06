@@ -24,7 +24,9 @@
 define('AJAX', true);
 require_once('../../../fm-init.php');
 
-include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'functions.php');
+include(ABSPATH . 'fm-modules/' . $fm_name . '/ajax/functions.php');
+
+$fm_users = new facileManager\Users();
 
 /** Generate TOTP */
 if (array_key_exists('otp_2fa', $_POST)) {
@@ -86,7 +88,7 @@ if (array_key_exists('otp_2fa', $_POST)) {
 			echo 'failed';
 			break;
 		case 'setup-app':
-			$tfa = new RobThree\Auth\TwoFactorAuth(new RobThree\Auth\Providers\Qr\BaconQrCodeProvider());
+			$tfa = new \RobThree\Auth\TwoFactorAuth(new \RobThree\Auth\Providers\Qr\BaconQrCodeProvider());
 			$user_2fa_setup_secret = $tfa->createSecret();
 			if ($user_2fa_setup_secret === false) {
 				echo 'failed';
@@ -114,7 +116,7 @@ if (array_key_exists('otp_2fa', $_POST)) {
 			';
 			echo $user_2fa_setup_app_ouput;
 			break;
-		case 'generate-recovery-code';
+		case 'generate-recovery-code':
 			$recovery_code = $fm_login->generate2FARecoveryCode();
 			if ($recovery_code !== false) {
 				echo '<p id="message" class="success"><i class="fa fa-check ok" aria-hidden="true"></i> <span class="recovery-code-display">' . $recovery_code . '</span></p>
@@ -145,8 +147,6 @@ if (is_array($_POST) && array_key_exists('user_id', $_POST)) {
 	
 	if ($_POST['user_id'] != $_SESSION['user']['id']) returnUnAuth();
 	
-	include(ABSPATH . 'fm-modules/'. $fm_name . '/classes/class_users.php');
-	
 	$form_bits = array('user_login', 'user_display_name', 'user_comment', 'user_email', 'user_module', 'user_token', 'user_theme', 'user_2fa_method');
 	if (getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_auth_type') == 1) {
 		$form_bits[] = 'user_password';
@@ -166,7 +166,6 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 	if ($_POST['item_sub_type'] == 'keys') {
 		if (!getOption('api_token_support')) returnUnAuth();
 		
-		include(ABSPATH . 'fm-modules/'. $fm_name . '/classes/class_users.php');
 		if (isset($_POST['item_id']) && !empty($_POST['item_id'])) {
 			// Get the key details
 			basicGet('fm_keys', $_POST['item_id'], 'key_', 'key_id');
@@ -196,7 +195,6 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 	} else returnError();
 
 	$item_type = $_POST['item_type'];
-	include(ABSPATH . 'fm-modules/'. $fm_name . '/classes/class_users.php');
 	
 	if ($add_new) {
 		if (currentUserCan('manage_users')) {

@@ -22,7 +22,7 @@
 
 if (!currentUserCan(array('manage_servers', 'build_server_configs', 'view_all'), $_SESSION['module'])) unAuth();
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_servers.php');
+$fm_module_servers = new facileManager\fmDNS\Servers();
 
 $type = (isset($_GET['type']) && array_key_exists(sanitize(strtolower($_GET['type'])), $__FM_CONFIG['servers']['avail_types'])) ? sanitize(strtolower($_GET['type'])) : 'servers';
 $display_type = ($type == 'servers') ? __('Name Servers') : __('Name Server Groups');

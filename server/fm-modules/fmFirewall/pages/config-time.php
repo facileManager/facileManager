@@ -22,7 +22,7 @@
 
 if (!currentUserCan(array('manage_time', 'view_all'), $_SESSION['module'])) unAuth();
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_time.php');
+$fm_module_time = new \facileManager\fmFirewall\Time();
 
 printHeader();
 @printMenu();

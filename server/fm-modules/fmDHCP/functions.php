@@ -84,8 +84,8 @@ HTML;
  * @return boolean
  */
 function moduleAddServer($action) {
-	include(ABSPATH . 'fm-modules/' . $_POST['module_name'] . '/classes/class_servers.php');
-	
+	$fm_module_servers = new \facileManager\fmDHCP\Servers();
+
 	return $fm_module_servers->$action($_POST);
 }
 

@@ -24,7 +24,9 @@
 $required_permission[] = 'manage_wlan_users';
 if (!currentUserCan(array_merge($required_permission, array('view_all')), $_SESSION['module'])) unAuth();
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_wlan_users.php');
+if (!isset($fm_wifi_wlan_users)) {
+	$fm_wifi_wlan_users = new \facileManager\fmWifi\Wlan_users();
+}
 
 printHeader();
 @printMenu();

@@ -42,7 +42,6 @@ if (is_array($GLOBALS)) {
 }
 
 if (isset($GLOBALS['basename']) && $GLOBALS['basename'] == 'index.php') {
-	require_once(ABSPATH . 'fm-includes/init.php');
 	checkAppVersions();
 } 
 

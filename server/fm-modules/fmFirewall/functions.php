@@ -68,7 +68,7 @@ function buildModuleToolbar() {
 
 
 function moduleAddServer($action) {
-	include(ABSPATH . 'fm-modules/' . $_POST['module_name'] . '/classes/class_servers.php');
+	$fm_module_servers = new \facileManager\fmFirewall\Servers();
 	
 	return $fm_module_servers->$action($_POST);
 }

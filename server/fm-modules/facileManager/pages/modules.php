@@ -21,7 +21,9 @@
 
 if (!currentUserCan('manage_modules')) unAuth();
 
-include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_tools.php');
+if (!isset($fm_tools)) {
+	$fm_tools = new facileManager\Tools();
+}
 
 $output = $avail_modules = $response = $update_core = '';
 $allow_update_core = true;

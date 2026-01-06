@@ -23,7 +23,7 @@
 $template_type = 'domain';
 $table = 'domains';
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_zones.php');
+$fm_dns_zones = new facileManager\fmDNS\Zones();
 
 if (!empty($_POST)) {
 	if (currentUserCan('manage_zones', $_SESSION['module'])) {
@@ -57,4 +57,4 @@ $tpl_extra_perm = 'manage_records';
 $user_capabilities = getUserCapabilities($_SESSION['user']['id'], 'all');
 $limited_domain_ids = (isset($user_capabilities[$_SESSION['module']]) && (array_key_exists('access_specific_zones', $user_capabilities[$_SESSION['module']]) && !array_key_exists('view_all', $user_capabilities[$_SESSION['module']]) && $user_capabilities[$_SESSION['module']]['access_specific_zones'][0])) ? "AND domain_id IN (" . implode(',', $fm_dns_zones->getZoneAccessIDs($user_capabilities[$_SESSION['module']]['access_specific_zones'])) . ")" : null;
 
-include(dirname(__FILE__) . '/templates.php');
+include(__DIR__ . '/templates.php');

@@ -23,7 +23,7 @@
 /** Ensure user can use this page */
 if (!currentUserCan(array('manage_servers', 'build_server_configs', 'view_all'), $_SESSION['module'])) unAuth();
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_servers.php');
+$fm_module_servers = new \facileManager\fmDHCP\Servers();
 $response = isset($response) ? $response : null;
 
 printHeader();
