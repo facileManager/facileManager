@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-26 11:47-0700\n"
+"POT-Creation-Date: 2026-01-06 11:20-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -261,7 +261,7 @@ msgstr ""
 #: server/fm-modules/fmWifi/classes/class_acls.php:69
 #: server/fm-modules/fmWifi/classes/class_acls.php:358
 #: server/fm-modules/fmWifi/classes/class_wlan_users.php:68
-#: server/fm-modules/fmWifi/classes/class_wlan_users.php:351
+#: server/fm-modules/fmWifi/classes/class_wlan_users.php:354
 msgid "MAC Address"
 msgstr ""
 
@@ -292,7 +292,7 @@ msgstr ""
 #: server/fm-modules/fmWifi/classes/class_acls.php:192
 #: server/fm-modules/fmWifi/classes/class_acls.php:357
 #: server/fm-modules/fmWifi/classes/class_wlan_users.php:69
-#: server/fm-modules/fmWifi/classes/class_wlan_users.php:353
+#: server/fm-modules/fmWifi/classes/class_wlan_users.php:356
 msgid "Associated WLANs"
 msgstr ""
 
@@ -675,38 +675,38 @@ msgstr ""
 msgid "Optionally specify the VLAN ID (1-4096) for the user."
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_wlan_users.php:352
+#: server/fm-modules/fmWifi/classes/class_wlan_users.php:355
 msgid "Assigned VLAN"
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_wlan_users.php:379
+#: server/fm-modules/fmWifi/classes/class_wlan_users.php:382
 msgid "No username is defined."
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_wlan_users.php:380
+#: server/fm-modules/fmWifi/classes/class_wlan_users.php:383
 msgid "No password is defined."
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_wlan_users.php:388
+#: server/fm-modules/fmWifi/classes/class_wlan_users.php:391
 #, php-format
 msgid "User name is too long (maximum %d character)."
 msgid_plural "User name is too long (maximum %d characters)."
 msgstr[0] ""
 msgstr[1] ""
 
-#: server/fm-modules/fmWifi/classes/class_wlan_users.php:392
+#: server/fm-modules/fmWifi/classes/class_wlan_users.php:395
 msgid "This user already exists."
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_wlan_users.php:395
+#: server/fm-modules/fmWifi/classes/class_wlan_users.php:398
 msgid "This hardware address already exists."
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_wlan_users.php:399
+#: server/fm-modules/fmWifi/classes/class_wlan_users.php:402
 msgid "The hardware address is invalid."
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_wlan_users.php:405
+#: server/fm-modules/fmWifi/classes/class_wlan_users.php:408
 msgid "The VLAN ID is invalid."
 msgstr ""
 
