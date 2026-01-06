@@ -24,7 +24,7 @@ function upgradefmModuleSchema($module_name) {
 	global $fmdb;
 	
 	/** Include module variables */
-	@include(dirname(__FILE__) . '/variables.inc.php');
+	@include(__DIR__ . '/variables.inc.php');
 	
 	/** Get current version */
 	$running_version = getOption('version', 0, $module_name);

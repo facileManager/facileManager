@@ -24,7 +24,7 @@ if (!currentUserCan(array('manage_services', 'view_all'), $_SESSION['module'])) 
 
 define('FM_INCLUDE_SEARCH', true);
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_services.php');
+$fm_module_services = new \facileManager\fmFirewall\Services();
 
 printHeader();
 @printMenu();

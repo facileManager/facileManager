@@ -22,8 +22,7 @@
 
 if (!currentUserCan(array('manage_policies', 'view_all'), $_SESSION['module'])) unAuth();
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_policies.php');
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_templates.php');
+$fm_module_templates = new \facileManager\fmFirewall\Templates();
 
 if (!empty($_POST)) {
 	if (currentUserCan('manage_policies', $_SESSION['module'])) {

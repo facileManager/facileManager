@@ -21,8 +21,8 @@
 
 if (!currentUserCan('run_tools')) unAuth();
 
-if (!class_exists('fm_tools')) {
-	include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . 'facileManager' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_tools.php');
+if (!isset($fm_tools)) {
+	$fm_tools = new facileManager\Tools();
 }
 
 $admin_tools = $output = $block_style = $classes = null;
@@ -62,15 +62,15 @@ $tools_option[] = '<h2>' . _('Clean Up Database') . '</h2>
 			<br />';
 
 /** Get available module tools */
-$module_var_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_SESSION['module'] . DIRECTORY_SEPARATOR . 'variables.inc.php';
+$module_var_file = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/variables.inc.php';
 if (file_exists($module_var_file)) {
 	include($module_var_file);
 }
-$shared_tools_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . 'shared' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'admin-tools.inc.php';
+$shared_tools_file = ABSPATH . 'fm-modules/shared/pages/admin-tools.inc.php';
 if (file_exists($shared_tools_file)) {
 	include($shared_tools_file);
 }
-$module_tools_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_SESSION['module'] . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'admin-tools.inc.php';
+$module_tools_file = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/pages/admin-tools.inc.php';
 if (file_exists($module_tools_file)) {
 	include($module_tools_file);
 }

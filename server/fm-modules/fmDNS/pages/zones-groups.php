@@ -26,4 +26,4 @@ if (!currentUserCan(array('view_all'), $_SESSION['module'])) unAuth();
 
 $map = 'groups';
 
-include(dirname(__FILE__) . '/zones.php');
+include(__DIR__ . '/zones.php');

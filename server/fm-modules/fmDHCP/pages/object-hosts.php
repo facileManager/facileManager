@@ -23,14 +23,10 @@
 $type = 'hosts';
 
 if (!isset($fm_dhcp_item)) {
-	if (!class_exists('fm_dhcp_hosts')) {
-		include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_hosts.php');
-	}
-
-	$fm_dhcp_item = new fm_dhcp_hosts();
+	$fm_dhcp_item = new \facileManager\fmDHCP\Hosts();
 }
 
 /** Ensure user can use this page */
 $required_permission[] = 'manage_hosts';
 
-include(dirname(__FILE__) . '/objects.php');
+include(__DIR__ . '/objects.php');

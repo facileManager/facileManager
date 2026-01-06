@@ -62,7 +62,7 @@ function fmUpgrade($database) {
 	list($rv, $content) = displayProgress(sprintf(_('Upgrading Core v%s Schema'), $fm_version), $success, 'display');
 	
 	/** Upgrade any necessary modules */
-	include(ABSPATH . 'fm-modules/'. $fm_name . '/classes/class_tools.php');
+	$fm_tools = new facileManager\Tools();
 	$module_list = $fmdb->get_results("SELECT module_name,option_value FROM fm_options WHERE option_name='version'");
 	$num_rows = $fmdb->num_rows;
 	for ($x=0; $x<$num_rows; $x++) {
@@ -1118,10 +1118,10 @@ function fmUpgrade_540b1($database) {
 
 		/** Delete unused files */
 		deleteDeprecatedFiles(array(
-			dirname(__FILE__) . '/pages/help.php',
-			dirname(__FILE__) . '/pages/admin-settings.php',
-			dirname(__FILE__) . '/pages/admin-modules.php',
-			dirname(__FILE__) . '/css/install.css'
+			__DIR__ . '/pages/help.php',
+			__DIR__ . '/pages/admin-settings.php',
+			__DIR__ . '/pages/admin-modules.php',
+			__DIR__ . '/css/install.css'
 		));
 	}
 

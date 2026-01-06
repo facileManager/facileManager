@@ -23,12 +23,6 @@
 if (!defined('AJAX')) define('AJAX', true);
 require_once('../../../fm-init.php');
 
-$class_dir = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/';
-foreach (scandir($class_dir) as $class_file) {
-	if (in_array($class_file, array('.', '..'))) continue;
-	include($class_dir . $class_file);
-}
-
 if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST) && currentUserCan('manage_wlans', $_SESSION['module'])) {
 	$cfg_data = isset($_POST['option_value']) ? $_POST['option_value'] : '';
 	$server_serial_no = isset($_POST['server_serial_no']) ? $_POST['server_serial_no'] : 0;
@@ -74,9 +68,7 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST) && cu
 	echo $update_count;
 	exit;
 } elseif (is_array($_POST) && array_key_exists('get_ap_status', $_POST)) {
-	if (!class_exists('fm_module_servers')) {
-		include_once(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_servers.php');
-	}
+	$fm_module_servers = new \facileManager\fmWifi\Servers();
 	$ap_status = $fm_module_servers->getAPStats(sanitize($_POST['ap_id']), 'status -o web');
 	if (is_int($ap_status) && $ap_status == true) {
 		exit(str_replace(_('OK'), __('AP is up'), $__FM_CONFIG['module']['icons']['ok']));
@@ -124,14 +116,14 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 	/* Determine which class we need to deal with */
 	switch($_POST['item_type']) {
 		case 'servers':
-			$post_class = $fm_module_servers;
+			$post_class = new \facileManager\fmWifi\Servers();
 			if (isset($_POST['item_sub_type']) && sanitize($_POST['item_sub_type']) == 'groups') {
 				$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'server_groups';
 				$prefix = 'group_';
 			}
 			break;
 		case 'wlans':
-			$class_name = "fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}{$_POST['item_type']}";
+			$class_name = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], ucfirst($_POST['item_type']));
 			$post_class = new $class_name();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'config_';
@@ -140,13 +132,13 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 			$type_map = $_POST['item_type'];
 			break;
 		case 'wlan_users':
-			$post_class = $fm_wifi_wlan_users;
+			$post_class = new \facileManager\fmWifi\Wlan_users();
 			break;
 		case 'acls':
-			$post_class = $fm_wifi_acls;
+			$post_class = new \facileManager\fmWifi\Acls();
 			break;
 		case 'options':
-			$post_class = $fm_module_options;
+			$post_class = new \facileManager\fmWifi\Options();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'config_';
 			$field = 'config_id';

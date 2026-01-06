@@ -26,11 +26,7 @@ require_once('../../../fm-init.php');
 if (is_array($_POST) && count($_POST)) {
 	if (currentUserCan('manage_networks', $_SESSION['module'])) {
 		if (!isset($fm_dhcp_item)) {
-			if (!class_exists('fm_dhcp_networks')) {
-				include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_networks.php');
-			}
-
-			$fm_dhcp_item = new fm_dhcp_networks();
+			$fm_dhcp_item = new \facileManager\fmDHCP\Networks();
 		}
 		extract($_POST);
 		$additional_lines = $fm_dhcp_item->getRangeInputForm($clicks + 1);

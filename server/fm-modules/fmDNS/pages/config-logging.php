@@ -22,7 +22,7 @@
 
 if (!currentUserCan(array('manage_servers', 'view_all'), $_SESSION['module'])) unAuth();
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_logging.php');
+$fm_module_logging = new facileManager\fmDNS\Logging();
 
 $type = (isset($_GET['type'])) ? sanitize(strtolower($_GET['type'])) : 'channel';
 $display_type = $__FM_CONFIG['logging']['avail_types'][$type];

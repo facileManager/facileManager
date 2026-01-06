@@ -26,7 +26,7 @@ if (!currentUserCan(array('manage_settings', 'view_all'), $_SESSION['module'])) 
 printHeader();
 @printMenu();
 
-include_once(ABSPATH . 'fm-modules/shared/classes/class_settings.php');
+$fm_module_settings = new facileManager\Shared\Settings();
 
 echo printPageHeader();
 

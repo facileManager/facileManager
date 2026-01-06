@@ -36,7 +36,7 @@ function printfmDNSUsersForm($user_module_perms, $module_name) {
 	
 	if (!array_key_exists($module_name, $__FM_CONFIG)) {
 		/** Include module variables */
-		@include(dirname(__FILE__) . '/variables.inc.php');
+		@include(__DIR__ . '/variables.inc.php');
 	}
 	
 	$available_zones_perms = 0;

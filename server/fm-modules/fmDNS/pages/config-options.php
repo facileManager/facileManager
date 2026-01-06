@@ -25,7 +25,7 @@ if (!array_key_exists('domain_id', $_GET)) {
 	if (!currentUserCan(array('manage_servers', 'view_all'), $_SESSION['module'])) unAuth();
 }
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_options.php');
+$fm_module_options = new facileManager\fmDNS\Options();
 
 $option_type = (isset($_GET['type'])) ? sanitize($_GET['type']) : 'global';
 if (!array_key_exists($option_type, $__FM_CONFIG['options']['avail_types'])) {
@@ -128,8 +128,7 @@ $sort_direction = $comment = null;
 $sort_field = 'cfg_name';
 
 if ($option_type == 'rpz') {
-	include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_rpz.php');
-	$working_class = $fm_module_rpz;
+	$working_class = new facileManager\fmDNS\Rpz();
 	$comment = getMinimumFeatureVersion('options', 'policy', 'message', "AND def_option_type='rpz'");
 
 	/** Get rpz for all zones */

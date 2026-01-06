@@ -28,10 +28,20 @@ if (is_array($_POST) && array_key_exists('action', $_POST) && $_POST['action'] =
 	return;
 }
 
-$class_dir = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/';
-foreach (scandir($class_dir) as $class_file) {
-	if (in_array($class_file, array('.', '..'))) continue;
-	include($class_dir . $class_file);
+if (!isset($fm_module_servers)) {
+	$fm_module_servers = new \facileManager\fmWifi\Servers();
+}
+if (!isset($fm_module_options)) {
+	$fm_module_options = new \facileManager\fmWifi\Options();
+}
+if (!isset($fm_wifi_acls)) {
+	$fm_wifi_acls = new \facileManager\fmWifi\Acls();
+}
+if (!isset($fm_wifi_wlans)) {
+	$fm_wifi_wlans = new \facileManager\fmWifi\Wlans();
+}
+if (!isset($fm_wifi_wlan_users)) {
+	$fm_wifi_wlan_users = new \facileManager\fmWifi\Wlan_users();
 }
 
 $unpriv_message = __('You do not have sufficient privileges.');
@@ -83,7 +93,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 			break;
 		case 'wlans':
 			$item = rtrim($_POST['item_type'], 's') . 's';
-			$class_name = "fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}$item";
+			$class_name = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], ucfirst($item));
 			$post_class = new $class_name();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'config_';

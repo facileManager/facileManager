@@ -30,7 +30,7 @@ if (isset($tpl_extra_perm)) $tpl_perms[] = $tpl_extra_perm;
 
 if (!currentUserCan($tpl_perms, $_SESSION['module'])) unAuth();
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_templates.php');
+$fm_module_templates = new facileManager\fmDNS\Templates();
 
 printHeader();
 @printMenu();

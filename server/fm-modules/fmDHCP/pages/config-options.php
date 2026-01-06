@@ -22,7 +22,7 @@
 
 if (!currentUserCan(array('manage_servers', 'view_all'), $_SESSION['module'])) unAuth();
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_options.php');
+$fm_module_options = new \facileManager\fmDHCP\Options();
 
 $option_type = (isset($_GET['type'])) ? sanitize(ucfirst($_GET['type'])) : 'Global';
 //$display_option_type = $__FM_CONFIG['options']['avail_types'][strtolower($option_type)];

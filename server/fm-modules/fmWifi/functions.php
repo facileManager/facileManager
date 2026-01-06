@@ -138,8 +138,8 @@ HTML;
 
 	if ($result) {
 		global $fm_module_servers;
-		if (!class_exists('fm_module_servers')) {
-			include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_servers.php');
+		if (!isset($fm_module_servers)) {
+			$fm_module_servers = new \facileManager\fmWifi\Servers();
 		}
 		foreach ($result as $server_info) {
 			$ap_clients = 0;
@@ -298,7 +298,7 @@ function buildModuleToolbar() {
  * @return boolean
  */
 function moduleAddServer($action) {
-	include(ABSPATH . 'fm-modules/' . $_POST['module_name'] . '/classes/class_servers.php');
+	$fm_module_servers = new \facileManager\fmWifi\Servers();
 	
 	return $fm_module_servers->$action($_POST);
 }

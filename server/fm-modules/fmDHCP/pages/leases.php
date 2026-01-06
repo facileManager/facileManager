@@ -34,7 +34,7 @@ echo printPageHeader((string) $response, null, false, null, null, 'noscroll', $a
 $placeholder = sprintf('<div><p>%s:</p>%s</div>', __('Please choose a server to view leases from.'), $addl_title_blocks[0]);
 
 if ($server_serial_no) {
-	include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_leases.php');
+	$fm_dhcp_leases = new \facileManager\fmDHCP\Leases();
 	$placeholder = $fm_dhcp_leases->getServerLeases($server_serial_no);
 }
 

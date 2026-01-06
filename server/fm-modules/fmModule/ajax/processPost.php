@@ -28,12 +28,6 @@ if (is_array($_POST) && array_key_exists('action', $_POST) && $_POST['action'] =
 	return;
 }
 
-$class_dir = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/';
-foreach (scandir($class_dir) as $class_file) {
-	if (in_array($class_file, array('.', '..'))) continue;
-	include($class_dir . $class_file);
-}
-
 $unpriv_message = __('You do not have sufficient privileges.');
 /** Array based on permissions in capabilities.inc.php */
 $checks_array = @array('servers' => 'manage_servers');

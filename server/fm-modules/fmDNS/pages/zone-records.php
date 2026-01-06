@@ -57,7 +57,7 @@ define('FM_INCLUDE_SEARCH', true);
 printHeader();
 @printMenu();
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_records.php');
+$fm_dns_records = new facileManager\fmDNS\Records();
 
 $search_query = createSearchSQL(array('name', 'value', 'ttl', 'class', 'text', 'comment'), 'record_');
 

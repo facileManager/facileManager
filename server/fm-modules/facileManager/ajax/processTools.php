@@ -25,18 +25,20 @@ define('AJAX', true);
 require_once('../../../fm-init.php');
 
 $response = null;
-include(ABSPATH . 'fm-modules/facileManager/classes/class_tools.php');
-$shared_tools_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . 'shared' . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'processTools.php';
+$shared_tools_file = ABSPATH . 'fm-modules/shared/ajax/processTools.php';
 if (file_exists($shared_tools_file) && $_SESSION['module'] != $fm_name) {
 	include($shared_tools_file);
 }
 
-$module_tools_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_SESSION['module'] . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'processTools.php';
+$module_tools_file = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/ajax/processTools.php';
 if (file_exists($module_tools_file) && $_SESSION['module'] != $fm_name) {
 	include($module_tools_file);
 }
 
 if (is_array($_POST) && count($_POST) && currentUserCan('run_tools')) {
+	if (!isset($fm_tools)) {
+		$fm_tools = new facileManager\Tools();
+	}
 	if (isset($_POST['task']) && !empty($_POST['task'])) {
 		switch($_POST['task']) {
 			case 'module_install':

@@ -117,7 +117,7 @@ if ($method === 'GET') {
             $_GET['domain_view'] = [$view_id];
         }
         $map = 'forward';
-        include(dirname(__FILE__) . '/zones.php');
+        include(__DIR__ . '/zones.php');
         unset($_GET['domain_view']);
         if ($result) {
             $data = getAPIRecordInformation($fmdb->last_result, 'zone');
@@ -166,7 +166,7 @@ if ($zone_reload_requested) {
     }
 }
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_records.php');
+$fm_dns_records = new \facileManager\fmDNS\Records();
 $record_addl_sql = " AND domain_id=$domain_id";
 
 switch ($method) {
@@ -427,8 +427,8 @@ function apiReloadZone($domain_id) {
     $response = __('This zone cannot be reloaded.');
 
     if (getNameFromID($domain_id, 'fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'domains', 'domain_', 'domain_id', 'domain_reload') == 'yes') {
-        if (!class_exists('fm_dns_zones')) {
-            include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_zones.php');
+        if (!isset($fm_dns_zones)) {
+            $fm_dns_zones = new facileManager\fmDNS\Zones();
         }
         $response = $fm_dns_zones->buildZoneConfig($domain_id);
     }

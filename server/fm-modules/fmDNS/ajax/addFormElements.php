@@ -27,7 +27,7 @@ require_once('../../../fm-init.php');
 
 $zone_access_allowed = true;
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_records.php');
+$fm_dns_records = new facileManager\fmDNS\Records();
 
 if (is_array($_POST) && count($_POST)) {
 	if (!isset($_POST['record_type'])) $_POST['record_type'] = 'ALL';

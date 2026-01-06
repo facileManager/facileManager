@@ -24,4 +24,4 @@
 
 $map = 'forward';
 
-include(dirname(__FILE__) . '/zones.php');
+include(__DIR__ . '/zones.php');

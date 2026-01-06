@@ -25,8 +25,9 @@
 if (!defined('AJAX')) define('AJAX', true);
 require_once('../../../fm-init.php');
 
-include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'functions.php');
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_servers.php');
+include(ABSPATH . 'fm-modules/' . $fm_name . '/ajax/functions.php');
+$class_name = sprintf('\%s\%s\Servers', $fm_name, $_SESSION['module']);
+$fm_module_servers = new $class_name();
 
 if (is_array($_POST) && count($_POST)) {
 	if (isset($_POST['action']) && $_POST['action'] == 'build') {
@@ -38,12 +39,12 @@ if (is_array($_POST) && count($_POST)) {
 	}
 }
 
-$shared_ajax_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . 'shared' . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'processReload.php';
+$shared_ajax_file = ABSPATH . 'fm-modules/shared/ajax/processReload.php';
 if (file_exists($shared_ajax_file) && $_SESSION['module'] != $fm_name) {
 	include($shared_ajax_file);
 }
 
-$module_ajax_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_SESSION['module'] . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'processReload.php';
+$module_ajax_file = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/ajax/processReload.php';
 if (file_exists($module_ajax_file) && $_SESSION['module'] != $fm_name) {
 	include($module_ajax_file);
 }

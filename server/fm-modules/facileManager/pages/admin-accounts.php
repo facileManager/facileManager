@@ -24,7 +24,9 @@ if (array_key_exists('verify', $_GET)) {
 	if (!defined('CLIENT')) define('CLIENT', true);
 	
 	require_once('fm-init.php');
-	include(ABSPATH . 'fm-modules/facileManager/classes/class_accounts.php');
+	if (!isset($fm_accounts)) {
+		$fm_accounts = new facileManager\Accounts();
+	}
 	
 	if (array_key_exists('HTTP_AUTHKEY', $_SERVER)) {
 		$_POST['AUTHKEY'] = $_SERVER['HTTP_AUTHKEY'];

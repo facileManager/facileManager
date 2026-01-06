@@ -20,9 +20,9 @@
  +-------------------------------------------------------------------------+
 */
 
-require_once(ABSPATH . 'fm-modules/shared/classes/class_buildconf.php');
+namespace facileManager\fmModule;
 
-class fm_module_buildconf extends fm_shared_module_buildconf {
+class Buildconf extends \facileManager\shared\Buildconf {
 	
 	/**
 	 * Generates the server config and updates the client
@@ -151,6 +151,3 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 	
 	
 }
-
-if (!isset($fm_module_buildconf))
-	$fm_module_buildconf = new fm_module_buildconf();

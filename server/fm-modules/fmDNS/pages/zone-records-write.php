@@ -24,7 +24,9 @@
 
 if (!defined('AJAX')) require_once('fm-init.php');
 
-include_once(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_records.php');
+if (!isset($fm_dns_records)) {
+	$fm_dns_records = new facileManager\fmDNS\Records();
+}
 
 if (empty($_POST)) {
 	header('Location: ' . $GLOBALS['RELPATH']);
@@ -80,8 +82,8 @@ if (isset($update) && is_array($update)) {
 		$old_record = null;
 		
 		if (isset($data['soa_serial_no'])) {
-			if (!class_exists('fm_dns_zones')) {
-				include_once(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_zones.php');
+			if (!isset($fm_dns_zones)) {
+				$fm_dns_zones = new facileManager\fmDNS\Zones();
 			}
 			$fm_dns_zones->updateSOASerialNo($domain_id, $data['soa_serial_no'], 'no-increment');
 

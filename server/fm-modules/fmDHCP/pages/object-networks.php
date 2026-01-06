@@ -26,14 +26,10 @@ $display_type = $__FM_CONFIG['networks']['avail_types'][$type];
 $addl_title_blocks[] = buildSubMenu($type, $__FM_CONFIG['networks']['avail_types']);
 
 if (!isset($fm_dhcp_item)) {
-	if (!class_exists('fm_dhcp_networks')) {
-		include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_networks.php');
-	}
-
-	$fm_dhcp_item = new fm_dhcp_networks();
+	$fm_dhcp_item = new \facileManager\fmDHCP\Networks();
 }
 
 /** Ensure user can use this page */
 $required_permission[] = 'manage_networks';
 
-include(dirname(__FILE__) . '/objects.php');
+include(__DIR__ . '/objects.php');

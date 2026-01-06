@@ -23,12 +23,6 @@
 if (!defined('AJAX')) define('AJAX', true);
 require_once('../../../fm-init.php');
 
-$class_dir = ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/';
-foreach (scandir($class_dir) as $class_file) {
-	if (in_array($class_file, array('.', '..'))) continue;
-	include($class_dir . $class_file);
-}
-
 if (is_array($_GET) && array_key_exists('action', $_GET) && $_GET['action'] == 'display-process-all') {
 	$update_count = countServerUpdates();
 	
@@ -79,42 +73,42 @@ if (is_array($_POST) && count($_POST) && currentUserCan($allowed_capabilities, $
 	/* Determine which class we need to deal with */
 	switch($_POST['item_type']) {
 		case 'servers':
-			$post_class = $fm_module_servers;
+			$post_class = new \facileManager\fmFirewall\Servers();
 			break;
 		case 'services':
-			$post_class = $fm_module_services;
+			$post_class = new \facileManager\fmFirewall\Services();
 			$type_map = $_POST['item_sub_type'];
 			break;
 		case 'objects':
-			$post_class = $fm_module_objects;
+			$post_class = new \facileManager\fmFirewall\Objects();
 			$type_map = $_POST['item_sub_type'];
 			break;
 		case 'groups':
-			$post_class = $fm_module_groups;
+			$post_class = new \facileManager\fmFirewall\Groups();
 			$type_map = $_POST['item_sub_type'];
 			break;
 		case 'time':
-			$post_class = $fm_module_time;
+			$post_class = new \facileManager\fmFirewall\Time();
 			$prefix = 'time_';
 			$field = $prefix . 'id';
 			$item_type .= ' ';
 			break;
 		case 'policies':
-			$post_class = $fm_module_policies;
+			$post_class = new \facileManager\fmFirewall\Policies();
 			$prefix = 'policy_';
 			$field = $prefix . 'id';
 			$item_type = $_POST['item_sub_type'];
 			if (substr($item_type, -1) != 's') $item_type .= ' ';
 			break;
 		case 'options':
-			$post_class = $fm_module_options;
+			$post_class = new \facileManager\fmFirewall\Options();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'cfg_';
 			$field = $prefix . 'id';
 			$type_map = 'global';
 			break;
 		case 'policy':
-			$post_class = $fm_module_templates;
+			$post_class = new \facileManager\fmFirewall\Templates();
 			$prefix = 'policy_';
 			$field = $prefix . 'id';
 			$type_map = $_POST['item_type'];

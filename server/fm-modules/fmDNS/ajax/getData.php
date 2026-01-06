@@ -25,10 +25,6 @@
 if (!defined('AJAX')) define('AJAX', true);
 require_once('../../../fm-init.php');
 
-foreach (glob(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_*.php') as $filename) {
-    include_once($filename);
-}
-
 if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 	$cfg_data = isset($_POST['option_value']) ? $_POST['option_value'] : '';
 	$server_serial_no = isset($_POST['server_serial_no']) ? intval($_POST['server_serial_no']) : 0;
@@ -43,6 +39,7 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 	$result = $fmdb->get_results($query);
 	if ($fmdb->num_rows) {
 		if (strpos($result[0]->def_type, 'address_match_element') !== false) {
+			$fm_dns_acls = new facileManager\fmDNS\Acls();
 			$available_acls = $fm_dns_acls->buildACLJSON($cfg_data, $server_serial_no);
 
 			printf('<th width="33&#37;" scope="row"><label for="cfg_data">%s</label></th>
@@ -71,6 +68,7 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 
 				$temp_addl_zones[] = array($temp_zone_id, $temp_zone_id);
 			}
+			$fm_dns_zones = new facileManager\fmDNS\Zones();
 			$available_domains = $fm_dns_zones->buildZoneJSON('all', 'all', 0, $temp_addl_zones);
 
 			printf('<th width="33&#37;" scope="row"><label for="cfg_data">%s</label></th>
@@ -92,6 +90,8 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 					</script>', __('Option Value'), $cfg_data, $result[0]->def_type, $available_domains);
 		} elseif (strpos($result[0]->def_type, 'rrset_order_spec') !== false) {
 			$cfg_data = ($cfg_data) ? explode(' ', $cfg_data) : array(null, null, null, null);
+			$fm_dns_zones = new facileManager\fmDNS\Zones();
+			$fm_module_options = new facileManager\fmDNS\Options();
 			
 			$available_classes = buildSelect('cfg_data[]', 'cfg_data', array_merge(array('any'), enumMYSQLSelect('fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'records', 'record_class')), $cfg_data[0]);
 			$available_types = buildSelect('cfg_data[]', 'cfg_data', array_merge(array('any'), enumMYSQLSelect('fm_' . $__FM_CONFIG['fmDNS']['prefix'] . 'records', 'record_type')), $cfg_data[1]);
@@ -146,6 +146,7 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 					});
 					</script>', __('Option Value'), sprintf(__('This option requires BIND %s or later.'), '9.9'), $cfg_data_port, sprintf(__('This option requires BIND %s or later.'), '9.9'), $cfg_data_dscp, $cfg_data, $result[0]->def_type, $available_masters);
 		} elseif (strpos($result[0]->def_type, 'key_id') !== false) {
+			$fm_dns_acls = new facileManager\fmDNS\Acls();
 			$available_items = $fm_dns_acls->buildACLJSON($cfg_data, $server_serial_no, 'tsig-keys');
 			$multiple = ($result[0]->def_multiple_values == 'yes') ? 'true' : 'false';
 
@@ -181,7 +182,11 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 				}
 			}
 			$cfg_data = str_replace(array('{', '}', '; ', ';'), array('', '', ',', ','), $cfg_data);
+
+			$fm_dns_acls = new facileManager\fmDNS\Acls();
 			$available_acls = $fm_dns_acls->buildACLJSON($cfg_data, $server_serial_no, 'none');
+			$fm_module_options = new facileManager\fmDNS\Options();
+
 			$tls_connections = buildSelect('cfg_data_params[tls]', 'cfg_data_params[tls]', $fm_module_options->availableParents('tls', 'tls_', $server_serial_no, array('blank', 'tls-default')), $cfg_data_array['tls'], 1, null, false, null, 'cfg_drop_down', __('Select a connection'));
 			$http_endpoints = buildSelect('cfg_data_params[http]', 'cfg_data_params[http]', $fm_module_options->availableParents('http', 'http_', $server_serial_no, 'blank'), $cfg_data_array['http'], 1, null, false, null, 'cfg_drop_down', __('Select an endpoint'));
 
@@ -250,6 +255,7 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 						$checkbox,
 						$available_files);
 		} elseif ($result[0]->def_option == 'dnssec-policy') {
+			$fm_module_dnssec = new facileManager\fmDNS\Dnssec();
 			$dropdown = buildSelect('cfg_data[]', 'cfg_data', $fm_module_dnssec->getDNSSECPolicies($cfg_data), $cfg_data, 1);
 			printf('<th width="33&#37;" scope="row"><label for="cfg_data">%s</label></th>
 					<td width="67&#37;">%s', __('Option Value'), $dropdown);
@@ -259,6 +265,7 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 					%s', __('Option Value'), str_replace(array('\"', '"', "'"), '', $cfg_data), $result[0]->def_type);
 		} else {
 			/** Build array of possible values */
+			$fm_module_options = new facileManager\fmDNS\Options();
 			$dropdown = $fm_module_options->populateDefTypeDropdown($result[0]->def_type, $cfg_data);
 			printf('<th width="33&#37;" scope="row"><label for="cfg_data">%s</label></th>
 					<td width="67&#37;">%s', __('Option Value'), $dropdown);
@@ -267,11 +274,13 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 	}
 	exit;
 } elseif (is_array($_POST) && array_key_exists('get_available_clones', $_POST) && currentUserCan('manage_zones', $_SESSION['module'])) {
+	$fm_dns_zones = new facileManager\fmDNS\Zones();
 	echo buildSelect('domain_clone_domain_id', 'domain_clone_domain_id', $fm_dns_zones->availableCloneDomains($_POST['map'], 0), 0);
 	exit;
 } elseif (is_array($_POST) && array_key_exists('get_available_options', $_POST) && currentUserCan('manage_servers', $_SESSION['module'])) {
 	$cfg_type = isset($_POST['cfg_type']) ? $_POST['cfg_type'] : 'global';
 	$server_serial_no = isset($_POST['server_serial_no']) ? $_POST['server_serial_no'] : 0;
+	$fm_module_options = new facileManager\fmDNS\Options();
 	$avail_options_array = $fm_module_options->availableOptions('add', $server_serial_no, $cfg_type);
 	echo buildSelect('cfg_name', 'cfg_name', $avail_options_array, $_POST['cfg_name'], 1, null, false, 'displayOptionPlaceholder()');
 	exit;
@@ -362,20 +371,20 @@ if (is_array($_POST) && count($_POST) && currentUserCan(array_unique($checks_arr
 	/* Determine which class we need to deal with */
 	switch ($_POST['item_type']) {
 		case 'servers':
-			$post_class = $fm_module_servers;
+			$post_class = new facileManager\fmDNS\Servers();
 			if (isset($_POST['item_sub_type']) && $_POST['item_sub_type'] == 'groups') {
 				$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'server_groups';
 				$prefix = 'group_';
 			}
 			break;
 		case 'options':
-			$post_class = $fm_module_options;
+			$post_class = new facileManager\fmDNS\Options();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'cfg_';
 			$type_map = @isset($_POST['request_uri']['type']) ? $_POST['request_uri']['type'] : 'global';
 			break;
 		case 'domains':
-			$post_class = $fm_dns_zones;
+			$post_class = new facileManager\fmDNS\Zones();
 			$type_map = isset($_POST['item_sub_type']) ? $_POST['item_sub_type'] : null;
 			$action = 'create';
 			if (!$add_new) $item_id = array('popup', 'template_menu');
@@ -386,7 +395,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan(array_unique($checks_arr
 			}
 			break;
 		case 'logging':
-			$post_class = $fm_module_logging;
+			$post_class = new facileManager\fmDNS\Logging();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'cfg_';
 			$item_type = $_POST['item_sub_type'] . ' ';
@@ -395,7 +404,8 @@ if (is_array($_POST) && count($_POST) && currentUserCan(array_unique($checks_arr
 		case 'http':
 		case 'tls':
 		case 'dnssec-policy':
-			$post_class = (in_array($_POST['item_type'], array('dnssec-policy'))) ? $fm_module_dnssec : ${"fm_module_{$_POST['item_type']}"};
+			$class_name = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], ucfirst($_POST['item_type']));
+			$post_class = (in_array($_POST['item_type'], array('dnssec-policy'))) ? new facileManager\fmDNS\Dnssec() : new $class_name();
 			$table = $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'config';
 			$prefix = 'cfg_';
 			$type_map = $_POST['item_type'];
@@ -412,7 +422,8 @@ if (is_array($_POST) && count($_POST) && currentUserCan(array_unique($checks_arr
 			$table .= 's';
 			break;
 		default:
-			$post_class = ${"fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}{$_POST['item_type']}"};
+			$class_name = sprintf('\%s\%s\%s', $fm_name, $_SESSION['module'], ucfirst($_POST['item_type']));
+			$post_class = new $class_name();
 	}
 	
 	if ($add_new) {

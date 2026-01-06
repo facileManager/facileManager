@@ -22,7 +22,7 @@
 
 if (!currentUserCan(array('manage_servers', 'view_all'), $_SESSION['module'])) unAuth();
 
-include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_groups.php');
+$fm_sqlpass_groups = new \facileManager\fmSQLPass\Groups();
 
 printHeader();
 @printMenu();

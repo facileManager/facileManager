@@ -25,10 +25,15 @@ define('CLIENT', true);
 
 require('fm-init.php');
 
-require_once(ABSPATH . 'fm-modules/facileManager/classes/class_logins.php');
-include(ABSPATH . 'fm-modules/facileManager/classes/class_accounts.php');
-if (is_file(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_buildconf.php')) {
-	include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_buildconf.php');
+if (!isset($fm_login)) {
+	$fm_login = new facileManager\Login();
+}
+if (!isset($fm_accounts)) {
+	$fm_accounts = new facileManager\Accounts();
+}
+if (is_file(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/Buildconf.php')) {
+	$class_name = '\\facileManager\\' . $_SESSION['module'] . '\\Buildconf';
+	$fm_module_buildconf = new $class_name();
 } else {
 	exit(_('This module does not utilize configuration previews.'));
 }

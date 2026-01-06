@@ -38,7 +38,9 @@ if (arrayKeysExist(array('genserial', 'addserial', 'install', 'upgrade', 'ssh'),
 	}
 
 	/** Check account key */
-	include(ABSPATH . 'fm-modules/facileManager/classes/class_accounts.php');
+	if (!isset($fm_accounts)) {
+		$fm_accounts = new facileManager\Accounts();
+	}
 	$account_status = $fm_accounts->verifyAccount($_SERVER['HTTP_AUTHKEY']);
 
 	if ($account_status !== true) {
@@ -80,9 +82,8 @@ if (arrayKeysExist(array('genserial', 'addserial', 'install', 'upgrade', 'ssh'),
 				if (function_exists('moduleCompleteClientInstallation')) {
 					moduleCompleteClientInstallation();
 				}
-				require_once(ABSPATH . 'fm-modules/shared/classes/class_servers.php');
 				if (!$fm_module_servers) {
-					$fm_module_servers = new fm_shared_module_servers();
+					$fm_module_servers = new facileManager\shared\Servers();
 				}
 				$fm_module_servers->updateClientVersion();
 			}
@@ -116,9 +117,8 @@ if (arrayKeysExist(array('genserial', 'addserial', 'install', 'upgrade', 'ssh'),
 				}
 				
 				// Probably need to move/remove this
-				require_once(ABSPATH . 'fm-modules/shared/classes/class_servers.php');
 				if (!$fm_module_servers) {
-					$fm_module_servers = new fm_shared_module_servers();
+					$fm_module_servers = new facileManager\shared\Servers();
 				}
 				$fm_module_servers->updateClientVersion();
 			}

@@ -23,14 +23,10 @@
 $type = 'groups';
 
 if (!isset($fm_dhcp_item)) {
-	if (!class_exists('fm_dhcp_groups')) {
-		include(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_groups.php');
-	}
-
-	$fm_dhcp_item = new fm_dhcp_groups();
+	$fm_dhcp_item = new \facileManager\fmDHCP\Groups();
 }
 
 /** Ensure user can use this page */
 $required_permission[] = 'manage_groups';
 
-include(dirname(__FILE__) . '/objects.php');
+include(__DIR__ . '/objects.php');

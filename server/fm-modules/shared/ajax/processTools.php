@@ -24,13 +24,13 @@
 if (!defined('AJAX')) define('AJAX', true);
 require_once('../../../fm-init.php');
 
-$module_tools_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $_SESSION['module'] . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'class_tools.php';
-if (file_exists($module_tools_file)) {
-	include($module_tools_file);
-}
-
 if (!isset($fm_module_tools)) {
-	$fm_module_tools = new fm_shared_module_tools();
+	$class = '\\facileManager\\shared\\Tools';
+	if (file_exists(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/Tools.php')) {
+		$class = '\\facileManager\\' . $_SESSION['module'] . '\\Tools';
+	}
+	$fm_module_tools = new $class();
+	unset($class);
 }
 
 $response = null;

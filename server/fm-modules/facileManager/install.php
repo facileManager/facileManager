@@ -38,7 +38,7 @@ function processSetup() {
 	global $__FM_CONFIG;
 	extract($_POST);
 
-	foreach ($ssl as $key=>$val) {
+	foreach ($ssl as $key => $val) {
 		if (isset($install_enable_ssl)) {
 			$__FM_CONFIG['db'][$key] = $val;
 		} else {
@@ -47,8 +47,8 @@ function processSetup() {
 		}
 	}
 	
-	include_once(ABSPATH . 'fm-includes/fm-db.php');
-	$fmdb = new fmdb($dbuser, $dbpass, $dbname, $dbhost, 'silent connect');
+	require_once(ABSPATH . 'fm-modules/facileManager/functions.php');
+	$fmdb = new facileManager\Fmdb($dbuser, $dbpass, $dbname, $dbhost, 'silent connect');
 	if (!$fmdb->dbh) {
 		exit(sprintf('ERROR: %s', _('Could not connect to MySQL')));
 	} else {
@@ -57,7 +57,7 @@ function processSetup() {
 			exit(sprintf('ERROR: %s', $fmdb->last_error));
 		}
 		if ($db_selected) {
-			$tables = $fmdb->query('SHOW TABLES FROM `' . $dbname . '`;');
+			$fmdb->query('SHOW TABLES FROM `' . $dbname . '`;');
 			if ($fmdb->num_rows) {
 				exit(sprintf('ERROR: %s', _('Database already exists and contains one or more tables.<br />Please choose a different name.')));
 			}
@@ -314,8 +314,8 @@ function installDatabase($database) {
 				);
 
 			foreach ($modules as $module_name) {
-				if (file_exists(dirname(__FILE__) . '/../' . $module_name . '/install.php')) {
-					include(dirname(__FILE__) . '/../' . $module_name . '/install.php');
+				if (file_exists(__DIR__ . '/../' . $module_name . '/install.php')) {
+					include(__DIR__ . '/../' . $module_name . '/install.php');
 					
 					$function = 'install' . $module_name . 'Schema';
 					if (function_exists($function)) {

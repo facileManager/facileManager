@@ -59,7 +59,9 @@ $auth['API_SECRET'] = cleanAndTrimInputs($_SERVER['HTTP_X_API_SECRET']);
 // }
 
 require_once('fm-init.php');
-include(ABSPATH . 'fm-modules/facileManager/classes/class_accounts.php');
+if (!isset($fm_accounts)) {
+	$fm_accounts = new facileManager\Accounts();
+}
 
 /** Ensure we have a valid account */
 $account_verify = $fm_accounts->verify($auth);
@@ -68,7 +70,9 @@ if ($account_verify != 'Success') {
 }
 
 /** Authenticate key */
-require_once(ABSPATH . 'fm-modules/facileManager/classes/class_logins.php');
+if (!isset($fm_login)) {
+	$fm_login = new facileManager\Login();
+}
 $logged_in = @$fm_login->doAPIAuth($auth['API_KEY'], $auth['API_SECRET'], $auth['AUTHKEY']);
 
 if (!$logged_in) {
@@ -95,7 +99,7 @@ if (strpos($uri_path_dir . '/', "/api/$lower_module_name/") === false) {
 }
 
 /** Include actions from module */
-$module_file = ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $module_name . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'api.inc.php';
+$module_file = ABSPATH . 'fm-modules/' . $module_name . '/pages/api.inc.php';
 if (file_exists($module_file)) {
 	include($module_file);
 }
