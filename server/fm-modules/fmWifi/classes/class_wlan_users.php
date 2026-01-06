@@ -283,7 +283,7 @@ HTML;
 		include(ABSPATH . 'fm-modules/facileManager/classes/class_users.php');
 		
 		$assoc_wlans = $wlan_user_mac = $wlan_user_comment = $wlan_user_vlan = null;
-		$wlan_ids = 0;
+		$wlan_ids = $user_id = 0;
 		
 		if (!empty($_POST) && !array_key_exists('is_ajax', $_POST)) {
 			if (is_array($_POST))
@@ -311,14 +311,17 @@ HTML;
 		$return_form = sprintf('
 		%s
 		<form name="manage" id="manage">
-		%s
-			<div id="tabs">
+			<input type="hidden" name="page" value="wlan_users" />
+			<input type="hidden" name="action" value="%s" />
+			<input type="hidden" name="user_id" value="%d" />
+			<div id="tabs" class="window-tall">
 				<div id="tab">
 					<div id="tab-content">
+					%s
 						<table class="form-table">
 							<tr>
 								<th width="33&#37;" scope="row"><label for="wlan_user_mac">%s</label></th>
-								<td width="67&#37;" nowrap><input name="wlan_user_mac" id="wlan_user_mac" type="text" value="%s" maxlength="17" /></td>
+								<td width="67&#37;" nowrap><input name="wlan_user_mac" id="wlan_user_mac" type="text" value="%s" maxlength="17" class="required" /></td>
 							</tr>
 							<tr>
 								<th width="33&#37;" scope="row"><label for="wlan_user_vlan">%s</label> %s</th>
@@ -346,7 +349,7 @@ HTML;
 				});
 			});
 		</script>',
-				$popup_header,
+				$popup_header, $action, $user_id,
 				$fm_users->printUsersForm($data, $action, array('editable'=>'user_login', 'user_password' => $GLOBALS['PWD_STRENGTH']), 'wlan_users', null, null, null, false, 'embed'),
 				__('MAC Address'), $wlan_user_mac,
 				__('Assigned VLAN'), $vlan_id_note, $wlan_user_vlan,
