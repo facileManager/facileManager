@@ -381,7 +381,9 @@ class fm_users {
 			}
 		}
 		/** Ensure valid capabilities are submitted */
-		$post['user_caps'] = $this->validateUserCaps($post['user_caps']);
+		if (isset($post['user_caps'])) {
+			$post['user_caps'] = $this->validateUserCaps($post['user_caps']);
+		}
 
 		/** Log user capabiliites */
 		if (isset($post['user_caps'])) {
