@@ -1546,7 +1546,17 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 			} else {
 				$domain_name = "$octet1.in-addr.arpa.";
 			}
-		} else $domain_name = $domain_name_trim . '.';
+		} else {
+			// RPZ handling: if any label is exactly "rpz", return apex "@"
+			// This matches cases like "example.rpz" or "rpz.example" or "a.b.rpz.c"
+			// but won't accidentally match "corpzone".
+			$hasRpzLabel = preg_match('/(^|\.)(rpz)(\.|$)/i', $domain_name_trim) === 1;
+
+			if ($hasRpzLabel) {
+				return '@';
+			}
+			$domain_name = $domain_name_trim . '.';
+		}
 		
 		return $domain_name;
 	}
