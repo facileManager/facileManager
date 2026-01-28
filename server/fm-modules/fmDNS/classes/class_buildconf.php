@@ -1274,6 +1274,14 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 			if ($domain->domain_ttl) {
 				$zone_file .= '$TTL ' . $domain->domain_ttl . "\n";
 			}
+			// RPZ handling: if any label is exactly "rpz", return apex "@"
+			// This matches cases like "example.rpz" or "rpz.example" or "a.b.rpz.c"
+			// but won't accidentally match "corpzone".
+			$hasRpzLabel = preg_match('/(^|\.)(rpz)(\.|$)/i', $domain_name_trim) === 1;
+
+			if ($hasRpzLabel) {
+				$domain_name = '@';
+			}
 
 			$zone_file .= "$domain_name {$soa_ttl} IN SOA $master_server $admin_email (\n";
 			$zone_file .= "\t\t$serial\t; Serial\n";
