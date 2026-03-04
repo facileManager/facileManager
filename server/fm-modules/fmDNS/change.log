@@ -1,3 +1,7 @@
+7.4.2 (2026-??-??)
+==================
+* Server - [bug] Fixed API support for zone reloads. (Issue #732)
+
 7.4.1 (2026-01-06)
 ==================
 * Server - [bug] Fixed PHP errors while editing HTTP Endpoints, TLS Connections, and DNSSEC Policies.
