@@ -2,6 +2,7 @@
 ==================
 * Server - [bug] Fixed PHP error when no user capabilities are set.
 * Server - [bug] Fixed large popup window CSS.
+* Server - [bug] Fixed upgrade process when custom logo is missing.
 
 6.0.3 (2026-01-06)
 ==================

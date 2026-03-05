@@ -3881,6 +3881,12 @@ function getBrandLogo($size = 'sm_brand_img') {
 	global $fm_name;
 	
 	$branding_logo = getOption($size);
+
+	if ($branding_logo && strpos($branding_logo, 'http') === false) {
+		if (!file_exists(ABSPATH . $branding_logo)) {
+			$branding_logo = null;
+		}
+	}
 	
 	if (!$branding_logo) {
 		$branding_logo = $GLOBALS['RELPATH'] . 'fm-modules/' . $fm_name . '/images/fm.png';
