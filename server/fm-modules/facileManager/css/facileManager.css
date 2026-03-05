@@ -1463,6 +1463,7 @@ a.delete:hover i {
 	margin: auto;
 	opacity: 1.0;
 	min-width: 500px;
+	max-width: 75%;
 	background-color: var(--form-popup-bg);
 	border: 1px solid #1e1e1e;
 	-webkit-border-radius: 6px;

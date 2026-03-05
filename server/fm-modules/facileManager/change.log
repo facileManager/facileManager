@@ -1,6 +1,7 @@
 6.0.4 (2026-01-??)
 ==================
 * Server - [bug] Fixed PHP error when no user capabilities are set.
+* Server - [bug] Fixed large popup window CSS.
 
 6.0.3 (2026-01-06)
 ==================
