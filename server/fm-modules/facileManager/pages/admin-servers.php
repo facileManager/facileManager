@@ -24,7 +24,7 @@
 if (arrayKeysExist(array('genserial', 'addserial', 'install', 'upgrade', 'ssh'), $_GET)) {
 	if (!defined('CLIENT')) define('CLIENT', true);
 
-	if (!isset($global_form_field_excludes)) $global_form_field_excludes = array('dryrun', 'compress', 'config', 'AUTHKEY', 'update_from_client', 'module_name', 'module_type');
+	if (!isset($global_form_field_excludes)) $global_form_field_excludes = array('dryrun', 'compress', 'config', 'AUTHKEY', 'SERIALNO', 'update_from_client', 'module_name', 'module_type');
 	
 	require_once('fm-init.php');
 	if (file_exists(ABSPATH . 'fm-modules/' . $_POST['module_name'] . '/variables.inc.php')) {
