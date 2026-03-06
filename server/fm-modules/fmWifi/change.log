@@ -1,6 +1,7 @@
 0.9.2 (2026-??-??)
 ==================
 * Server - [security] Fixed stored XSS throughout application.
+* Server - [bug] Fixed inability to edit quoted string options.
 
 0.9.1 (2026-01-06)
 ==================
