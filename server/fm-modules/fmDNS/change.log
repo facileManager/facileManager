@@ -1,4 +1,4 @@
-7.4.2 (2026-??-??)
+7.4.2 (2026-03-06)
 ==================
 * Server - [security] Fixed stored XSS throughout application.
 * Server - [bug] Fixed API support for zone reloads. (Issue #732)

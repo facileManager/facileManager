@@ -29,7 +29,7 @@
  */
 
 /** Client version */
-$data['server_client_version'] = '0.8.0';
+$data['server_client_version'] = '0.9.2';
 
 error_reporting(0);
 

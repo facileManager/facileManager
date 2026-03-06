@@ -1,4 +1,4 @@
-6.0.4 (2026-01-??)
+6.0.4 (2026-03-06)
 ==================
 * Server - [security] Fixed stored XSS throughout application.
 * Server - [security] Fixed reflected XSS in the admin logs.

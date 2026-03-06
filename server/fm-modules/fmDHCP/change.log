@@ -1,4 +1,4 @@
-0.12.1 (2026-??-??)
+0.12.1 (2026-03-06)
 ===================
 * Server - [security] Fixed stored XSS throughout application.
 * Server - [bug] Fixed inability to edit quoted string options.
