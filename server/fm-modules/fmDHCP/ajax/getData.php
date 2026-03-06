@@ -57,7 +57,7 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST) && cu
 		} elseif ($result[0]->def_dropdown == 'no') {
 			printf('<th width="33&#37;" scope="row"><label for="config_data">%s</label></th>
 					<td width="67&#37;"><input name="config_data" id="config_data" type="text" value="%s" size="40" /><br />
-					%s', __('Option Value'), str_replace(array('"', "'"), '', $cfg_data), $result[0]->def_type);
+					%s', __('Option Value'), str_replace(array('\"', '"', "'", '&quot;'), '', html_entity_decode($cfg_data)), $result[0]->def_type);
 		} else {
 			/** Build array of possible values */
 			$dropdown = $fm_module_options->populateDefTypeDropdown($result[0]->def_type, $cfg_data);
