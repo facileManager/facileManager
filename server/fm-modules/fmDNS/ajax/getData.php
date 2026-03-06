@@ -216,7 +216,7 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 						$cfg_data,
 						$available_acls);
 		} elseif (in_array($result[0]->def_option, array('include'))) {
-			$cfg_data = str_replace(array('\"', '"', "'"), '', $cfg_data);
+			$cfg_data = str_replace(array('\"', '"', "'", '&quot;'), '', html_entity_decode($cfg_data));
 			$domain_id = (array_key_exists('domain_id', $_POST)) ? intval($_POST['domain_id']) : 0;
 			$available_files = $fm_dns_files->buildJSON($cfg_data, $server_serial_no);
 
@@ -256,7 +256,7 @@ if (is_array($_POST) && array_key_exists('get_option_placeholder', $_POST)) {
 		} elseif ($result[0]->def_dropdown == 'no') {
 			printf('<th width="33&#37;" scope="row"><label for="cfg_data">%s</label></th>
 					<td width="67&#37;"><input name="cfg_data" id="cfg_data" type="text" value="%s" size="40" class="required" /><br />
-					%s', __('Option Value'), str_replace(array('\"', '"', "'"), '', $cfg_data), $result[0]->def_type);
+					%s', __('Option Value'), str_replace(array('\"', '"', "'", '&quot;'), '', html_entity_decode($cfg_data)), $result[0]->def_type);
 		} else {
 			/** Build array of possible values */
 			$dropdown = $fm_module_options->populateDefTypeDropdown($result[0]->def_type, $cfg_data);

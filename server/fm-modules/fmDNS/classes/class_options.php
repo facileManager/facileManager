@@ -718,7 +718,7 @@ HTML;
 					case 'quoted_string | none':
 					case 'quoted_string | none | hostname':
 						$tmp_array = array();
-						foreach (explode(';', $post['cfg_data']) as $k => $v) {
+						foreach (explode(';', html_entity_decode($post['cfg_data'])) as $k => $v) {
 							$tmp_array[$k] = trim(str_replace('"', '', $v));
 						}
 						$post['cfg_data'] = '"' . implode('"; "', $tmp_array) . '"';
