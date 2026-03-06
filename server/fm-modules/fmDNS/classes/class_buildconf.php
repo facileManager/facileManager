@@ -617,7 +617,11 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 						$config_result = $fmdb->last_result;
 						$view_config_count = $fmdb->num_rows;
 						for ($j=0; $j < $view_config_count; $j++) {
-							$view_config[$config_result[$j]->cfg_name] = array($config_result[$j]->cfg_data, $config_result[$j]->cfg_comment);
+							if (in_array($config_result[$j]->cfg_name, $multi_def_params)) {
+								$view_config[$config_result[$j]->cfg_name][] = array($config_result[$j]->cfg_data, $config_result[$j]->cfg_comment);
+							} else {
+								$view_config[$config_result[$j]->cfg_name] = array($config_result[$j]->cfg_data, $config_result[$j]->cfg_comment);
+							}
 						}
 						unset($config_result, $view_config_count);
 					} else $view_config = array();
@@ -652,12 +656,21 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 					unset($view_config, $server_view_config);
 
 					foreach ($config_array as $cfg_name => $cfg_data) {
-						list($cfg_info, $cfg_comment) = $cfg_data;
+						if (!is_array($cfg_data[0])) {
+							list($cfg_info, $cfg_comment) = $cfg_data;
 
-						$config .= $this->formatConfigOption($cfg_name, $cfg_info, $cfg_comment, $this->server_info, "\t");
+							$config .= $this->formatConfigOption($cfg_name, $cfg_info, $cfg_comment, $this->server_info, "\t");
 						
-						if ($cfg_name == 'recursion') {
-							$include_hint_zone_local = ($cfg_info == 'yes') ? true : false;
+							/** Include hint zone (root servers) */
+							if ($cfg_name == 'recursion') {
+								$include_hint_zone_local = ($cfg_info == 'yes') ? true : false;
+							}
+						} else {
+							/** Handle multiple instances if param */
+							foreach ($cfg_data as $k => $multi_cfg_data) {
+								list($cfg_info, $cfg_comment) = $multi_cfg_data;
+								$config .= $this->formatConfigOption($cfg_name, $cfg_info, $cfg_comment, $this->server_info, "\t");
+							}
 						}
 					}
 					unset($config_array);
