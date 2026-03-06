@@ -96,6 +96,13 @@ class fm_module_options {
 		if ($fmdb->num_rows) {
 			$num_same_config = $fmdb->num_rows;
 			$query = "SELECT def_max_parameters FROM fm_{$__FM_CONFIG['fmDNS']['prefix']}functions WHERE def_option='" . sanitize($post['cfg_name']) . "' AND def_option_type='{$post['cfg_type']}'";
+			if (array_key_exists('domain_id', $_POST) && $_POST['domain_id']) {
+				$query .= " AND def_clause_support LIKE '%Z%'";
+			} elseif (array_key_exists('view_id', $_POST) && $_POST['view_id']) {
+				$query .= " AND def_clause_support LIKE '%V%'";
+			} else {
+				$query .= " AND def_clause_support LIKE '%O%'";
+			}
 			$fmdb->get_results($query);
 			if ($fmdb->last_result[0]->def_max_parameters >= 0 && $num_same_config >= $fmdb->last_result[0]->def_max_parameters) {
 				return __('This record already exists.');
@@ -161,6 +168,13 @@ class fm_module_options {
 			if ($result[0]->cfg_id != $post['cfg_id']) {
 				$num_same_config = $fmdb->num_rows;
 				$query = "SELECT def_max_parameters FROM fm_{$__FM_CONFIG['fmDNS']['prefix']}functions WHERE def_option='" . $post['cfg_name'] . "' AND def_option_type='{$post['cfg_type']}'";
+				if (array_key_exists('domain_id', $_POST) && $_POST['domain_id']) {
+					$query .= " AND def_clause_support LIKE '%Z%'";
+				} elseif (array_key_exists('view_id', $_POST) && $_POST['view_id']) {
+					$query .= " AND def_clause_support LIKE '%V%'";
+				} else {
+					$query .= " AND def_clause_support LIKE '%O%'";
+				}
 				$fmdb->get_results($query);
 				if ($fmdb->last_result[0]->def_max_parameters >= 0 && $num_same_config > $fmdb->last_result[0]->def_max_parameters - 1) {
 					return __('This record already exists.');
@@ -704,7 +718,7 @@ HTML;
 					case 'quoted_string | none':
 					case 'quoted_string | none | hostname':
 						$tmp_array = array();
-						foreach (explode(';', $post['cfg_data']) as $k => $v) {
+						foreach (explode(';', html_entity_decode($post['cfg_data'])) as $k => $v) {
 							$tmp_array[$k] = trim(str_replace('"', '', $v));
 						}
 						$post['cfg_data'] = '"' . implode('"; "', $tmp_array) . '"';

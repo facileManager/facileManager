@@ -1,3 +1,9 @@
+7.4.2 (2026-??-??)
+==================
+* Server - [security] Fixed stored XSS throughout application.
+* Server - [bug] Fixed API support for zone reloads. (Issue #732)
+* Server - [bug] Fixed an issue where valid duplicate configuration options could not be added. (Issue #738)
+
 7.4.1 (2026-01-06)
 ==================
 * Server - [bug] Fixed PHP errors while editing HTTP Endpoints, TLS Connections, and DNSSEC Policies.

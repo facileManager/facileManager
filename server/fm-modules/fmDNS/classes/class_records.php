@@ -1274,7 +1274,7 @@ HTML;
 		}
 		if ($record_type != 'SOA') {
 			if (!empty($data['record_value'])) {
-				$data['record_value'] = str_replace(array('"', "'"), '', $data['record_value']);
+				$data['record_value'] = str_replace(array('"', "'", '&quot;'), '', html_entity_decode($data['record_value']));
 				if (strpos($data['record_value'], "\n")) {
 					foreach (explode("\n", $data['record_value']) as $line) {
 						$tmp_value[] = trim($line);

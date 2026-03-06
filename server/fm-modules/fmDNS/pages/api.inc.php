@@ -394,7 +394,7 @@ switch ($method) {
 }
 
 /** Reload zone if specificed */
-if (in_array($code, [200, 201, 204]) && $zone_reload_allowed && $zone_reload_requested) {
+if (in_array($code, [200, 201, 202, 204]) && $zone_reload_allowed && $zone_reload_requested) {
     apiReloadZone($domain_id);
 }
 
