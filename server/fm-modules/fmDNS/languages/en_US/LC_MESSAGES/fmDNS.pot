@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-06 11:20-0700\n"
+"POT-Creation-Date: 2026-03-06 11:14-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -763,11 +763,11 @@ msgstr ""
 msgid "No ACL address defined."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_buildconf.php:1525
+#: server/fm-modules/fmDNS/classes/class_buildconf.php:1538
 msgid "This section is added from the custom field."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_buildconf.php:1683
+#: server/fm-modules/fmDNS/classes/class_buildconf.php:1696
 #, php-format
 msgid ""
 "The named utilities (specifically named-checkconf and named-checkzone) "
@@ -775,35 +775,35 @@ msgid ""
 "be checked for syntax."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_buildconf.php:1942
+#: server/fm-modules/fmDNS/classes/class_buildconf.php:1955
 #, php-format
 msgid ""
 "The root servers have been recently updated, but the webserver user (%s) "
 "cannot write to %s to update the hint zone."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_buildconf.php:1943
+#: server/fm-modules/fmDNS/classes/class_buildconf.php:1956
 msgid "A local copy will be used instead."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_buildconf.php:2161
+#: server/fm-modules/fmDNS/classes/class_buildconf.php:2174
 #, php-format
 msgid "// BIND %s or greater is required for %s"
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_buildconf.php:2291
+#: server/fm-modules/fmDNS/classes/class_buildconf.php:2304
 #, php-format
 msgid "Cannot resolve %s"
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_buildconf.php:2475
+#: server/fm-modules/fmDNS/classes/class_buildconf.php:2488
 #, php-format
 msgid ""
 "The dnssec-signzone binary could not be found on %s so DNSSEC zone signing "
 "cannot be done."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_buildconf.php:2480
+#: server/fm-modules/fmDNS/classes/class_buildconf.php:2493
 #, php-format
 msgid "%s is not writeable by %s so DNSSEC zone signing cannot be done."
 msgstr ""
@@ -1477,62 +1477,62 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:101
-#: server/fm-modules/fmDNS/classes/class_options.php:166
+#: server/fm-modules/fmDNS/classes/class_options.php:108
+#: server/fm-modules/fmDNS/classes/class_options.php:180
 msgid "This record already exists."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:115
-#: server/fm-modules/fmDNS/classes/class_options.php:177
+#: server/fm-modules/fmDNS/classes/class_options.php:122
+#: server/fm-modules/fmDNS/classes/class_options.php:191
 msgid "Empty values are not allowed."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:116
-#: server/fm-modules/fmDNS/classes/class_options.php:178
+#: server/fm-modules/fmDNS/classes/class_options.php:123
+#: server/fm-modules/fmDNS/classes/class_options.php:192
 #, php-format
 msgid "%s is not an acceptable option name."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:128
+#: server/fm-modules/fmDNS/classes/class_options.php:135
 msgid "Could not add the option because a database error occurred."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:190
+#: server/fm-modules/fmDNS/classes/class_options.php:204
 msgid "Could not update the option because a database error occurred."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:218
+#: server/fm-modules/fmDNS/classes/class_options.php:232
 msgid "This option could not be deleted because a database error occurred."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:221
+#: server/fm-modules/fmDNS/classes/class_options.php:235
 #, php-format
 msgid "Option '%s' for %s was deleted."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:324
+#: server/fm-modules/fmDNS/classes/class_options.php:338
 msgid "Add Option"
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:324
+#: server/fm-modules/fmDNS/classes/class_options.php:338
 msgid "Edit Option"
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:371
+#: server/fm-modules/fmDNS/classes/class_options.php:385
 msgid "Option Name"
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:698
+#: server/fm-modules/fmDNS/classes/class_options.php:712
 #, php-format
 msgid "%s is an invalid number."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:701
+#: server/fm-modules/fmDNS/classes/class_options.php:715
 #, php-format
 msgid "%s is an invalid port number."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_options.php:721
+#: server/fm-modules/fmDNS/classes/class_options.php:735
 #, php-format
 msgid "%s is an invalid IP address."
 msgstr ""

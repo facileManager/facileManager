@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-06 11:20-0700\n"
+"POT-Creation-Date: 2026-03-06 11:14-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -394,35 +394,35 @@ msgstr ""
 msgid "Option '%s' for %s was deleted."
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_options.php:299
+#: server/fm-modules/fmWifi/classes/class_options.php:301
 msgid "Add Option"
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_options.php:299
+#: server/fm-modules/fmWifi/classes/class_options.php:301
 msgid "Edit Option"
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_options.php:344
+#: server/fm-modules/fmWifi/classes/class_options.php:346
 msgid "Option Name"
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_options.php:481
+#: server/fm-modules/fmWifi/classes/class_options.php:483
 #, php-format
 msgid "%s is an invalid number."
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_options.php:484
+#: server/fm-modules/fmWifi/classes/class_options.php:486
 #, php-format
 msgid "%s is not in the valid range (%s)."
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_options.php:488
+#: server/fm-modules/fmWifi/classes/class_options.php:490
 #, php-format
 msgid "%s is an invalid port number."
 msgstr ""
 
-#: server/fm-modules/fmWifi/classes/class_options.php:498
-#: server/fm-modules/fmWifi/classes/class_options.php:503
+#: server/fm-modules/fmWifi/classes/class_options.php:500
+#: server/fm-modules/fmWifi/classes/class_options.php:505
 #, php-format
 msgid "%s is an invalid IP address."
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-06 11:20-0700\n"
+"POT-Creation-Date: 2026-03-06 11:14-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -640,30 +640,30 @@ msgstr ""
 msgid "%s (%s) option (%s) was deleted."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_options.php:314
+#: server/fm-modules/fmDHCP/classes/class_options.php:316
 msgid "Add Option"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_options.php:314
+#: server/fm-modules/fmDHCP/classes/class_options.php:316
 msgid "Edit Option"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_options.php:359
+#: server/fm-modules/fmDHCP/classes/class_options.php:361
 msgid "Option Name"
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_options.php:526
+#: server/fm-modules/fmDHCP/classes/class_options.php:528
 #, php-format
 msgid "%s is an invalid number."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_options.php:529
+#: server/fm-modules/fmDHCP/classes/class_options.php:531
 #, php-format
 msgid "%s is an invalid port number."
 msgstr ""
 
-#: server/fm-modules/fmDHCP/classes/class_options.php:539
-#: server/fm-modules/fmDHCP/classes/class_options.php:544
+#: server/fm-modules/fmDHCP/classes/class_options.php:541
+#: server/fm-modules/fmDHCP/classes/class_options.php:546
 #, php-format
 msgid "%s is an invalid IP address."
 msgstr ""
