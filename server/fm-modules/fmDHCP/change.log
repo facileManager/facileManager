@@ -1,3 +1,8 @@
+0.12.1 (2026-??-??)
+===================
+* Server - [security] Fixed stored XSS throughout application.
+* Server - [bug] Fixed inability to edit quoted string options.
+
 0.12.0 (2025-12-26)
 ===================
 * Server - [improvement] Removed href="#" from non-navigational anchor tags.
