@@ -296,6 +296,8 @@ HTML;
 			$data_holder = $results[0]->def_type;
 		}
 		
+		$config_data = sanitize($config_data);
+
 		$popup_title = $action == 'add' ? __('Add Option') : __('Edit Option');
 		$popup_header = buildPopup('header', $popup_title);
 		$popup_footer = buildPopup('footer');
