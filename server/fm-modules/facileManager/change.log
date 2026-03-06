@@ -1,5 +1,7 @@
 6.0.4 (2026-01-??)
 ==================
+* Server - [security] Fixed stored XSS throughout application.
+* Server - [security] Fixed reflected XSS in the admin logs.
 * Server - [bug] Fixed PHP error when no user capabilities are set.
 * Server - [bug] Fixed large popup window CSS.
 * Server - [bug] Fixed upgrade process when custom logo is missing.

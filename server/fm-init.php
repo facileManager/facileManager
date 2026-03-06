@@ -103,6 +103,7 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 			$_POST['uri_params'] = json_decode($_POST['uri_params'], true);
 		}
 		$_POST = cleanAndTrimInputs($_POST);
+		$_REQUEST = cleanAndTrimInputs($_REQUEST);
 		if (isset($_SERVER['HTTP_AUTHKEY'])) {
 			$_SERVER['HTTP_AUTHKEY'] = sanitize($_SERVER['HTTP_AUTHKEY']);
 		}

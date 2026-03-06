@@ -221,6 +221,7 @@ function sanitize($data, $replace = null) {
 		return $data;
 	} else {
 		if (is_string($data)) {
+			$data = htmlentities($data, ENT_COMPAT, 'UTF-8', false);
 			$data = htmlspecialchars(strip_tags($data, '<username>'), ENT_NOQUOTES);
 			if ($fmdb->use_mysqli) {
 				return html_entity_decode(str_replace('\r\n', "\n", mysqli_real_escape_string($fmdb->dbh, $data)));

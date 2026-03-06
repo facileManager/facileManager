@@ -22,7 +22,7 @@
 */
 
 define('AJAX', true);
-require_once('../../../fm-init.php');
+require('../../../fm-init.php');
 
 include(ABSPATH . 'fm-modules' . DIRECTORY_SEPARATOR . $fm_name . DIRECTORY_SEPARATOR . 'ajax' . DIRECTORY_SEPARATOR . 'functions.php');
 
