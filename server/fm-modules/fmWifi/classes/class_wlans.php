@@ -491,16 +491,16 @@ HTML;
 		$config_name = $config_data;
 		
 		/** Get child elements */
-		$ignore_broadcast_ssid_checked = (str_replace(array('"', "'"), '', $this->getConfig($config_id, 'ignore_broadcast_ssid'))) ? 'checked' : null;
-		$ieee80211n_checked = (str_replace(array('"', "'"), '', $this->getConfig($config_id, 'ieee80211n'))) ? 'checked' : null;
-		$ieee80211ac_checked = (str_replace(array('"', "'"), '', $this->getConfig($config_id, 'ieee80211ac'))) ? 'checked' : null;
-		$ieee80211d_checked = (str_replace(array('"', "'"), '', $this->getConfig($config_id, 'ieee80211d'))) ? 'checked' : null;
-		$wmm_enabled_checked = (str_replace(array('"', "'"), '', $this->getConfig($config_id, 'wmm_enabled'))) ? 'checked' : null;
-		$preamble_checked = (str_replace(array('"', "'"), '', $this->getConfig($config_id, 'preamble'))) ? 'checked' : null;
+		$ignore_broadcast_ssid_checked = (str_replace(array('"', "'", '&quot;'), '', html_entity_decode($this->getConfig($config_id, 'ignore_broadcast_ssid')))) ? 'checked' : null;
+		$ieee80211n_checked = (str_replace(array('"', "'", '&quot;'), '', html_entity_decode($this->getConfig($config_id, 'ieee80211n')))) ? 'checked' : null;
+		$ieee80211ac_checked = (str_replace(array('"', "'", '&quot;'), '', html_entity_decode($this->getConfig($config_id, 'ieee80211ac')))) ? 'checked' : null;
+		$ieee80211d_checked = (str_replace(array('"', "'", '&quot;'), '', html_entity_decode($this->getConfig($config_id, 'ieee80211d')))) ? 'checked' : null;
+		$wmm_enabled_checked = (str_replace(array('"', "'", '&quot;'), '', html_entity_decode($this->getConfig($config_id, 'wmm_enabled')))) ? 'checked' : null;
+		$preamble_checked = (str_replace(array('"', "'", '&quot;'), '', html_entity_decode($this->getConfig($config_id, 'preamble')))) ? 'checked' : null;
 		$config_aps = buildSelect('config_aps', 'config_aps', availableServers('id'), explode(';', $config_aps), 1, null, true);
 		$hw_mode = $this->getConfig($config_id, 'hw_mode');
 		$hw_mode_options = buildSelect('hw_mode', 'hw_mode', $hw_mode_options, $hw_mode);
-		$auth_algs_checked = (str_replace(array('"', "'"), '', $this->getConfig($config_id, 'auth_algs'))) ? 'checked' : null;
+		$auth_algs_checked = (str_replace(array('"', "'", '&quot;'), '', html_entity_decode($this->getConfig($config_id, 'auth_algs')))) ? 'checked' : null;
 		$macaddr_acl_options = buildSelect('macaddr_acl', 'macaddr_acl', $macaddr_acl_options, $this->getConfig($config_id, 'macaddr_acl'));
 		$macaddr_note = sprintf(' <a class="tooltip-top" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>', __('The ACL functionality of hostapd (macaddr_acl) does not seem to work with Raspbian. Therefore, the use of ebtables is recommended to deny clients.'));
 
@@ -508,12 +508,12 @@ HTML;
 		$wpa_key_mgmt = $fm_module_options->populateDefTypeDropdown($fm_module_options->parseDefType('wpa_key_mgmt'), $this->getConfig($config_id, 'wpa_key_mgmt'), 'wpa_key_mgmt');
 		$wpa_pairwise = $fm_module_options->populateDefTypeDropdown($fm_module_options->parseDefType('wpa_pairwise'), $this->getConfig($config_id, 'wpa_pairwise'), 'wpa_pairwise');
 
-		$channel = str_replace(array('"', "'"), '', $this->getConfig($config_id, 'channel'));
+		$channel = str_replace(array('"', "'", '&quot;'), '', html_entity_decode($this->getConfig($config_id, 'channel')));
 		$country_code = ($config_id) ? $this->getConfig($config_id, 'country_code') : $country_code;
 		$country_code = $this->buildConfigOptions('country_code', $country_code);
 		$max_num_sta = $this->getConfig($config_id, 'max_num_sta');
 		$max_num_sta_note = sprintf(' <a class="tooltip-right" data-tooltip="%s"><i class="fa fa-question-circle"></i></a>', __('Limit the number of clients that can connect or leave empty for the maximum (2007). In addition, you can choose to ignore broadcast Probe Request frames from unassociated clients if the maximum client count has been reached which would discourage clients from trying to associate with this AP if the association would be rejected due to the maximum client limit.'));
-		$no_probe_resp_if_max_sta_checked = (str_replace(array('"', "'"), '', $this->getConfig($config_id, 'no_probe_resp_if_max_sta'))) ? 'checked' : null;
+		$no_probe_resp_if_max_sta_checked = (str_replace(array('"', "'", '&quot;'), '', html_entity_decode($this->getConfig($config_id, 'no_probe_resp_if_max_sta')))) ? 'checked' : null;
 
 		$ieee80211n_entry = 'none';
 		if (in_array($hw_mode, array('', 'a', 'b', 'g'))) {
