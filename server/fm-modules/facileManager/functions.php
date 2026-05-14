@@ -3882,9 +3882,12 @@ function getBrandLogo($size = 'sm_brand_img') {
 	global $fm_name;
 	
 	$branding_logo = getOption($size);
-
+	//logo path fix when using /dnsamin in url
+	$check_path = preg_replace('#^/dnsadmin#', '', $branding_logo);
+	
 	if ($branding_logo && strpos($branding_logo, 'http') === false) {
-		if (!file_exists(ABSPATH . $branding_logo)) {
+		//if (!file_exists(ABSPATH . $branding_logo)) {
+		if (!file_exists(ABSPATH . $check_path)) { 
 			$branding_logo = null;
 		}
 	}
