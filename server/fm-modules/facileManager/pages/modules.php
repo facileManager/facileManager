@@ -56,7 +56,7 @@ if (array_key_exists('action', $_GET) && array_key_exists('module', $_GET)) {
 require(ABSPATH . 'fm-includes/version.php');
 $fm_new_version_available = isNewVersionAvailable($fm_name, $fm_version);
 
-if (!empty($fm_new_version_available)) {
+if (!empty($fm_new_version_available) && is_array($fm_new_version_available)) {
 	list($fm_temp_directory, $allow_update_core) = clearUpdateDir();
 	
 	if (!is_writable_r(ABSPATH, 'config.inc.php')) $allow_update_core = false;
@@ -147,9 +147,12 @@ if (count($modules)) {
 			}
 		}
 		
-		if ($module_new_version_available = isNewVersionAvailable($module_name, $module_version)) {
+		$module_new_version_available = isNewVersionAvailable($module_name, $module_version);
+		if (is_array($module_new_version_available)) {
 			$module_new_version_available = '<div class="upgrade_notice">' . $module_new_version_available['text'] . '</div>';
 			$class[] = 'upgrade';
+		} else {
+			$module_new_version_available = '';
 		}
 		$class = implode(' ', array_unique($class));
 		

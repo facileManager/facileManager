@@ -74,7 +74,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 		}
 	}
 
-	if (!empty($fm_new_version_available) || $module_new_version_available) {
+	if ((!empty($fm_new_version_available) && is_array($fm_new_version_available)) || $module_new_version_available) {
 		echo 'modules.php';
 	}
 

@@ -1123,7 +1123,7 @@ function buildDashboard() {
 	require(ABSPATH . 'fm-includes/version.php');
 	$fm_new_version_available = isNewVersionAvailable($fm_name, $fm_version);
 	
-	if ($fm_new_version_available) {
+	if ($fm_new_version_available && is_array($fm_new_version_available)) {
 		$dashboard = <<<DASH
 	<div id="shadow_box" class="fullwidthbox">
 		<div id="shadow_container" class="fullwidthbox">
