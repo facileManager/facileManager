@@ -1,6 +1,7 @@
 6.0.5 (2026-??-??)
 ==================
 * Server - [bug] Fixed a PHP fatal error when checking for updates. (Issue #741)
+* Server - [bug] Fixed login form CSS for small screens.
 
 6.0.4 (2026-03-06)
 ==================
