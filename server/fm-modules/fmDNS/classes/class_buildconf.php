@@ -2390,7 +2390,7 @@ HTML;
 	 * @return null
 	 */
 	function moduleUpdateReloadFlags($server_serial_no, $post_data) {
-		global $fmdb, $__FM_CONFIG;
+		global $fmdb, $__FM_CONFIG, $fm_dns_zones;
 		
 		extract($post_data);
 		
@@ -2398,8 +2398,8 @@ HTML;
 			$this->setBuiltDomainIDs($server_serial_no, $built_domain_ids);
 		}
 		if (isset($reload_domain_ids)) {
-			$query = "DELETE FROM `fm_" . $__FM_CONFIG['fmDNS']['prefix'] . "track_reloads` WHERE `server_serial_no`='" . sanitize($server_serial_no) . "' AND domain_id IN (" . implode(',', array_unique($reload_domain_ids)) . ')';
-			$fmdb->query($query);
+			/** Remove reload flags */
+			$fm_dns_zones->removeZoneReload(sanitize($server_serial_no), array_unique($reload_domain_ids));
 			
 			/** Update domain_check_config */
 			$query = "UPDATE `fm_" . $__FM_CONFIG['fmDNS']['prefix'] . "domains` SET `domain_check_config`='no' WHERE domain_id IN (" . implode(',', array_unique($reload_domain_ids)) . ')';
