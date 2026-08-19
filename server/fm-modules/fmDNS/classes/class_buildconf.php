@@ -2766,7 +2766,7 @@ RewriteRule "^/?(.*)"      "%s" [L,R,LE]
 			return str_replace(array('"', "'"), '', $fmdb->last_result[0]->cfg_data);
 		}
 
-		return null;
+		return '';
 	}
 
 

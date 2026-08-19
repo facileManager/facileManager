@@ -1,3 +1,7 @@
+7.4.3 (2026-??-??)
+==================
+* Server - [bug] Fixed PHP errors during server configuration builds.
+
 7.4.2 (2026-03-06)
 ==================
 * Server - [security] Fixed stored XSS throughout application.
