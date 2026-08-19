@@ -118,7 +118,7 @@ if (!isset($__FM_CONFIG)) {
 		$("form .required").closest("tr").children("th").children("label").addClass("required");
 	});
 	
-	$(function displayHideProcessAll() {
+	function displayHideProcessAll() {
 		if ($("#tophead").is(":visible")) {
 			var form_data = {
 				action: "display-process-all"
@@ -147,6 +147,9 @@ if (!isset($__FM_CONFIG)) {
 				}
 			});
 		}
+	}
+	$(function() {
+		displayHideProcessAll();
 	});
 	
 	if (!onPage("admin-logs.php")) {
@@ -453,6 +456,7 @@ if (!isset($__FM_CONFIG)) {
 							}
 						}
 					}
+					displayHideProcessAll();
 				} else {
 					var eachLine = response.split("\n");
 					if (eachLine.length <= 2) {
@@ -521,6 +525,7 @@ if (!isset($__FM_CONFIG)) {
 								$("#table_edits").after("<p id=\"table_edits\" class=\"noresult\">' . _('There are no items defined.') . '</p>");
 							}
 						});
+						displayHideProcessAll();
 					} else {
 						setTimeout(function() {
 					    	$this.html("<i class=\"fa fa-trash delete\" alt=\"Delete\" title=\"Delete\" aria-hidden=\"true\"></i>");
