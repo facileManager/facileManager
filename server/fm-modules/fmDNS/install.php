@@ -315,11 +315,21 @@ CREATE TABLE IF NOT EXISTS `$database`.`fm_{$__FM_CONFIG[$module]['prefix']}trac
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 TABLESQL;
 
+  $table[] = <<<TABLESQL
+ALTER TABLE `$database`.`fm_{$__FM_CONFIG[$module]['prefix']}track_builds`
+  ADD UNIQUE KEY `uq_domain_server` (`domain_id`,`server_serial_no`);
+TABLESQL;
+
 	$table[] = <<<TABLESQL
 CREATE TABLE IF NOT EXISTS `$database`.`fm_{$__FM_CONFIG[$module]['prefix']}track_reloads` (
   `domain_id` int(11) NOT NULL,
   `server_serial_no` int(11) NOT NULL
 ) ENGINE = INNODB DEFAULT CHARSET=utf8;
+TABLESQL;
+
+  $table[] = <<<TABLESQL
+ALTER TABLE `$database`.`fm_{$__FM_CONFIG[$module]['prefix']}track_reloads`
+  ADD UNIQUE KEY `uq_domain_server` (`domain_id`,`server_serial_no`);
 TABLESQL;
 
 	$table[] = <<<TABLESQL

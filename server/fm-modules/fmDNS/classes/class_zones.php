@@ -1490,8 +1490,14 @@ HTML;
 			switch($name_servers[$i]->server_update_method) {
 				case 'cron':
 					/** Add records to fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}track_reloads */
-					foreach ($this->getZoneCloneChildren($domain_id) as $child_id) {
-						$this->addZoneReload($name_servers[$i]->server_serial_no, $child_id);
+					if ($name_servers[$i]->server_build_config == 'no') {
+						foreach ($this->getZoneCloneChildren($domain_id) as $child_id) {
+							if ($name_servers[$i]->server_update_config != 'conf') {
+								$this->addZoneReload($name_servers[$i]->server_serial_no, $child_id);
+							} else {
+								$this->removeZoneReload($name_servers[$i]->server_serial_no);
+							}
+						}
 					}
 					
 					$post_result[] = __('This zone will be updated on the next cron run.');
@@ -1553,7 +1559,9 @@ HTML;
 				}
 			}
 			/** Set the server_update_config flag */
-			setBuildUpdateConfigFlag($name_servers[$i]->server_serial_no, 'yes', 'update');
+			if ($name_servers[$i]->server_update_config != 'conf') {
+				setBuildUpdateConfigFlag($name_servers[$i]->server_serial_no, 'yes', 'update');
+			}
 		}
 		
 		/** Reset the domain_reload flag */
@@ -1606,7 +1614,22 @@ HTML;
 	function addZoneReload($server_serial_no, $domain_id) {
 		global $fmdb, $__FM_CONFIG;
 		
-		$query = "INSERT INTO `fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}track_reloads` VALUES($domain_id, $server_serial_no)";
+		$query = "INSERT IGNORE INTO `fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}track_reloads` VALUES($domain_id, $server_serial_no)";
+		$fmdb->query($query);
+	}
+	
+	
+	function removeZoneReload($server_serial_no, $domain_id = null) {
+		global $fmdb, $__FM_CONFIG;
+
+		$domain_id_sql = '';
+		
+		if ($domain_id) {
+			if (is_array($domain_id)) {
+				$domain_id_sql = (is_array($domain_id)) ? "AND `domain_id` IN (" . join(',', $domain_id) . ")" : "AND `domain_id`=$domain_id";
+			}
+		}
+		$query = "DELETE FROM `fm_{$__FM_CONFIG[$_SESSION['module']]['prefix']}track_reloads` WHERE `server_serial_no`=$server_serial_no $domain_id_sql";
 		$fmdb->query($query);
 	}
 	

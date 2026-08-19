@@ -2988,3 +2988,26 @@ function upgradefmDNS_720b1($__FM_CONFIG, $running_version) {
 	return true;
 }
 
+
+/** 7.4.2 */
+function upgradefmDNS_742($__FM_CONFIG, $running_version) {
+	global $fmdb;
+	
+	$success = version_compare($running_version, '7.2.0-beta1', '<') ? upgradefmDNS_720b1($__FM_CONFIG, $running_version) : true;
+	if (!$success) return false;
+
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}track_builds` ADD UNIQUE KEY `uq_domain_server` (`domain_id`, `server_serial_no`)";
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}track_reloads` ADD UNIQUE KEY `uq_domain_server` (`domain_id`, `server_serial_no`)";
+	
+	/** Run queries */
+	if (isset($queries) && count($queries) && $queries[0]) {
+		foreach ($queries as $schema) {
+			$fmdb->query($schema);
+		}
+	}
+
+	setOption('version', '7.4.2', 'auto', false, 0, 'fmDNS');
+	
+	return true;
+}
+
