@@ -332,7 +332,7 @@ class fm_users {
 		if (isset($post['user_2fa_method']) && !isset($post['enable_2fa'])) {
 			$post['user_2fa_method'] = '0';
 			$post['user_2fa_secret'] = '';
-			unset($post['app_otp']);
+			unset($post['app_otp'], $post['tfa_setup_complete']);
 			$log_message .= formatLogKeyData('user_', '2FA Method', 'Disabled');
 		} elseif (isset($post['user_2fa_method'])) {
 			if ($post['user_2fa_method'] != 'app') {
