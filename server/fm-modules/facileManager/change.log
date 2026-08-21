@@ -5,6 +5,7 @@
 * Server - [bug] Fixed the inability to disable 2FA when the user has a 2FA method set.
 * Server - [bug] Fixed the process-all button display when deleting or toggling item status.
 * Server - [bug] Fixed PHP deprecation warnings.
+* Server - [bug] Added a missing check to prevent the API from being used when API support is disabled.
 
 6.0.4 (2026-03-06)
 ==================

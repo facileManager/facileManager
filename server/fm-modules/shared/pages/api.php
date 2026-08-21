@@ -23,6 +23,11 @@
 
 header("Content-Type: application/json");
 
+/** Ensure API support is enabled */
+if (!getOption('api_token_support')) {
+	returnAPIStatus(403);
+}
+
 /** Handle client interactions */
 if (!defined('CLIENT')) define('CLIENT', true);
 
