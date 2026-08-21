@@ -890,7 +890,7 @@ function getNameFromID($id, $table, $prefix, $field, $data, $account_id = null, 
 		}
 	}
 	
-	return false;
+	return null;
 }
 
 
