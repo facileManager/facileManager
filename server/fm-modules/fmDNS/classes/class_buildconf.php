@@ -537,7 +537,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 				for ($i=0; $i < $control_config_count; $i++) {
 					if ($control_result[$i]->control_comment) {
 						$comment = wordwrap($control_result[$i]->control_comment, 50, "\n");
-						$control_config .= "\t// " . str_replace("\n", "\n// ", $comment) . "\n";
+						$control_config .= "\t// " . str_replace("\n", "\n\t// ", $comment) . "\n";
 						unset($comment);
 					}
 					$control_config .= "\tinet " . $control_result[$i]->control_ip;
@@ -565,7 +565,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 				for ($i=0; $i < $control_config_count; $i++) {
 					if ($control_result[$i]->control_comment) {
 						$comment = wordwrap($control_result[$i]->control_comment, 50, "\n");
-						$control_config .= "\t// " . str_replace("\n", "\n// ", $comment) . "\n";
+						$control_config .= "\t// " . str_replace("\n", "\n\t// ", $comment) . "\n";
 						unset($comment);
 					}
 					$control_config .= "\tinet " . $control_result[$i]->control_ip;
