@@ -537,7 +537,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 				for ($i=0; $i < $control_config_count; $i++) {
 					if ($control_result[$i]->control_comment) {
 						$comment = wordwrap($control_result[$i]->control_comment, 50, "\n");
-						$control_config .= "\t// " . str_replace("\n", "\n// ", $comment) . "\n";
+						$control_config .= "\t// " . str_replace("\n", "\n\t// ", $comment) . "\n";
 						unset($comment);
 					}
 					$control_config .= "\tinet " . $control_result[$i]->control_ip;
@@ -565,7 +565,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 				for ($i=0; $i < $control_config_count; $i++) {
 					if ($control_result[$i]->control_comment) {
 						$comment = wordwrap($control_result[$i]->control_comment, 50, "\n");
-						$control_config .= "\t// " . str_replace("\n", "\n// ", $comment) . "\n";
+						$control_config .= "\t// " . str_replace("\n", "\n\t// ", $comment) . "\n";
 						unset($comment);
 					}
 					$control_config .= "\tinet " . $control_result[$i]->control_ip;
@@ -1673,7 +1673,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 	 * @since 2.2
 	 * @package fmDNS
 	 *
-	 * @param array $raw_data Array containing named files and contents
+	 * @param array $files_array Array containing named files and contents
 	 * @param string|array $checks_to_run String or array of what checks to run
 	 * @return string|void
 	 */
@@ -1720,7 +1720,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 				$tmp_contents = preg_replace('/^\/\/(.+?)+/', '', $contents);
 				$tmp_contents = explode("};\n", trim($tmp_contents));
 				foreach($tmp_contents as $zone_def) {
-					if (strpos($zone_def, 'type master;') !== false) {
+					if (strpos($zone_def, 'type master;') !== false || strpos($zone_def, 'type primary;') !== false) {
 						preg_match('/^zone "(.+?)+/', $zone_def, $tmp_zone_def);
 						$tmp_zone_def = explode('"', $tmp_zone_def[0]);
 						preg_match('/file "(.+?)+/', trim($zone_def), $tmp_zone_def_file);
@@ -1772,7 +1772,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 				if (!$retval) {
 					if (count($files_array['files']) == 1) {
 						$tmp_zone_file_array = array_keys($files_array['files']);
-						$zone_files['all'] = array(preg_replace('/.conf$/', '', $tmp_zone_file_array[0]) => $tmp_zone_file_array[0]);
+						$zone_files['all'] = array(preg_replace('/.hosts$/', '', $tmp_zone_file_array[0]) => $tmp_zone_file_array[0]);
 					}
 					$named_checkzone_results = '';
 					if (array($zone_files)) {

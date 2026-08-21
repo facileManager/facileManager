@@ -769,14 +769,10 @@ HTML;
 					$soa_default_checked, __('Make Default Template'), $soa_id);
 		}
 		
-		if (array_key_exists('map', $_GET) && sanitize($_GET['map']) == 'reverse') {
-			$template_append = null;
-		} else {
-			$template_append = sprintf('<tr>
+		$template_append = sprintf('<tr>
 			<th>%s</th>
 			<td><input type="radio" id="append[0]" name="%2$s[%3$s][soa_append]" value="yes" %4$s /><label class="radio" for="append[0]"> %6$s</label> <input type="radio" id="append[1]" name="%2$s[%3$s][soa_append]" value="no" %5$s /><label class="radio" for="append[1]"> %7$s</label></td>
 		</tr>', __('Append Domain'), $action, $soa_id, $yeschecked, $nochecked, __('yes'), __('no'));
-		}
 		
 		$labels = array(
 			__('TTL'),
