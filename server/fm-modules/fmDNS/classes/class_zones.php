@@ -1028,7 +1028,7 @@ HTML;
 		}
 		
 		/** Process multiple domain name servers */
-		if (strpos($domain_name_servers, ';')) {
+		if ($domain_name_servers && strpos($domain_name_servers, ';')) {
 			$domain_name_servers = explode(';', rtrim($domain_name_servers, ';'));
 			if (in_array('0', $domain_name_servers)) $domain_name_servers = 0;
 		}
