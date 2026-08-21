@@ -2685,20 +2685,24 @@ HTML;
 			global $fm_module_buildconf;
 			include_once(ABSPATH . 'fm-modules/' . $_SESSION['module'] . '/classes/class_buildconf.php');
 
-			basicGet('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', $domain_id, 'domain_', 'domain_id');
-			$zone_result = $fmdb->last_result[0];
-			
-			/** Is this a clone id? */
-			if ($zone_result->domain_clone_domain_id) $zone_result = $fm_module_buildconf->mergeZoneDetails($zone_result, 'clone');
-			elseif ($zone_result->domain_template_id) $zone_result = $fm_module_buildconf->mergeZoneDetails($zone_result, 'template');
+			foreach ($this->getZoneCloneChildren($domain_id) as $child_id) {
+				basicGet('fm_' . $__FM_CONFIG[$_SESSION['module']]['prefix'] . 'domains', $child_id, 'domain_', 'domain_id');
+				$zone_result = $fmdb->last_result[0];
 
-			$zone_file_contents = str_replace('$INCLUDE', ';', @$fm_module_buildconf->buildZoneFile($zone_result, 0));
+				/** Is this a clone id? */
+				if ($zone_result->domain_clone_domain_id) $zone_result = $fm_module_buildconf->mergeZoneDetails($zone_result, 'clone');
+				elseif ($zone_result->domain_template_id) $zone_result = $fm_module_buildconf->mergeZoneDetails($zone_result, 'template');
 
-			if (method_exists($fm_module_buildconf, 'processConfigsChecks')) {
-				$response = @$fm_module_buildconf->processConfigsChecks(array('server_serial_no' => 0, 'files' => array($zone_result->domain_name . '.conf' => $zone_file_contents)), 'checkzone');
-			}
-			if (strpos($response, @$fm_module_buildconf->getSyntaxCheckMessage('loadable')) !== false) {
-				$response = false;
+				$zone_file_contents = str_replace('$INCLUDE', ';', @$fm_module_buildconf->buildZoneFile($zone_result, 0));
+
+				if (method_exists($fm_module_buildconf, 'processConfigsChecks')) {
+					$response = @$fm_module_buildconf->processConfigsChecks(array('server_serial_no' => 0, 'files' => array($zone_result->domain_name . '.hosts' => $zone_file_contents)), 'checkzone');
+				}
+				if (strpos($response, @$fm_module_buildconf->getSyntaxCheckMessage('loadable')) !== false) {
+					$response = false;
+				} else {
+					break;
+				}
 			}
 		}
 
