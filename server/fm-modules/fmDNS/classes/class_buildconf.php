@@ -1697,7 +1697,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 		}
 		
 		$fm_temp_directory = '/' . ltrim(getOption('fm_temp_directory'), '/');
-		$tmp_dir = rtrim($fm_temp_directory, '/') . '/' . $_SESSION['module'] . '_' . date("YmdHis") . '/';
+		$tmp_dir = rtrim($fm_temp_directory, '/') . '/' . escapeshellarg($_SESSION['module']) . '_' . date("YmdHis") . '/';
 		system('rm -rf ' . $tmp_dir);
 		
 		/** Create temporary directory structure */
@@ -1744,7 +1744,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 		if (!$die) {
 			/** Run named-checkconf */
 			if (in_array('checkconf', $checks_to_run)) {
-				$named_checkconf_cmd = findProgram('sudo') . ' -n ' . $named_checkconf . ' -t ' . $tmp_dir . ' ' . $files_array['server_config_file'] . ' 2>&1';
+				$named_checkconf_cmd = findProgram('sudo') . ' -n ' . $named_checkconf . ' -t ' . $tmp_dir . ' ' . escapeshellarg($files_array['server_config_file']) . ' 2>&1';
 				exec($named_checkconf_cmd, $named_checkconf_results, $retval);
 				/** Remove key-directory statements for config checks */
 				foreach ($named_checkconf_results as $key => $val) {
@@ -1778,7 +1778,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 					if (array($zone_files)) {
 						foreach ($zone_files as $view => $zones) {
 							foreach ($zones as $zone_name => $zone_file) {
-								$named_checkzone_cmd = findProgram('sudo') . ' -n ' . $named_checkzone . ' -t ' . $tmp_dir . ' ' . $zone_name . ' ' . $zone_file . ' 2>&1';
+								$named_checkzone_cmd = findProgram('sudo') . ' -n ' . $named_checkzone . ' -t ' . $tmp_dir . ' ' . escapeshellarg($zone_name) . ' ' . escapeshellarg($zone_file) . ' 2>&1';
 								exec($named_checkzone_cmd, $results, $retval);
 								if ($retval) {
 									$class = 'class="error"';
@@ -2521,7 +2521,7 @@ HTML;
 		$dnssec_ksk = join(' ', $dnssec_ksk);
 		
 		/** Sign zone with all keys */
-		$dnssec_output = shell_exec('cd ' . escapeshellarg($tmp_dir) . ' && ' . $dnssec_signzone . ' -g -K ' . escapeshellarg($tmp_dir) . ' -o ' . escapeshellarg($domain->domain_name) . ' ' . $dnssec_ksk . ' -f ' . escapeshellarg($temp_zone_file) . '.signed -e ' . $dnssec_endtime . ' ' . escapeshellarg($temp_zone_file) . ' ' . escapeshellarg($dnssec_key_signing_array['ZSK'][0][0]) . ' 2>&1');
+		$dnssec_output = shell_exec('cd ' . $tmp_dir . ' && ' . $dnssec_signzone . ' -g -K ' . $tmp_dir . ' -o ' . escapeshellarg($domain->domain_name) . ' ' . $dnssec_ksk . ' -f ' . escapeshellarg($temp_zone_file) . '.signed -e ' . $dnssec_endtime . ' ' . escapeshellarg($temp_zone_file) . ' ' . escapeshellarg($dnssec_key_signing_array['ZSK'][0][0]) . ' 2>&1');
 		if (file_exists($temp_zone_file . '.signed')) {
 			$signed_zone = file_get_contents($temp_zone_file . '.signed');
 			$GLOBALS[$_SESSION['module']]['DNSSEC'][] = array('domain_id' => $domain->parent_domain_id, 'domain_dnssec_signed' => strtotime('now'));

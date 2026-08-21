@@ -158,7 +158,7 @@ function buildConf($url, $data) {
 			$path_parts['filename'] = str_replace('.' . $path_parts['extension'], '', $path_parts['basename']);
 		}
 		$config_file_pattern = $path_parts['dirname'] . DIRECTORY_SEPARATOR . $path_parts['filename'] . '.*';
-		exec('ls ' . $config_file_pattern, $config_file_match);
+		exec('ls ' . escapeshellarg($config_file_pattern), $config_file_match);
 		foreach ($config_file_match as $config_file) {
 			deleteFile($config_file, $debug, $data['dryrun']);
 		}
@@ -498,7 +498,7 @@ function moduleInitWebRequest() {
 				exit(serialize('Zone ID is not found.'));
 			}
 
-			exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . dirname(__FILE__) . '/client.php zones id=' . $_POST['domain_id'] . ' 2>&1', $rawoutput, $rc);
+			exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . dirname(__FILE__) . '/client.php zones id=' . escapeshellarg($_POST['domain_id']) . ' 2>&1', $rawoutput, $rc);
 			if ($rc) {
 				/** Something went wrong */
 				$output[] = 'Zone reload failed.';
@@ -512,7 +512,7 @@ function moduleInitWebRequest() {
 			$output['failures'] = false;
 			$output['output'] = array();
 
-			exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . dirname(__FILE__) . '/client.php ' . $_POST['command_args'], $output['output'], $rc);
+			exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . dirname(__FILE__) . '/client.php ' . escapeshellarg($_POST['command_args']), $output['output'], $rc);
 			if ($rc) {
 				/** Something went wrong */
 				$output['failures'] = true;
@@ -578,7 +578,7 @@ function runRndcActions($rndc_actions, $server_config_file, $server_key_with_rnd
  * @package fmDNS
  */
 function addChrootFiles() {
-	if (file_exists('/usr/libexec/setup-named-chroot.sh') && !exec('grep -c ' . escapeshellarg('named.conf.keys') . ' /usr/libexec/setup-named-chroot.sh')) {
+	if (file_exists('/usr/libexec/setup-named-chroot.sh') && !exec('grep -c named.conf.keys /usr/libexec/setup-named-chroot.sh')) {
 		file_put_contents('/usr/libexec/setup-named-chroot.sh', str_replace('rndc.key', 'rndc.key /etc/named.conf.keys', file_get_contents('/usr/libexec/setup-named-chroot.sh')));
 	}
 }

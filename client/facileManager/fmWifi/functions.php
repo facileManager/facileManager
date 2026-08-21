@@ -162,9 +162,9 @@ function installFMModule($module_name, $proto, $compress, $data, $server_locatio
 	$entry_exists = intval(trim(shell_exec('crontab -l 2>/dev/null | grep ' . escapeshellarg($module_name) . ' | grep -c status-all')));
 	
 	if (!$entry_exists) {
-		$dump = shell_exec('crontab -l > ' . $tmpfile . ' 2>/dev/null');
+		$dump = shell_exec('crontab -l > ' . escapeshellarg($tmpfile) . ' 2>/dev/null');
 
-		$cmd = "echo '* * * * * " . findProgram('php') . ' ' . dirname(__FILE__) . "/client.php status-all' >> $tmpfile && " . findProgram('crontab') . ' ' . $tmpfile;
+		$cmd = "echo '* * * * * " . findProgram('php') . ' ' . dirname(__FILE__) . "/client.php status-all' >> " . escapeshellarg($tmpfile) . ' && ' . findProgram('crontab') . ' ' . escapeshellarg($tmpfile);
 		$cron_update = system($cmd, $retval);
 		unlink($tmpfile);
 		
@@ -296,7 +296,7 @@ function moduleInitWebRequest() {
 
 	switch ($_POST['action']) {
 		case 'manage_leases':
-			exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . dirname(__FILE__) . '/client.php ' . $_POST['command_args'], $output['output'], $rc);
+			exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . dirname(__FILE__) . '/client.php ' . escapeshellarg($_POST['command_args']), $output['output'], $rc);
 			if ($rc) {
 				/** Something went wrong */
 				$output['failures'] = true;
