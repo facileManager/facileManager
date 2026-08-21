@@ -4,6 +4,7 @@
 * Server - [bug] Fixed login form CSS for small screens.
 * Server - [bug] Fixed the inability to disable 2FA when the user has a 2FA method set.
 * Server - [bug] Fixed the process-all button display when deleting or toggling item status.
+* Server - [bug] Fixed PHP deprecation warnings.
 
 6.0.4 (2026-03-06)
 ==================
