@@ -149,7 +149,7 @@ class fm_settings {
 		}
 		
 		/** Create the ssh key pair */
-		exec(findProgram('ssh-keygen') . " -t rsa -b 2048 -f $fm_temp_directory/fm_id_rsa -N ''", $exec_array, $retval);
+		exec(findProgram('ssh-keygen') . " -t rsa -b 2048 -f " . escapeshellarg($fm_temp_directory . '/fm_id_rsa') . " -N ''", $exec_array, $retval);
 		$array['ssh_key_priv'] = @file_get_contents($fm_temp_directory . '/fm_id_rsa');
 		$array['ssh_key_pub'] = @file_get_contents($fm_temp_directory . '/fm_id_rsa.pub');
 		

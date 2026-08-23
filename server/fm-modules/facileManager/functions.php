@@ -3281,7 +3281,7 @@ function runRemoteCommand($host_array, $command, $format = 'silent', $port = 22,
 		}
 
 		/** Test SSH authentication */
-		exec(findProgram('ssh') . " -T -i $temp_ssh_key -o 'StrictHostKeyChecking no' -p $port -l $ssh_user $host 'ls /usr/local/$fm_name/{$_SESSION['module']}/client.php'", $output, $rc);
+		exec(findProgram('ssh') . ' -T -i ' . escapeshellarg($temp_ssh_key) . " -o 'StrictHostKeyChecking no' -p $port -l " . escapeshellarg($ssh_user) . " $host 'ls " . escapeshellarg("/usr/local/$fm_name/{$_SESSION['module']}/client.php") . "'", $output, $rc);
 		if ($rc) {
 			/** Something went wrong */
 			if ($rc == 255 || $client_check == 'include') {
@@ -3299,7 +3299,7 @@ function runRemoteCommand($host_array, $command, $format = 'silent', $port = 22,
 		}
 		unset($output);
 
-		exec(findProgram('ssh') . " -T -i $temp_ssh_key -o 'StrictHostKeyChecking no' -p $port -l $ssh_user $host \"$command\"", $output, $rc);
+		exec(findProgram('ssh') . ' -T -i ' . escapeshellarg($temp_ssh_key) . " -o 'StrictHostKeyChecking no' -p $port -l " . escapeshellarg($ssh_user) . " $host \"" . escapeshellarg($command) . "\"", $output, $rc);
 	
 		if ($rc) {
 			$failures = true;
@@ -3634,7 +3634,7 @@ function createTempDir($subdir, $append = null) {
 	}
 	
 	$fm_temp_directory = '/' . ltrim(getOption('fm_temp_directory'), '/');
-	$tmp_dir = rtrim($fm_temp_directory, '/') . "/$subdir/";
+	$tmp_dir = escapeshellarg(rtrim($fm_temp_directory, '/') . "/$subdir/");
 	system('rm -rf ' . $tmp_dir);
 	$created = createDir($tmp_dir);
 

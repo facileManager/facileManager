@@ -1,5 +1,6 @@
 6.0.5 (2026-??-??)
 ==================
+* Both   - [security] Fixed command injection vulnerabilities.
 * Server - [bug] Fixed a PHP fatal error when checking for updates. (Issue #741)
 * Server - [bug] Fixed login form CSS for small screens.
 * Server - [bug] Fixed the inability to disable 2FA when the user has a 2FA method set.

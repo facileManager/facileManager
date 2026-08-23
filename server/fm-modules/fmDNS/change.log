@@ -1,5 +1,6 @@
 7.4.3 (2026-??-??)
 ==================
+* Both   - [security] Fixed command injection vulnerabilities.
 * Server - [bug] Fixed PHP errors during server configuration builds.
 * Server - [bug] Fixed zone reloads and configuration builds for servers utilizing cron updates. (Issue #740)
 * Server - [bug] Fixed the missing "Append Domain" option when editing SOA records.

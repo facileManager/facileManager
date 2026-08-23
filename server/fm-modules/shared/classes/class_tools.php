@@ -37,7 +37,7 @@ class fm_shared_module_tools {
 		
 		/** Load ssh key for use */
 		$ssh_key = getOption('ssh_key_priv', $_SESSION['user']['account_id']);
-		$temp_ssh_key = getOption('fm_temp_directory') . '/fm_id_rsa';
+		$temp_ssh_key = escapeshellarg(getOption('fm_temp_directory') . '/fm_id_rsa');
 		if ($ssh_key) {
 			if (file_exists($temp_ssh_key)) @unlink($temp_ssh_key);
 			$ssh_key_loaded = @file_put_contents($temp_ssh_key, $ssh_key);
@@ -78,7 +78,7 @@ class fm_shared_module_tools {
 						} elseif (!$ssh_user) {
 							$return .= _('no SSH user defined');
 						} else {
-							exec(findProgram('ssh') . " -T -i $temp_ssh_key -o 'StrictHostKeyChecking no' -p {$results[$x]->server_update_port} -l $ssh_user {$results[$x]->server_name} 'ls /usr/local/$fm_name/{$_SESSION['module']}/client.php'", $post_result, $retval);
+							exec(findProgram('ssh') . " -T -i $temp_ssh_key -o 'StrictHostKeyChecking no' -p " . escapeshellarg($results[$x]->server_update_port) . ' -l ' . escapeshellarg($ssh_user) . ' ' . escapeshellarg($results[$x]->server_name) . " 'ls " . escapeshellarg("/usr/local/$fm_name/{$_SESSION['module']}/client.php") . "'", $post_result, $retval);
 							if ($retval) {
 								$return .= ($retval == 255) ? _('ssh key login failed') : _('client file is not present');
 							} else {

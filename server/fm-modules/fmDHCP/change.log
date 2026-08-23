@@ -1,3 +1,7 @@
+0.12.2 (2026-??-??)
+==================
+* Both   - [security] Fixed command injection vulnerabilities.
+
 0.12.1 (2026-03-06)
 ===================
 * Server - [security] Fixed stored XSS throughout application.

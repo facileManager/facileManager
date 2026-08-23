@@ -190,7 +190,7 @@ function moduleInitWebRequest() {
 
 	switch ($_POST['action']) {
 		case 'manage_leases':
-			exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . dirname(__FILE__) . '/client.php ' . $_POST['command_args'], $output['output'], $rc);
+			exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . dirname(__FILE__) . '/client.php ' . escapeshellarg($_POST['command_args']), $output['output'], $rc);
 			if ($rc) {
 				/** Something went wrong */
 				$output['failures'] = true;
