@@ -1,4 +1,4 @@
-6.0.5 (2026-??-??)
+6.0.5 (2026-08-24)
 ==================
 * Both   - [security] Fixed command injection vulnerabilities.
 * Server - [bug] Fixed a PHP fatal error when checking for updates. (Issue #741)
