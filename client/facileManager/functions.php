@@ -929,14 +929,14 @@ function initWebRequest() {
 	if (isset($_POST['action'])) {
 		switch ($_POST['action']) {
 			case 'buildconf':
-				exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . escapeshellarg(dirname(__FILE__) . '/' . $_POST['module'] .  '/client.php buildconf' . $_POST['options']) . ' 2>&1', $output, $rc);
+				exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . escapeshellarg(dirname(__FILE__) . '/' . $_POST['module'] .  '/client.php') . ' buildconf ' . escapeshellarg($_POST['options']) . ' 2>&1', $output, $rc);
 				if ($rc) {
 					/** Something went wrong */
 					$output[] = 'Config build failed.';
 				}
 				break;
 			case 'upgrade':
-				exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . escapeshellarg(dirname(__FILE__) . '/' . $_POST['module'] . '/client.php upgrade') . ' 2>&1', $output);
+				exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . escapeshellarg(dirname(__FILE__) . '/' . $_POST['module'] . '/client.php') . ' upgrade 2>&1', $output);
 				break;
 			default:
 				/** Process module-specific requests */

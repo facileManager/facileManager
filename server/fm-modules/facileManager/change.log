@@ -2,6 +2,7 @@
 ==================
 * Server - [bug] Fixed inability to download and install module updates introduced in v6.0.5.
 * Server - [bug] Ensures the specified temporary directory exists before saving the settings.
+* Client - [bug] Fixed interaction errors introduced in v6.0.5.
 
 6.0.5 (2026-08-24)
 ==================

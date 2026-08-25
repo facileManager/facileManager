@@ -3299,7 +3299,7 @@ function runRemoteCommand($host_array, $command, $format = 'silent', $port = 22,
 		}
 		unset($output);
 
-		exec(findProgram('ssh') . ' -T -i ' . escapeshellarg($temp_ssh_key) . " -o 'StrictHostKeyChecking no' -p $port -l " . escapeshellarg($ssh_user) . " $host \"" . escapeshellarg($command) . "\"", $output, $rc);
+		exec(findProgram('ssh') . ' -T -i ' . escapeshellarg($temp_ssh_key) . " -o 'StrictHostKeyChecking no' -p $port -l " . escapeshellarg($ssh_user) . " $host \"" . escapeshellarg($command) . '"', $output, $rc);
 	
 		if ($rc) {
 			$failures = true;
