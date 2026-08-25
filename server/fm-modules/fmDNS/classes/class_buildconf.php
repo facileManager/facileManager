@@ -1697,7 +1697,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 		}
 		
 		$fm_temp_directory = '/' . ltrim(getOption('fm_temp_directory'), '/');
-		$tmp_dir = rtrim($fm_temp_directory, '/') . '/' . escapeshellarg($_SESSION['module']) . '_' . date("YmdHis") . '/';
+		$tmp_dir = escapeshellarg(rtrim($fm_temp_directory, '/') . '/' . $_SESSION['module'] . '_' . date("YmdHis") . '/');
 		system('rm -rf ' . $tmp_dir);
 		
 		/** Create temporary directory structure */

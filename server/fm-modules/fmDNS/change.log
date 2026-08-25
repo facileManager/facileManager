@@ -1,6 +1,7 @@
 7.4.4 (2026-08-25)
 ==================
 * Server - [bug] Fixed upgrade process introduced in v7.4.3.
+* Client - [bug] Fixed interaction errors introduced in v7.4.3.
 
 7.4.3 (2026-08-24)
 ==================
