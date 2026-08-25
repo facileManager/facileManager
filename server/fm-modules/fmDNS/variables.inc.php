@@ -31,8 +31,8 @@ if (!@is_array($__FM_CONFIG)) $__FM_CONFIG = array();
 
 /** Module Information */
 $__FM_CONFIG['fmDNS'] = array(
-		'version'							=> '7.4.3',
-		'client_version'					=> '7.4.3',
+		'version'							=> '7.4.4',
+		'client_version'					=> '7.4.4',
 		'description'						=> __('Easily manage one or more ISC BIND servers through a web interface. No more editing configuration and zone files manually.', 'fmDNS'),
 		'prefix'							=> 'dns_',
 		'required_dns_version'				=> '9.3',
