@@ -3634,8 +3634,8 @@ function createTempDir($subdir, $append = null) {
 	}
 	
 	$fm_temp_directory = '/' . ltrim(getOption('fm_temp_directory'), '/');
-	$tmp_dir = escapeshellarg(rtrim($fm_temp_directory, '/') . "/$subdir/");
-	system('rm -rf ' . $tmp_dir);
+	$tmp_dir = rtrim($fm_temp_directory, '/') . "/$subdir/";
+	system('rm -rf ' . escapeshellarg($tmp_dir));
 	$created = createDir($tmp_dir);
 
 	return array($tmp_dir, $created);

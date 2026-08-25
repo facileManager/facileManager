@@ -1,3 +1,7 @@
+6.0.6 (2026-08-25)
+==================
+* Server - [bug] Fixed inability to download and install module updates introduced in v6.0.5.
+
 6.0.5 (2026-08-24)
 ==================
 * Both   - [security] Fixed command injection vulnerabilities.
