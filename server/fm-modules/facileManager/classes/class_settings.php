@@ -72,6 +72,7 @@ class fm_settings {
 				if (in_array($key, $ports)) {
 					if ($data && !verifyNumber($data, 1, 65535, false)) return _('Invalid port number specified.');
 				}
+				if ($key == 'fm_temp_directory' && !(is_dir($data) && is_writable($data))) return _('Invalid temporary directory specified.');
 				
 				if (isset($data_array)) $data = $data_array;
 				
@@ -142,7 +143,7 @@ class fm_settings {
 	 * @package facileManager
 	 */
 	function generateSSHKeyPair() {
-		global $fmdb, $__FM_CONFIG, $fm_name;
+		global $fmdb, $fm_name;
 		
 		if (! $fm_temp_directory = getOption('fm_temp_directory')) {
 			$fm_temp_directory = sys_get_temp_dir();

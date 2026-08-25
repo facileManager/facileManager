@@ -1,6 +1,7 @@
 6.0.6 (2026-08-25)
 ==================
 * Server - [bug] Fixed inability to download and install module updates introduced in v6.0.5.
+* Server - [bug] Ensures the specified temporary directory exists before saving the settings.
 
 6.0.5 (2026-08-24)
 ==================
