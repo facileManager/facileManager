@@ -1,3 +1,7 @@
+7.4.5 (2026-08-25)
+==================
+* Both   - [bug] Fixed configuration build errors introduced in v7.4.4. (Issue #754)
+
 7.4.4 (2026-08-25)
 ==================
 * Server - [bug] Fixed upgrade process introduced in v7.4.3.

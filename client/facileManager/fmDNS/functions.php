@@ -498,7 +498,7 @@ function moduleInitWebRequest() {
 				exit(serialize('Zone ID is not found.'));
 			}
 
-			exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . dirname(__FILE__) . '/client.php zones id=' . escapeshellarg($_POST['domain_id']) . ' 2>&1', $rawoutput, $rc);
+			exec(findProgram('sudo') . ' ' . findProgram('php') . ' ' . dirname(__FILE__) . '/client.php zones id=' . intval($_POST['domain_id']) . ' 2>&1', $rawoutput, $rc);
 			if ($rc) {
 				/** Something went wrong */
 				$output[] = 'Zone reload failed.';

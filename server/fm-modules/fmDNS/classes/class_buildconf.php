@@ -1697,8 +1697,9 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 		}
 		
 		$fm_temp_directory = '/' . ltrim(getOption('fm_temp_directory'), '/');
-		$tmp_dir = escapeshellarg(rtrim($fm_temp_directory, '/') . '/' . $_SESSION['module'] . '_' . date("YmdHis") . '/');
-		system('rm -rf ' . $tmp_dir);
+		$tmp_dir = rtrim($fm_temp_directory, '/') . '/' . $_SESSION['module'] . '_' . date("YmdHis") . '/';
+		$tmp_dir_shell_escaped = escapeshellarg($tmp_dir);
+		system('rm -rf ' . $tmp_dir_shell_escaped);
 		
 		/** Create temporary directory structure */
 		foreach ($files_array['files'] as $file => $file_properties) {
@@ -1744,7 +1745,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 		if (!$die) {
 			/** Run named-checkconf */
 			if (in_array('checkconf', $checks_to_run)) {
-				$named_checkconf_cmd = findProgram('sudo') . ' -n ' . $named_checkconf . ' -t ' . $tmp_dir . ' ' . escapeshellarg($files_array['server_config_file']) . ' 2>&1';
+				$named_checkconf_cmd = findProgram('sudo') . ' -n ' . $named_checkconf . ' -t ' . $tmp_dir_shell_escaped . ' ' . escapeshellarg($files_array['server_config_file']) . ' 2>&1';
 				exec($named_checkconf_cmd, $named_checkconf_results, $retval);
 				/** Remove key-directory statements for config checks */
 				foreach ($named_checkconf_results as $key => $val) {
@@ -1759,9 +1760,11 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 					if (strpos($named_checkconf_results, 'sudo') !== false) {
 						$class = 'class="info"';
 						$message = $this->getSyntaxCheckMessage('sudo', array('checkconf_cmd' => $named_checkconf_cmd, 'checkconf_results' => $named_checkconf_results));
-					} else {
+					} elseif (trim($named_checkconf_results)) {
 						$message_type = (strpos($class, 'errors') !== false) ? 'errors' : 'warning';
 						$message = $this->getSyntaxCheckMessage($message_type, array('checkconf_results' => $named_checkconf_results));
+					} else {
+						$retval = false;
 					}
 					
 				}
@@ -1778,7 +1781,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 					if (array($zone_files)) {
 						foreach ($zone_files as $view => $zones) {
 							foreach ($zones as $zone_name => $zone_file) {
-								$named_checkzone_cmd = findProgram('sudo') . ' -n ' . $named_checkzone . ' -t ' . $tmp_dir . ' ' . escapeshellarg($zone_name) . ' ' . escapeshellarg($zone_file) . ' 2>&1';
+								$named_checkzone_cmd = findProgram('sudo') . ' -n ' . $named_checkzone . ' -t ' . $tmp_dir_shell_escaped . ' ' . escapeshellarg($zone_name) . ' ' . escapeshellarg($zone_file) . ' 2>&1';
 								exec($named_checkzone_cmd, $results, $retval);
 								if ($retval) {
 									$class = 'class="error"';
@@ -1806,7 +1809,7 @@ class fm_module_buildconf extends fm_shared_module_buildconf {
 		}
 		
 		/** Remove temporary directory */
-		system('rm -rf ' . $tmp_dir);
+		system('rm -rf ' . $tmp_dir_shell_escaped);
 		
 		return <<<HTML
 			<div id="config_check" $class>
