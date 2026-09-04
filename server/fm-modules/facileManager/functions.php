@@ -3281,7 +3281,7 @@ function runRemoteCommand($host_array, $command, $format = 'silent', $port = 22,
 		}
 
 		/** Test SSH authentication */
-		exec(findProgram('ssh') . ' -T -i ' . escapeshellarg($temp_ssh_key) . " -o 'StrictHostKeyChecking no' -p $port -l " . escapeshellarg($ssh_user) . " $host 'ls " . escapeshellarg("/usr/local/$fm_name/{$_SESSION['module']}/client.php") . "'", $output, $rc);
+		exec(findProgram('ssh') . ' -T -i ' . escapeshellarg($temp_ssh_key) . " -o 'StrictHostKeyChecking no' -p $port -l " . escapeshellarg($ssh_user) . ' ' . $host . ' ' . escapeshellarg('ls '."/usr/local/$fm_name/{$_SESSION['module']}/client.php"), $output, $rc);
 		if ($rc) {
 			/** Something went wrong */
 			if ($rc == 255 || $client_check == 'include') {
@@ -3299,7 +3299,7 @@ function runRemoteCommand($host_array, $command, $format = 'silent', $port = 22,
 		}
 		unset($output);
 
-		exec(findProgram('ssh') . ' -T -i ' . escapeshellarg($temp_ssh_key) . " -o 'StrictHostKeyChecking no' -p $port -l " . escapeshellarg($ssh_user) . " $host \"" . escapeshellarg($command) . '"', $output, $rc);
+		exec(findProgram('ssh') . ' -T -i ' . escapeshellarg($temp_ssh_key) . " -o 'StrictHostKeyChecking no' -p $port -l " . escapeshellarg($ssh_user) . ' ' . $host . ' ' . escapeshellarg($command), $output, $rc);
 	
 		if ($rc) {
 			$failures = true;
