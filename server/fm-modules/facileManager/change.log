@@ -1,3 +1,8 @@
+6.0.7 (2026-08-25)
+==================
+* Server - [bug] Fixed the server configuration tests using ssh. (Issue #755)
+* Server - [bug] Fixed server update process over ssh. (Issue #756)
+
 6.0.6 (2026-08-25)
 ==================
 * Server - [bug] Fixed inability to download and install module updates introduced in v6.0.5.
