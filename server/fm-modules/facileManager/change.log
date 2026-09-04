@@ -1,4 +1,4 @@
-6.0.7 (2026-08-25)
+6.0.7 (2026-09-04)
 ==================
 * Server - [bug] Fixed the server configuration tests using ssh. (Issue #755)
 * Server - [bug] Fixed server update process over ssh. (Issue #756)
