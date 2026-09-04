@@ -441,7 +441,7 @@ HTML;
 			$current_name = $array['record_name'];
 			
 			/** Set ttl to default if empty */
-			if (!$array['record_ttl']) $array['record_ttl'] = __('default');
+			if (!array_key_exists('record_ttl', $array) ||!$array['record_ttl']) $array['record_ttl'] = __('default');
 			
 			$all_records[] = $array;
 			
