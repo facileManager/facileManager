@@ -84,8 +84,12 @@ if (is_array($_POST) && count($_POST) && currentUserCan('run_tools')) {
 				// Graphic highlighting
 				$message = transformOutput($message);
 
+				// Get additional message to display
+				include(ABSPATH . 'fm-includes/version.php');
+				$addl_message = ($GLOBALS['running_db_version'] < $fm_db_version) ? _('The next step is to upgrade the database.') : _('The upgrade process is complete.');
+
 				$response .= '<p><pre>' . $message . '</pre></p>';
-				if (strpos($message, '!') === false) $response .= sprintf('<p>%s</p>', _('The next step is to upgrade the database.'));
+				if (strpos($message, '!') === false) $response .= sprintf('<p>%s</p>', $addl_message);
 				$response .= buildPopup('footer', _('OK'), array('cancel_button' => 'cancel'), getMenuURL(_('Modules')));
 				
 				echo $response;

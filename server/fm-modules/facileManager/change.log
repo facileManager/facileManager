@@ -1,3 +1,8 @@
+6.0.9 (2026-??-??)
+==================
+* Server - [bug] Fixed core upgrade completion message to only display the database upgrade message
+           only when the database requires an upgrade.
+
 6.0.8 (2026-09-06)
 ==================
 * Server - [bug] Fixed the module upgrade process to set the correct client version.
