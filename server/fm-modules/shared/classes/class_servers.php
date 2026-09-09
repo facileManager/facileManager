@@ -120,7 +120,7 @@ class fm_shared_module_servers {
 							break;
 						}
 					} else {
-						return $server_remote;
+						return implode("\n", $response) . "\n". $server_remote;
 					}
 					
 					/** Test the port first */

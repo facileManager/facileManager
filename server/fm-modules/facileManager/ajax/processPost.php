@@ -145,6 +145,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 			$bulk_class = $fm_tools;
 			$bulk_function = 'manageModule';
 			$page = _('Modules');
+			$strip_html = false;
 			
 			break;
 		/** Handle client upgrades */
@@ -160,6 +161,8 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 			$bulk_class = $fm_module_servers;
 			$bulk_function = 'doClientUpgrade';
 			$page = _('Servers');
+			$strip_html = true;
+
 			break;
 		/** Handle client server config builds */
 		case 'build config':
@@ -174,6 +177,8 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 			$bulk_class = $fm_module_servers;
 			$bulk_function = 'doBulkServerBuild';
 			$page = _('Servers');
+			$strip_html = true;
+
 			break;
 	}
 	$output = '';
@@ -184,10 +189,14 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 		}
 	}
 
+	// Strip html tags from the output
+	if ($strip_html) $output = strip_tags($output);
+
 	// Graphic highlighting
 	$output = trim(transformOutput($output));
 
 	if ($output) {
+		if ($strip_html)$output = '<p><pre>' . $output . '</pre></p>';
 		$output .= "<p class=\"complete\">" . _('Complete') . '.</p>';
 		echo buildPopup('header', ucwords($_POST['bulk_action']) . ' Results') . $output . buildPopup('footer', _('OK'), array('cancel_button' => 'cancel'), getMenuURL($page));
 	} else {

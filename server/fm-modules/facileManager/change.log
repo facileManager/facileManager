@@ -2,6 +2,7 @@
 ==================
 * Server - [bug] Fixed core upgrade completion message to only display the database upgrade message
            only when the database requires an upgrade.
+* Server - [bug] Fixed client upgrade output formatting errors introduced in v6.0.8.
 
 6.0.8 (2026-09-06)
 ==================
