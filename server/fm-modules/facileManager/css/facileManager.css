@@ -2298,7 +2298,6 @@ a.subelement_edit img {
 }
 
 .tooltip-copy {
-	z-index: 1000;
 	position: relative;
 	display: inline-block;
 	cursor: pointer;
