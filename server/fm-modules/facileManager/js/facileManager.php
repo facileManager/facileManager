@@ -73,8 +73,12 @@ if (!isset($__FM_CONFIG)) {
 	var KEYCODE_ESC = 27;
 	
 	$(document).keyup(function(e) {
-		if (e.keyCode == KEYCODE_ESC) { $("#cancel_button").click(); }
-		if (e.keyCode == KEYCODE_ENTER && $(":focus").is("input[type=text], input[type=password], input[type=checkbox]")) { $("#primary_button, #loginbtn, #forgotbtn, #verify_otpbtn").click(); }
+		var $focused = $(":focus");
+		if (!$focused.length || $focused.closest(".select2-container").length || $focused.is("select, .select2-search__field")) {
+			return;
+		}
+		if (e.keyCode == KEYCODE_ESC && $focused.is("input[type=text], input[type=password], input[type=checkbox], textarea")) { $("#cancel_button").click(); }
+		if (e.keyCode == KEYCODE_ENTER && $focused.is("input[type=text], input[type=password], input[type=checkbox]")) { $("#primary_button, #loginbtn, #forgotbtn, #verify_otpbtn").click(); }
 	});
 
 	$(function() {

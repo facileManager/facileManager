@@ -4,6 +4,7 @@
            only when the database requires an upgrade.
 * Server - [bug] Fixed client upgrade output formatting errors introduced in v6.0.8.
 * Server - [bug] Fixed icon z-index.
+* Server - [bug] Fixed dialog boxes so ENTER and ESC do not close the dialog box when working with drop downs.
 
 6.0.8 (2026-09-06)
 ==================
