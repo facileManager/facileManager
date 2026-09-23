@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 17:51-0600\n"
+"POT-Creation-Date: 2026-09-23 16:51-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1809,66 +1809,66 @@ msgid ""
 "http/https are supported)"
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1281
+#: server/fm-modules/fmDNS/classes/class_records.php:1284
 msgid "This field cannot be empty."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1291
+#: server/fm-modules/fmDNS/classes/class_records.php:1294
 msgid ""
 "Names can only contain letters, numbers, hyphens (-), underscores (_), or @. "
 "However, @ is not valid for CNAME records. Additionally, the same name "
 "cannot exist for A and CNAME records."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1298
+#: server/fm-modules/fmDNS/classes/class_records.php:1301
 msgid "This field must be a number."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1305
+#: server/fm-modules/fmDNS/classes/class_records.php:1308
 msgid ""
 "This field must be in TTL format which consists of numbers and time-based "
 "letters (s, m, h, d, w, y). Examples include 300, 5d, or 1y4w9d."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1313
+#: server/fm-modules/fmDNS/classes/class_records.php:1316
 msgid "IP address must be in valid IPv4 or IPv6 format."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1332
-#: server/fm-modules/fmDNS/classes/class_records.php:1337
+#: server/fm-modules/fmDNS/classes/class_records.php:1335
+#: server/fm-modules/fmDNS/classes/class_records.php:1340
 msgid "Invalid record"
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1350
+#: server/fm-modules/fmDNS/classes/class_records.php:1353
 msgid "Invalid value"
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1358
+#: server/fm-modules/fmDNS/classes/class_records.php:1361
 msgid "The Key Tag may not be empty."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1371
+#: server/fm-modules/fmDNS/classes/class_records.php:1374
 msgid "Invalid email address format"
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1391
+#: server/fm-modules/fmDNS/classes/class_records.php:1394
 #, php-format
 msgid "Input is too long (maximum %d characters)."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1398
+#: server/fm-modules/fmDNS/classes/class_records.php:1401
 msgid "Invalid"
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1404
+#: server/fm-modules/fmDNS/classes/class_records.php:1407
 msgid "Negative Cache may not be more than 3 hours."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1410
+#: server/fm-modules/fmDNS/classes/class_records.php:1413
 msgid "Invalid TTL format."
 msgstr ""
 
-#: server/fm-modules/fmDNS/classes/class_records.php:1419
+#: server/fm-modules/fmDNS/classes/class_records.php:1422
 msgid "This name already exists."
 msgstr ""
 
