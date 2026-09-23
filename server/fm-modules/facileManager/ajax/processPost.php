@@ -185,7 +185,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 	if (is_array($_POST['item_id'])) {
 		foreach ($_POST['item_id'] as $id) {
 			$result = $bulk_class->$bulk_function($id, $_POST['bulk_action']);
-			if (!is_int($result)) $output .= $result . "\n";
+			if ($result && !is_int($result)) $output .= rtrim($result) . "\n\n";
 		}
 	}
 
@@ -196,7 +196,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 	$output = trim(transformOutput($output));
 
 	if ($output) {
-		if ($strip_html)$output = '<p><pre>' . $output . '</pre></p>';
+		if ($strip_html) $output = '<p><pre>' . $output . '</pre></p>';
 		$output .= "<p class=\"complete\">" . _('Complete') . '.</p>';
 		echo buildPopup('header', ucwords($_POST['bulk_action']) . ' Results') . $output . buildPopup('footer', _('OK'), array('cancel_button' => 'cancel'), getMenuURL($page));
 	} else {

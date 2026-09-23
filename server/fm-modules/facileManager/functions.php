@@ -3258,7 +3258,7 @@ function runRemoteCommand($host_array, $command, $format = 'silent', $port = 22,
 	$temp_ssh_key = getOption('fm_temp_directory') . '/fm_id_rsa';
 	if (file_exists($temp_ssh_key)) @unlink($temp_ssh_key);
 	if (@file_put_contents($temp_ssh_key, $ssh_key) === false) {
-		$message = sprintf(_('Failed: could not load SSH key into %s.'), $temp_ssh_key);
+		$message = sprintf(_('Failed: could not load SSH key into %s.') . "\n", $temp_ssh_key);
 		return ($response == 'close') ? displayResponseClose($message) : $message;
 	}
 
@@ -3276,7 +3276,7 @@ function runRemoteCommand($host_array, $command, $format = 'silent', $port = 22,
 		/** Test the port first */
 		if (!socketTest($host, $port, 10)) {
 			if (file_exists($temp_ssh_key)) @unlink($temp_ssh_key);
-			$message = sprintf(_('Failed: could not access %s (tcp/%d).'), $host, $port);
+			$message = sprintf(_('Failed: could not access %s (tcp/%d).') . "\n", $host, $port);
 			return ($response == 'close') ? displayResponseClose($message) : $message;
 		}
 
@@ -3290,10 +3290,10 @@ function runRemoteCommand($host_array, $command, $format = 'silent', $port = 22,
 
 			/** Handle error codes */
 			if ($rc == 255) {
-				$message = _('Failed: Could not login via SSH. Check the system logs on the client for the reason.');
+				$message = _('Failed: Could not login via SSH. Check the system logs on the client for the reason.') . "\n";
 				return ($response == 'close') ? displayResponseClose($message) : $message;
 			} elseif ($client_check == 'include') {
-				$message = _('Failed: Client file is not present - is the client software installed?');
+				$message = _('Failed: Client file is not present - is the client software installed?') . "\n";
 				return ($response == 'close') ? displayResponseClose($message) : $message;
 			}
 		}
@@ -4114,6 +4114,50 @@ function cleanAndTrimInputs($post) {
 	}
 	
 	return $post;	
+}
+
+
+/**
+ * Hightlights failures and successes
+ * 
+ * @since 4.7.0
+ * @package facileManager
+ * 
+ * @param $text Text to transform
+ * @return string
+ */
+function transformOutput($text) {
+	global $__FM_CONFIG;
+
+	// remove the first <div id="response_close">...</div> across the full text
+	$orig_text = $text;
+	$text = preg_replace("/<div\\s+(?:class|id)\\s*=\\s*(['\"])\\s*response_close\\s*\\1[^>]*>.*?<\\/div>/is", '', $text, 1);
+	// replace the first matching error div or paragraph with its inner contents (preserve inner HTML)
+	$text = preg_replace("/<(div|p)\\s+(?:class|id)\\s*=\\s*(['\"])\\s*error\\s*\\2[^>]*>(.*?)<\\/\\1>/is", '$3', $text, 1);
+
+	foreach (explode("\n", $text) as $line) {
+		$p = '';
+		if (strpos($line, '<p>') !== false) {
+			$line = preg_replace('/<p>/', '', $line, 1);
+			$p = '<p>';
+		}
+
+		if (strpos(strtolower($line), _('failed')) !== false) {
+			$line = str_replace('-->', '', $line);
+			$line = sprintf('%s%s %s', $p, $__FM_CONFIG['icons']['fail'], trim($line));
+		} elseif (strpos(strtolower($line), _('successful')) !== false) {
+			$line = str_replace('-->', '', $line);
+			$line = sprintf('%s%s %s', $p, $__FM_CONFIG['icons']['ok'], trim($line));
+		} elseif (strpos(strtolower($line), _('notice')) !== false) {
+			$line = str_replace('-->', '', $line);
+			$line = sprintf('%s%s %s', $p, $__FM_CONFIG['icons']['caution'], trim($line));
+		} else {
+			$line = sprintf('%s%s', $p, trim($line));
+		}
+		$tmp_output[] = str_replace('-->', $__FM_CONFIG['icons']['ok'], trim($line));
+	}
+
+	return (isset($tmp_output)) ? preg_replace("/\n{3,}/", "\n\n", join("\n", $tmp_output)) : $orig_text;
 }
 
 

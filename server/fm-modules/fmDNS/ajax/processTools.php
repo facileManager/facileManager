@@ -85,7 +85,7 @@ if (is_array($_POST) && count($_POST) && currentUserCan('run_tools')) {
 					foreach ($_POST['domain_name_servers'] as $server_id) {
 						$response .= $fm_module_servers->manageCache($server_id, $_POST['task']) . "\n\n";
 					}
-					$response = trim($response, "\n"). '</pre>';
+					$response = transformOutput(trim($response, "\n")). '</pre>';
 				} else {
 					$response = buildPopup('header', _('Error'));
 					$response .= sprintf('<p>%s</p>', __('Please specify at least one server.'));

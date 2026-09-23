@@ -2066,6 +2066,9 @@ th {
 pre {
 	padding: 10px;
 }
+div.popup-contents > pre > i {
+	margin-left: 10px;
+}
 
 #scroll-to-top {
 	position: fixed;
