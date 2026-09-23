@@ -1,3 +1,8 @@
+7.4.7 (2026-??-??)
+==================
+* Server - [bug] Fixed missing URI record type link when viewing all records.
+* Server - [bug] Fixed database schema query introduced in v7.2.0-beta1 and ensure the schema gets applied. (Issue #760)
+
 7.4.6 (2026-09-06)
 ==================
 * Server - [bug] Fixed installer and upgrader.

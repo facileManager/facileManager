@@ -1154,7 +1154,10 @@ HTML;
 			if ($k == 'record_type') $v = $record_type;
 			$uri[] = sprintf('%s=%s', $k, $v);
 		}
-		return sprintf('<a href="%s?%s">%s</s>', $GLOBALS['basename'], join('&', $uri), $record_type);
+		if (!in_array('record_type', array_keys($GLOBALS['URI']))) {
+			$uri[] = sprintf('record_type=%s', $record_type);
+		}
+		return sprintf('<a href="%s?%s">%s</a>', $GLOBALS['basename'], join('&', $uri), $record_type);
 	}
 	
 
