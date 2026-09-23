@@ -32,7 +32,7 @@ function upgradefmDNSSchema($running_version) {
 	}
 	
 	/** Checks to support older versions (ie n-3 upgrade scenarios */
-	$success = version_compare($running_version, '7.4.4', '<') ? upgradefmDNS_744($__FM_CONFIG, $running_version) : true;
+	$success = version_compare($running_version, '7.4.7', '<') ? upgradefmDNS_747($__FM_CONFIG, $running_version) : true;
 	if (!$success) return $fmdb->last_error;
 	
 	return true;
@@ -2983,8 +2983,8 @@ function upgradefmDNS_720b1($__FM_CONFIG, $running_version) {
 	$success = version_compare($running_version, '7.1.1', '<') ? upgradefmDNS_711($__FM_CONFIG, $running_version) : true;
 	if (!$success) return false;
 
-	$queries[] = "UPDATE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_master_server` `soa_master_server` VARCHAR(255) NOT NULL";
-	$queries[] = "UPDATE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_email_address` `soa_email_address` VARCHAR(255) NOT NULL";
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_master_server` `soa_master_server` VARCHAR(255) NOT NULL";
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_email_address` `soa_email_address` VARCHAR(255) NOT NULL";
 	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_ttl` `soa_ncache` VARCHAR(50) NULL DEFAULT '1200'";
 	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` ADD `soa_ttl` VARCHAR(50) NULL DEFAULT '1200' AFTER `soa_name`";
 	$queries[] = "UPDATE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` SET `soa_ttl` = `soa_ncache`";
@@ -3044,4 +3044,29 @@ function upgradefmDNS_744($__FM_CONFIG, $running_version) {
 	
 	return true;
 }
+
+/** 7.4.7 */
+function upgradefmDNS_747($__FM_CONFIG, $running_version) {
+	global $fmdb;
+	
+	$success = version_compare($running_version, '7.4.4', '<') ? upgradefmDNS_744($__FM_CONFIG, $running_version) : true;
+	if (!$success) return false;
+
+	/** Redo queries from upgradefmDNS_720b1() that were incorrect */
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_master_server` `soa_master_server` VARCHAR(255) NOT NULL";
+	$queries[] = "ALTER TABLE `fm_{$__FM_CONFIG['fmDNS']['prefix']}soa` CHANGE `soa_email_address` `soa_email_address` VARCHAR(255) NOT NULL";
+	
+	/** Run queries */
+	if (isset($queries) && count($queries) && $queries[0]) {
+		foreach ($queries as $schema) {
+			$fmdb->query($schema);
+			if (!$fmdb->result || $fmdb->sql_errors) return false;
+		}
+	}
+
+	setOption('version', '7.4.7', 'auto', false, 0, 'fmDNS');
+	
+	return true;
+}
+
 
