@@ -340,7 +340,7 @@ if (file_exists(ABSPATH . 'config.inc.php')) {
 			if (isset($_path_parts[$_api_key + 1])) {
 				$_module = $_path_parts[$_api_key + 1];
 				$_module_arr = getAvailableModules();
-				if ($_arr_key = array_search(strtolower($_module), array_map('strtolower', $_module_arr))) {
+				if (($_arr_key = array_search(strtolower($_module), array_map('strtolower', $_module_arr))) !== false) {
 					$_POST['module_name'] = $module_name = $_module_arr[$_arr_key];
 				}
 			}
