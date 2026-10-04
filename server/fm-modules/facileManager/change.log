@@ -1,5 +1,5 @@
-6.0.10 (2026-??-??)
-==================
+6.0.10 (2026-10-04)
+===================
 * Server - [security] Fixed scenarios where users with 'User Management' privileges could elevate their own privileges.
 * Server - [security] Fixed a scenario where another user could demote the default super-admin account.
 * Server - [bug] Fixed scenarios where users could demote themselves to lower privileges.
