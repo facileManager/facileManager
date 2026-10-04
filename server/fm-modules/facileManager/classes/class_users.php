@@ -305,10 +305,16 @@ class fm_users {
 		$post['user_id'] = (!isset($post['user_id']) || !$post['user_id']) ? $_SESSION['user']['id'] : intval($post['user_id']);
 
 		/** Authorized to update users? */
-		if ((!currentUserCan('manage_users') && ($_SESSION['user']['id'] != $post['user_id'] || isset($post['user_caps']))) 
-			|| ($_SESSION['user']['id'] != $post['user_id'] && $post['user_id'] == getDefaultAdminID()) 
+		$current_user_can_do_everything = currentUserCan('do_everything');
+		$current_user_can_manage_users = currentUserCan('manage_users');
+		if ((!currentUserCan('manage_users') && ($_SESSION['user']['id'] != $post['user_id'] || isset($post['user_caps'])))
+			|| ($_SESSION['user']['id'] != $post['user_id'] && $post['user_id'] == getDefaultAdminID())
+			|| (!$current_user_can_do_everything && userCan($post['user_id'], 'do_everything'))
 			|| isset($post['user_login'])
-			|| (isset($post['user_caps']) && $_SESSION['user']['id'] == $post['user_id'] && $_SESSION['user']['id'] == getDefaultAdminID())) {
+			|| (isset($post['user_caps']) && $_SESSION['user']['id'] == $post['user_id'] && $_SESSION['user']['id'] == getDefaultAdminID())
+			|| (isset($post['user_caps']) && $_SESSION['user']['id'] == $post['user_id'] && !$current_user_can_do_everything)
+			|| ($_SESSION['user']['id'] == $post['user_id'] && (array_key_exists('user_caps', $post) || array_key_exists('user_group', $post)))
+			) {
 				return _('You do not have permission to make these changes.');
 		}
 
@@ -408,7 +414,7 @@ class fm_users {
 		}
 
 		/** Full name in the session */
-		if ($_SESSION['user']['id'] == $post['user_id']) {
+		if ($_SESSION['user']['id'] == $post['user_id'] && array_key_exists('user_display_name', $post)) {
 			@session_start();
 			$_SESSION['user']['display_name'] = $post['user_display_name'];
 			session_write_close();
@@ -464,6 +470,9 @@ class fm_users {
 
 		if (isset($post['group_users']) && is_array($post['group_users'])) {
 			foreach ((array) $post['group_users'] as $id) {
+				if ($id == $_SESSION['user']['id'] || (userCan($id, 'do_everything') && !currentUserCan('do_everything')) || $id == getDefaultAdminID()) {
+					return _('You do not have permission to make these changes.');
+				}
 				$group_members[] = $this->getName('user', $id);
 			}
 		} else {
@@ -479,7 +488,8 @@ class fm_users {
 				$post['user_caps'] = array($fm_name => array('do_everything' => 1));
 			}
 		}
-		if (isset($post['user_caps'])) {
+		// Only save group capabilities for groups current user is not a member of
+		if (isset($post['user_caps']) && $post['group_id'] != getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_group')) {
 			$sql .= ",group_caps='" . serialize($post['user_caps']) . "'";
 			$log_message .= formatLogKeyData('', 'permissions', $this->getFriendlyCaps($post['user_caps']));
 		}
@@ -494,7 +504,7 @@ class fm_users {
 		
 		/* Associated users with group */
 		if (!isset($post['group_users'])) $post['group_users'] = 0;
-		$queries[] = "UPDATE `fm_users` SET `user_group`='0', `user_caps`=NULL WHERE `user_group`='{$post['group_id']}'";
+		$queries[] = "UPDATE `fm_users` SET `user_group`='0', `user_caps`=NULL WHERE `user_group`='{$post['group_id']}' AND `user_id`!='{$_SESSION['user']['id']}'";
 		$queries[] = "UPDATE `fm_users` SET `user_group`='{$post['group_id']}', `user_caps`=NULL WHERE `user_id` IN ('" . join("','", (array) $post['group_users']) . "')";
 		foreach ($queries as $query) {
 			$fmdb->query($query);
@@ -520,8 +530,15 @@ class fm_users {
 		
 		$functionCan = $type . 'Can';
 		
+		// Don't delete yourself or your group!
+		if (($type == 'user' && $id == $_SESSION['user']['id'])
+			|| ($type == 'group' && $id == getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_group'))
+			) {
+			return _('You do not have permission to make these changes.');
+		}
+
 		if ($type != 'key' && (!currentUserCan('do_everything') && $functionCan($id, 'do_everything')) || ($type == 'user' && $id == getDefaultAdminID())) {
-			return sprintf(_('You do not have permission to delete this %s.'), $type);
+			return _('You do not have permission to make these changes.');
 		}
 		if ($type == 'user') {
 			/** Ensure user is not current LDAP template user */
@@ -541,7 +558,7 @@ class fm_users {
 		
 		$tmp_name = getNameFromID($id, 'fm_' . $type . 's', $type . '_', $type . '_id', $field);
 		if (!updateStatus('fm_' . $type . 's', $id, $type . '_', 'deleted', $type . '_id')) {
-			return formatError(sprintf(_('This %s could not be deleted.'), $type), 'sql');
+			return formatError(_('This item could not be deleted.'), 'sql');
 		} else {
 			addLogEntry(sprintf(_("Deleted %s '%s'."), $type, $tmp_name), $fm_name);
 			return true;
@@ -968,8 +985,11 @@ HTML;
 		}
 		
 		do if (in_array('user_perms', $form_bits)) {
-			/** Cannot edit perms if a member of a group or super-admin if logged in user is not a super-admin */
-			if ($user_id == $default_id || (userCan($user_id, 'do_everything') && !currentUserCan('do_everything'))) break;
+			/** Cannot edit perms of a group member or super-admin if logged in user is not a super-admin */
+			if ($user_id == $default_id
+				|| (userCan($user_id, 'do_everything') && !currentUserCan('do_everything'))
+				|| ($type == 'groups' && $group_id == getNameFromID($_SESSION['user']['id'], 'fm_users', 'user_', 'user_id', 'user_group'))
+			) break;
 			
 			if ($type == 'users') {
 				$id = $user_id;

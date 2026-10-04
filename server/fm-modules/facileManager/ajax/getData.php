@@ -191,6 +191,7 @@ if (is_array($_POST) && array_key_exists('item_type', $_POST) && $_POST['item_ty
 		$add_new = true;
 	} elseif (array_key_exists('item_id', $_POST)) {
 		$id = $_POST['item_id'];
+		if ($_POST['item_sub_type'] == 'users' && $id == $_SESSION['user']['id']) returnUnAuth();
 		$view_id = isset($_POST['view_id']) ? $_POST['view_id'] : null;
 		$add_new = false;
 	} else returnError();

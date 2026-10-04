@@ -1,5 +1,10 @@
 6.0.10 (2026-??-??)
 ==================
+* Server - [security] Fixed scenarios where users with 'User Management' privileges could elevate their own privileges.
+* Server - [security] Fixed a scenario where another user could demote the default super-admin account.
+* Server - [bug] Fixed scenarios where users could demote themselves to lower privileges.
+* Server - [bug] Fixed scenarios where users with 'User Management' or higher privileges could delete their own
+           account or associated group.
 * Server - [bug] Fixed an API 400 error when fmDNS is the first or only module directory installed. (Issue #750)
 * Server - [bug] Removed unnecessary slashes from the user display name.
 
