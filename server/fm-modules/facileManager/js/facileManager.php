@@ -139,10 +139,10 @@ if (!isset($__FM_CONFIG)) {
 						return false;
 					}
 					if (response == 0 || ! $.isNumeric(response)) {
-						$(".process_all_updates").parent().fadeOut(400);
+						$(".process_all_updates").fadeOut(400);
 					} else {
 						$("#tophead span.update_count").html(response);
-						$(".process_all_updates").parent().fadeIn(400);
+						$(".process_all_updates").fadeIn(400);
 					}
 					window.setTimeout(displayHideProcessAll, 45000);
 				},

@@ -317,6 +317,10 @@ input[type="checkbox"].modules {
 	min-height: 0;
 }
 
+div.process_all_updates {
+	display: none;
+}
+
 .flex-row-center,
 div.header-container {
 	display: flex;

@@ -409,7 +409,7 @@ HTML;
 		$sections['right'][] = sprintf('<div class="flex-apart"><a class="search" title="%s"><i class="fa fa-search fa-lg"></i></a>%s</div>', _('Search this page'), displaySearchForm());
 	}
 
-	$sections['right'][] = sprintf('<a class="process_all_updates tooltip-bottom" data-tooltip="%s"><i class="fa fa-refresh fa-lg"></i></a><span class="update_count"></span>', _('Process all available updates now'));
+	$sections['right'][] = ['process_all_updates', sprintf('<a tooltip-bottom" data-tooltip="%s"><i class="fa fa-refresh fa-lg"></i></a><span class="update_count"></span>', _('Process all available updates now'))];
 
 	$return_parts = '';
 	foreach ($sections as $class => $section_array) {
