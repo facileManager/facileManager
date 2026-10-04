@@ -1010,7 +1010,7 @@ HTML;
 					$title = "<b>$title</b>";
 				}
 				if ($key != 'do_everything' && $user_is_super_admin) {
-					$checked = null;
+					$checked = 'checked';
 				} else {
 					$checked = ($perm_function($id, $key)) ? 'checked' : null;
 				}
@@ -1042,7 +1042,7 @@ PERM;
 				$i = 1;
 				if (array_key_exists($module_name, $fm_user_caps)) {
 					foreach ($fm_user_caps[$module_name] as $key => $title) {
-						$checked = ($perm_function($id, $key, $module_name) && !$user_is_super_admin) ? 'checked' : null;
+						$checked = ($perm_function($id, $key, $module_name)) ? 'checked' : null;
 						$module_perm_boxes .= ' <input name="user_caps[' . $module_name . '][' . $key . ']" id="fm_perm_' . $module_name . '_' . $key . '" type="checkbox" value="1" ' . $checked . '/> <label for="fm_perm_' . $module_name . '_' . $key . '">' . $title . '</label>' . "\n";
 						/** Display checkboxes three per row */
 						if ($i == 3) {

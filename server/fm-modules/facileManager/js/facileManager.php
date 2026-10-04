@@ -964,6 +964,35 @@ if (!isset($__FM_CONFIG)) {
 		$(this).setThemeMode();
 	});
 
+	/* Super-Admin privilege checkbox */
+	var resettingPermissionSelects = false;
+	$("#manage_item_contents").delegate(".user_permissions #fm_perm_do_everything", "click", function() {
+		var $container = $(this).closest(".user_permissions").parent();
+
+		if (this.checked) {
+			$container.find(":checkbox").not(this).prop("checked", true);
+
+			resettingPermissionSelects = true;
+			$container.find("select").val("0").trigger("change");
+			resettingPermissionSelects = false;
+		}
+	});
+
+	$("#manage_item_contents").delegate(".user_permissions select", "change", function() {
+		if (!resettingPermissionSelects) {
+			$(this).closest(".user_permissions")
+				.parent()
+				.find("#fm_perm_do_everything")
+				.prop("checked", false);
+		}
+	});
+	$("#manage_item_contents").delegate(".user_permissions :checkbox:not(#fm_perm_do_everything)", "click", function() {
+			$(this).closest(".user_permissions")
+				.parent()
+				.find("#fm_perm_do_everything")
+				.prop("checked", false);
+	});
+
 	/* Account 2FA changes */
 	$("#manage_item_contents").delegate("#enable_2fa", "click", function(e) {
 		if ($(this).is(":checked")) {
